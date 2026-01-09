@@ -16,6 +16,12 @@
 </head>
 <body>
 
+    @{
+        var token = Context.Request.Cookies["AuthToken"];
+        var role = Context.Request.Cookies["UserRole"];
+        var isLoggedIn = !string.IsNullOrEmpty(token);
+    }
+
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
@@ -56,8 +62,8 @@
                             </a>
                         </li>
 
-                        @* USER / ADMIN MENU *@
-                        @if (!string.IsNullOrEmpty(Context.Session.GetString("JwtToken")))
+                        @* USER *@
+                        @if (isLoggedIn && role == "USER")
                         {
                             <li class="nav-item">
                                 <a class="nav-link"
@@ -69,7 +75,7 @@
                         }
 
                         @* ADMIN *@
-                        @if (Context.Session.GetString("UserRole") == "ADMIN")
+                        @if (isLoggedIn && role == "ADMIN")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-warning"
@@ -81,7 +87,7 @@
                         }
 
                         @* SUPER ADMIN *@
-                        @if (Context.Session.GetString("UserRole") == "SUPER_ADMIN")
+                        @if (isLoggedIn && role == "SUPER_ADMIN")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-danger"
@@ -97,24 +103,17 @@
                     <ul class="navbar-nav ms-auto">
 
                         <li class="nav-item dropdown">
-
                             <a class="nav-link dropdown-toggle text-white"
                                href="#"
                                role="button"
-                               data-bs-toggle="dropdown"
-                               aria-expanded="false">
+                               data-bs-toggle="dropdown">
                                 <i class="fa-solid fa-user"></i>
-                                @(
-                                                                string.IsNullOrEmpty(Context.Session.GetString("JwtToken"))
-                                                                ? "Account"
-                                                                : "My Account"
-                                                                )
+                                @(isLoggedIn ? "My Account" : "Account")
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end">
 
-                                @* NOT LOGGED IN *@
-                                @if (string.IsNullOrEmpty(Context.Session.GetString("JwtToken")))
+                                @if (!isLoggedIn)
                                 {
                                     <li>
                                         <a class="dropdown-item"
@@ -136,13 +135,10 @@
                                 }
                                 else
                                 {
-                                    @* LOGGED IN *@
                                     <li>
                                         <span class="dropdown-item-text">
                                             Role:
-                                            <strong>
-                                                @Context.Session.GetString("UserRole")
-                                            </strong>
+                                            <strong>@role</strong>
                                         </span>
                                     </li>
 
@@ -157,25 +153,21 @@
                                         </a>
                                     </li>
                                 }
-
                             </ul>
                         </li>
 
                     </ul>
-
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- PAGE CONTENT -->
     <div class="container mt-4">
         @RenderBody()
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     @RenderSection("Scripts", required: false)
+
 </body>
 </html>

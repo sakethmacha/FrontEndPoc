@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Registration Successful";
+}
+
+<div class="container">
+    <div class="row justify-content-center align-items-center vh-100">
+        <div class="col-md-7 col-lg-6">
+
+            <div class="card shadow-lg border-0 rounded-4 text-center">
+                <div class="card-body p-5">
+
+                    <!-- ICON -->
+                    <div class="display-1 mb-3">
+                        🎉
+                    </div>
+
+                    <!-- MESSAGE -->
+                    <h2 class="fw-bold text-success mb-3">
+                        Registration Successful!
+                    </h2>
+
+                    <p class="text-muted fs-5 mb-4">
+                        Your account has been created successfully.
+                        <br />
+                        Grab some popcorn 🍿 — your movie journey starts now!
+                    </p>
+
+                    <!-- ACTIONS -->
+                    <div class="d-grid gap-2 col-8 mx-auto">
+
+                        <a asp-controller="Account"
+                           asp-action="Login"
+                           class="btn btn-danger btn-lg">
+                            🔐 Login Now
+                        </a>
+
+                        <a asp-controller="Home"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            🏠 Go to Home
+                        </a>
+                    </div>
+
+                    <!-- FUN FOOTER -->
+                    <hr class="my-4" />
+
+                    <p class="text-muted small mb-0">
+                        ⚠️ Warning: Watching movies may cause emotional attachment to characters.
+                    </p>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
