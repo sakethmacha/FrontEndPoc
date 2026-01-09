@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "Movie Booking";
+}
+
+<div class="container mt-4">
+
+    <!-- HERO SECTION -->
+    <div class="row mb-5">
+        <div class="col text-center">
+            <h1 class="display-4 fw-bold">
+                🎬 Book Movies, Not Regrets
+            </h1>
+            <p class="lead text-muted">
+                Pick a seat. Grab popcorn. Cry, laugh, scream — repeat.
+            </p>
+
+            <a class="btn btn-danger btn-lg mt-3 shadow"
+               asp-controller="Movies"
+               asp-action="Index">
+                🍿 Browse Movies
+            </a>
+        </div>
+    </div>
+
+    <!-- FEATURE CARDS -->
+    <div class="row text-center mb-5">
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow border-0 rounded-4">
+                <div class="card-body">
+                    <div class="display-5">🎥</div>
+                    <h5 class="fw-bold mt-3">Latest Movies</h5>
+                    <p class="text-muted">
+                        From blockbusters to guilty pleasures.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow border-0 rounded-4">
+                <div class="card-body">
+                    <div class="display-5">💺</div>
+                    <h5 class="fw-bold mt-3">Choose Your Seat</h5>
+                    <p class="text-muted">
+                        Front row warrior or backbench legend?
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 shadow border-0 rounded-4">
+                <div class="card-body">
+                    <div class="display-5">💳</div>
+                    <h5 class="fw-bold mt-3">Fast Payments</h5>
+                    <p class="text-muted">
+                        Blink and your ticket is booked.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- NOW SHOWING -->
+    <h3 class="fw-bold mb-4">
+        🔥 Now Showing (Totally Real Movies)
+    </h3>
+
+    <div class="row g-4">
+
+        <!-- MOVIE CARD -->
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="https://via.placeholder.com/300x400?text=Action+Movie"
+                     class="card-img-top rounded-top" />
+                <div class="card-body">
+                    <h6 class="fw-bold">Fast & Curious 12</h6>
+                    <p class="text-muted small">Action | 2h 30m</p>
+                    <a href="#" class="btn btn-outline-danger btn-sm w-100">
+                        Book Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="https://via.placeholder.com/300x400?text=Romantic+Movie"
+                     class="card-img-top rounded-top" />
+                <div class="card-body">
+                    <h6 class="fw-bold">Love.exe Stopped Working</h6>
+                    <p class="text-muted small">Romance | 2h 5m</p>
+                    <a href="#" class="btn btn-outline-danger btn-sm w-100">
+                        Book Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="https://via.placeholder.com/300x400?text=Horror+Movie"
+                     class="card-img-top rounded-top" />
+                <div class="card-body">
+                    <h6 class="fw-bold">404: Ghost Not Found</h6>
+                    <p class="text-muted small">Horror | 1h 55m</p>
+                    <a href="#" class="btn btn-outline-danger btn-sm w-100">
+                        Book Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card h-100 shadow-sm border-0">
+                <img src="https://via.placeholder.com/300x400?text=Comedy+Movie"
+                     class="card-img-top rounded-top" />
+                <div class="card-body">
+                    <h6 class="fw-bold">Bug in the System</h6>
+                    <p class="text-muted small">Comedy | 2h 10m</p>
+                    <a href="#" class="btn btn-outline-danger btn-sm w-100">
+                        Book Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="row mt-5">
+        <div class="col text-center">
+            <div class="alert alert-warning shadow-sm">
+                🎟️ Warning: Watching movies may cause happiness, tears, and popcorn addiction.
+            </div>
+        </div>
+    </div>
+
+</div>

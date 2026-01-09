@@ -1,0 +1,59 @@
+﻿@model MovieBooking.Web.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="row justify-content-center align-items-center vh-100">
+    <div class="col-md-5 col-lg-4">
+        <div class="card auth-card p-4 bg-light">
+            <h3 class="text-center fw-bold mb-3">Welcome Back 🎬</h3>
+            <p class="text-center text-muted mb-4">
+                Login to book your favorite movies
+            </p>
+
+            <form asp-action="Login" method="post" novalidate>
+
+                <!-- EMAIL -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label fw-semibold"></label>
+                    <input asp-for="Email" class="form-control" placeholder="john@email.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label fw-semibold"></label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <!-- LOGIN ERROR (MODEL-LEVEL ONLY) -->
+                @if (ViewData.ModelState.ErrorCount > 0 &&
+                                ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger py-2">
+                        Invalid email or password
+                    </div>
+                }
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                    Login
+                </button>
+            </form>
+
+            <hr class="my-4" />
+
+            <p class="text-center mb-0">
+                Don’t have an account?
+                <a asp-action="Register" class="fw-semibold text-decoration-none">
+                    Register here
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
