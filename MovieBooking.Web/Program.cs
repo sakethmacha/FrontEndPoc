@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using MovieBooking.Web.Interfaces;
 using MovieBooking.Web.Services;
 namespace MovieBooking.Web
 {
@@ -10,7 +11,12 @@ namespace MovieBooking.Web
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddHttpClient<AuthenticationApiService>((ServiceProvider, Client) =>
+            builder.Services.AddHttpClient<IAuthenticationMvcService,AuthenticationMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient<ISuperAdminMvcService,SuperAdminMvcService>((ServiceProvider, Client) =>
             {
                 var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
                 Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
@@ -22,7 +28,17 @@ namespace MovieBooking.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-
+            builder.Services
+             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+             .AddCookie(options =>
+             {
+                 options.LoginPath = "/Account/Login";
+                 options.AccessDeniedPath = "/Account/AccessDenied";
+                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                 options.SlidingExpiration = true;
+             });
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddAuthorization();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -38,6 +54,7 @@ namespace MovieBooking.Web
 
             app.UseRouting();
             app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -1,6 +1,7 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MovieBooking.Web.Models;
+using System.Diagnostics;
+using System.Security.Claims;
 
 namespace MovieBooking.Web.Controllers
 {
@@ -28,5 +29,17 @@ namespace MovieBooking.Web.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        public IActionResult Dashboard()
+        {
+            return Json(new
+            {
+                IsAuthenticated = User.Identity.IsAuthenticated,
+                UserName = User.Identity.Name,
+                Roles = User.Claims
+                    .Where(c => c.Type == ClaimTypes.Role)
+                    .Select(c => c.Value)
+            });
+        }
+
     }
 }

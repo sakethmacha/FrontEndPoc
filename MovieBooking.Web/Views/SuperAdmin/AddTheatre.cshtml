@@ -1,0 +1,16 @@
+﻿@model AddTheatreViewModel
+<h2 class="mt-4">➕ Add Theatre</h2>
+
+<form method="post" class="card p-4 shadow-sm">
+    <div class="mb-3">
+        <label>Name</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Location</label>
+        <input asp-for="Location" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Save Theatre</button>
+</form>

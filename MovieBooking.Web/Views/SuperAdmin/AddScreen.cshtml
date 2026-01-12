@@ -1,0 +1,28 @@
+﻿@model AddScreenViewModel
+<h2 class="mt-4">🎦 Add Screen</h2>
+
+<form method="post" class="card p-4 shadow-sm">
+    <div class="mb-3">
+        <label>Theatre</label>
+        <select asp-for="TheatreId" class="form-select"
+                asp-items="@(new SelectList(Model.Theatres, "TheatreId", "Name"))">
+            <option value="">Select Theatre</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Screen Name</label>
+        <input asp-for="ScreenName" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Seat Layout Type</label>
+        <select asp-for="SeatLayoutType" class="form-select">
+            <option>STANDARD</option>
+            <option>VIP</option>
+            <option>MIXED</option>
+        </select>
+    </div>
+
+    <button class="btn btn-success">Save Screen</button>
+</form>

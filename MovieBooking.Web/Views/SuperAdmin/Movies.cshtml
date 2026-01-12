@@ -1,0 +1,72 @@
+﻿@model List<MovieBooking.Web.ApiContracts.Movies.MovieResponse>
+<h2 class="mt-4">🎬 Movies</h2>
+
+<a asp-action="AddMovie" class="btn btn-primary mb-3">➕ Add Movie</a>
+
+<table class="table table-striped shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>Duration</th>
+            <th>Release</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.Title</td>
+                <td>@m.DurationMinutes min</td>
+                <td>@m.ReleaseDate.ToShortDateString()</td@model List<MovieBooking.Web.ApiContracts.Movies.MovieResponse>
+
+<h2 class="mt-4">🎬 Movies</h2>
+
+<a asp-action="AddMovie" class="btn btn-primary mb-3">
+    ➕ Add Movie
+</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No movies available.
+    </div>
+}
+else
+{
+    <table class="table table-striped shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Duration</th>
+                <th>Release Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in Model)
+            {
+                <tr>
+                    <td>@m.Title</td>
+                    <td>@m.DurationMinutes min</td>
+                    <td>@m.ReleaseDate.ToString("dd MMM yyyy")</td>
+                    <td>
+                        <span class="badge @(m.IsActive ? "bg-success" : "bg-danger")">
+                            @(m.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+                <td>
+                    <span class="badge @(m.IsActive ? "bg-success" : "bg-danger")">
+                        @(m.IsActive ? "Active" : "Inactive")
+                    </span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

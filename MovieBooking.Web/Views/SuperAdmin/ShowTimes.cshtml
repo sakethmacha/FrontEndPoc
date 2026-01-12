@@ -1,0 +1,30 @@
+﻿@model List<MovieBooking.Web.ApiContracts.ShowTimes.ShowTimeResponse>
+<h2 class="mt-4">⏰ ShowTimes</h2>
+
+<a asp-action="AddShowTime" class="btn btn-primary mb-3">➕ Add ShowTime</a>
+
+<table class="table table-bordered shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Movie</th>
+            <th>Theatre</th>
+            <th>Screen</th>
+            <th>Language</th>
+            <th>Time</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.MovieTitle</td>
+                <td>@s.TheatreName</td>
+                <td>@s.ScreenName</td>
+                <td>@s.Language</td>
+                <td>@s.StartTime</td>
+                <td>₹@s.BasePrice</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Super Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">🎬 Super Admin Dashboard</h2>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <a asp-action="Movies" class="card text-decoration-none shadow-sm">
+                <div class="card-body text-center">
+                    <h5>Movies</h5>
+                    <p class="text-muted">Manage movies</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-action="Theatres" class="card text-decoration-none shadow-sm">
+                <div class="card-body text-center">
+                    <h5>Theatres</h5>
+                    <p class="text-muted">Manage theatres</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-action="ShowTimes" class="card text-decoration-none shadow-sm">
+                <div class="card-body text-center">
+                    <h5>ShowTimes</h5>
+                    <p class="text-muted">Manage showtimes</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-3">
+            <a asp-action="Requests" class="card text-decoration-none shadow-sm">
+                <div class="card-body text-center">
+                    <h5>Requests</h5>
+                    <p class="text-muted">Approve / Reject</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

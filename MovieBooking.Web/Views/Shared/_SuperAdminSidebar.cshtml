@@ -1,0 +1,33 @@
+﻿@if (User.IsInRole("SUPER_ADMIN"))
+{
+    <div class="col-md-2 bg-dark min-vh-100 p-3">
+        <h5 class="text-white mb-4">Super Admin</h5>
+
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item mb-2">
+                <a asp-controller="SuperAdmin" asp-action="Dashboard"
+                   class="nav-link text-white">🏠 Dashboard</a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a asp-controller="SuperAdmin" asp-action="Movies"
+                   class="nav-link text-white">🎬 Movies</a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a asp-controller="SuperAdmin" asp-action="Theatres"
+                   class="nav-link text-white">🏢 Theatres</a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a asp-controller="SuperAdmin" asp-action="ShowTimes"
+                   class="nav-link text-white">⏰ ShowTimes</a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a asp-controller="SuperAdmin" asp-action="Requests"
+                   class="nav-link text-white">📥 Requests</a>
+            </li>
+        </ul>
+    </div>
+}

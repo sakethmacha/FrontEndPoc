@@ -1,110 +1,121 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MovieBooking.Web.Services;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using MovieBooking.Web.Interfaces;
 using MovieBooking.Web.ViewModels;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace MovieBooking.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly AuthenticationApiService AuthenticationApiService;
+        private readonly IAuthenticationMvcService _authService;
 
-        public AccountController(AuthenticationApiService AuthenticationApiService)
+        public AccountController(IAuthenticationMvcService authService)
         {
-            this.AuthenticationApiService = AuthenticationApiService;
+            _authService = authService;
         }
 
-     
-
+        // ---------------- LOGIN (GET) ----------------
         [HttpGet]
-        public IActionResult Login() => View();
+        public IActionResult Login(string? returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
 
+        // ---------------- LOGIN (POST) ----------------
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel Model)
+        public async Task<IActionResult> Login(
+            LoginViewModel model,
+            string? returnUrl = null)
         {
             if (!ModelState.IsValid)
-                return View(Model);
+                return View(model);
 
-            var result = await AuthenticationApiService.LoginAsync(Model);
+            // 1️⃣ Call API
+            var result = await _authService.LoginAsync(model);
 
             if (result == null)
             {
                 ModelState.AddModelError("", "Invalid credentials");
-                return View(Model);
+                return View(model);
             }
 
-            // Store JWT in secure cookie
-            Response.Cookies.Append(
-                "AuthToken",
-                result.Token,
-                new CookieOptions
+            // 2️⃣ Decode JWT
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(result.Token);
+
+            // 3️⃣ Extract claims from JWT
+            var claims = jwt.Claims.ToList();
+
+            // OPTIONAL: add Name claim for MVC UI
+            claims.Add(new Claim(ClaimTypes.Name, result.Name));
+
+            // 4️⃣ Create identity
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var principal = new ClaimsPrincipal(identity);
+
+            // 5️⃣ Sign in (COOKIE AUTH)
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties
                 {
-                    HttpOnly = true,
-                    Secure = true,              // HTTPS only
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
                 });
 
-            // Store role (can also decode from JWT later)
-            Response.Cookies.Append(
-                "UserRole",
-                result.Role,
-                new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTimeOffset.UtcNow.AddDays(7)
-                });
-
+            // 6️⃣ Redirect to requested page
             return RedirectToAction("LoginSuccess");
         }
-
-
-        [HttpGet]
-        public IActionResult Register() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel Model)
+        public IActionResult LoginSuccess()
         {
-            if (!ModelState.IsValid)
-                return View(Model);
-
-            var Result = await AuthenticationApiService.RegisterAsync(Model);
-
-            if (Result == null)
-            {
-                ModelState.AddModelError("", "Registration failed. Email may already exist.");
-                return View(Model);
-            }
-
-            return RedirectToAction("RegisterSuccess");
+            return View();
         }
-        [HttpGet]
+
+
+        // ---------------- REGISTER ----------------
         public IActionResult RegisterSuccess()
         {
             return View();
         }
         [HttpGet]
-        public IActionResult LoginSuccess()
+        public IActionResult Register() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _authService.RegisterAsync(model);
+
+            if (result == null)
+            {
+                ModelState.AddModelError("", "Registration failed");
+                return View(model);
+            }
+
+            return RedirectToAction("Login");
+        }
+
+        // ---------------- LOGOUT ----------------
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            return RedirectToAction("Login");
+        }
+
+        public IActionResult AccessDenied()
         {
             return View();
         }
-        public IActionResult Logout()
-        {
-            var cookieOptions = new CookieOptions
-            {
-                Path = "/",                  // MUST match creation
-                Secure = Request.IsHttps,
-                SameSite = SameSiteMode.Lax
-            };
-
-            Response.Cookies.Delete("AuthToken", cookieOptions);
-            Response.Cookies.Delete("UserRole", cookieOptions);
-
-            return RedirectToAction("Login", "Account");
-        }
-
     }
-
-
 }

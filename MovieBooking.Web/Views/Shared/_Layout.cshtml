@@ -61,6 +61,7 @@
                                 Privacy
                             </a>
                         </li>
+                      
 
                         @* USER *@
                         @if (isLoggedIn && role == "USER")
@@ -162,8 +163,17 @@
         </nav>
     </header>
 
-    <div class="container mt-4">
-        @RenderBody()
+    <div class="container-fluid">
+        <div class="row">
+            @if (User.IsInRole("SuperAdmin"))
+            {
+                @await Html.PartialAsync("_SuperAdminSidebar")
+            }
+
+            <main class="col p-4">
+                @RenderBody()
+            </main>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

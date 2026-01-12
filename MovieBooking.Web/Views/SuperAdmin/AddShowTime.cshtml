@@ -1,0 +1,42 @@
+﻿@model AddShowTimeViewModel
+<h2 class="mt-4">➕ Add ShowTime</h2>
+
+<form method="post" class="card p-4 shadow-sm">
+    <div class="row mb-3">
+        <div class="col">
+            <label>Movie</label>
+            <select asp-for="MovieId" class="form-select"
+                    asp-items="@(new SelectList(Model.Movies, "MovieId", "Title"))"></select>
+        </div>
+        <div class="col">
+            <label>Language</label>
+            <select asp-for="LanguageId" class="form-select"
+                    asp-items="@(new SelectList(Model.Languages, "LanguageId", "Name"))"></select>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <label>Theatre</label>
+            <select asp-for="TheatreId" class="form-select"
+                    asp-items="@(new SelectList(Model.Theatres, "TheatreId", "Name"))"></select>
+        </div>
+        <div class="col">
+            <label>Screen ID</label>
+            <input asp-for="ScreenId" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label>Start Time</label>
+            <input asp-for="StartTime" type="datetime-local" class="form-control" />
+        </div>
+        <div class="col">
+            <label>Base Price</label>
+            <input asp-for="BasePrice" class="form-control" />
+        </div>
+    </div>
+
+    <button class="btn btn-success mt-4">Save ShowTime</button>
+</form>
