@@ -27,14 +27,11 @@ namespace MovieBooking.Web.Controllers
 
         // ---------------- LOGIN (POST) ----------------
         [HttpPost]
-        public async Task<IActionResult> Login(
-            LoginViewModel model,
-            string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model,string? returnUrl = null)
         {
             if (!ModelState.IsValid)
                 return View(model);
 
-            // 1️⃣ Call API
             var result = await _authService.LoginAsync(model);
 
             if (result == null)
@@ -43,36 +40,32 @@ namespace MovieBooking.Web.Controllers
                 return View(model);
             }
 
-            // 2️⃣ Decode JWT
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(result.Token);
 
-            // 3️⃣ Extract claims from JWT
             var claims = jwt.Claims.ToList();
 
-            // OPTIONAL: add Name claim for MVC UI
+            // 🔥 STORE JWT FOR MVC → API CALLS
+            claims.Add(new Claim("access_token", result.Token));
+
             claims.Add(new Claim(ClaimTypes.Name, result.Name));
 
-            // 4️⃣ Create identity
             var identity = new ClaimsIdentity(
                 claims,
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
-            var principal = new ClaimsPrincipal(identity);
-
-            // 5️⃣ Sign in (COOKIE AUTH)
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                principal,
+                new ClaimsPrincipal(identity),
                 new AuthenticationProperties
                 {
                     IsPersistent = true,
                     ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
                 });
 
-            // 6️⃣ Redirect to requested page
             return RedirectToAction("LoginSuccess");
         }
+
         public IActionResult LoginSuccess()
         {
             return View();

@@ -22,19 +22,14 @@ namespace MovieBooking.Web
                 Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
             });
             builder.Services.AddDistributedMemoryCache();
-            builder.Services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
+            
             builder.Services
              .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
              .AddCookie(options =>
              {
                  options.LoginPath = "/Account/Login";
                  options.AccessDeniedPath = "/Account/AccessDenied";
-                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                 options.ExpireTimeSpan = TimeSpan.FromDays(1);
                  options.SlidingExpiration = true;
              });
             builder.Services.AddHttpContextAccessor();
@@ -53,7 +48,7 @@ namespace MovieBooking.Web
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseSession();
+            //app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 

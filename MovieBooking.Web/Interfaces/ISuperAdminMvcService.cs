@@ -1,5 +1,6 @@
 ﻿using MovieBooking.Web.ApiContracts.AdminRequests;
 using MovieBooking.Web.ApiContracts.Movies;
+using MovieBooking.Web.ApiContracts.Screens;
 using MovieBooking.Web.ApiContracts.ShowTimes;
 using MovieBooking.Web.ApiContracts.Theatres;
 using MovieBooking.Web.ViewModels;
@@ -13,7 +14,7 @@ namespace MovieBooking.Web.Interfaces
 
         Task<List<TheatreResponse>> GetTheatresAsync();
         Task AddTheatreAsync(AddTheatreViewModel vm);
-
+        Task<List<ScreenResponse>> GetScreensByTheatreAsync(Guid theatreId);
         Task AddScreenAsync(AddScreenViewModel vm);
 
         Task<List<ShowTimeResponse>> GetShowTimesAsync();

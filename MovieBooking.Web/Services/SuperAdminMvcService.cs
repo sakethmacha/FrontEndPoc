@@ -23,10 +23,18 @@ namespace MovieBooking.Web.Services
 
         private void Auth()
         {
-            var token = _ctx.HttpContext!.Request.Cookies["AuthToken"];
+            var token = _ctx.HttpContext!
+                .User
+                .FindFirst("access_token")?
+                .Value;
+
+            if (string.IsNullOrEmpty(token))
+                throw new UnauthorizedAccessException("JWT token missing");
+
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
         }
+
 
         public async Task<List<MovieResponse>> GetMoviesAsync()
         {
@@ -36,8 +44,10 @@ namespace MovieBooking.Web.Services
 
         public async Task AddMovieAsync(AddMovieViewModel vm)
         {
-            Auth();
-            await _http.PostAsJsonAsync("api/superadmin/movies",
+            Auth(); // MUST attach a VALID JWT
+
+            var response = await _http.PostAsJsonAsync(
+                "api/superadmin/movies",
                 new AddMovieRequest
                 {
                     Title = vm.Title,
@@ -46,7 +56,16 @@ namespace MovieBooking.Web.Services
                     ReleaseDate = vm.ReleaseDate,
                     PosterUrl = vm.PosterUrl
                 });
+
+            //  THIS IS THE MOST IMPORTANT PART
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(
+                    $"AddMovie failed: {(int)response.StatusCode} {response.StatusCode} - {error}");
+            }
         }
+
 
         public async Task<List<TheatreResponse>> GetTheatresAsync()
         {
@@ -54,28 +73,62 @@ namespace MovieBooking.Web.Services
             return await _http.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres");
         }
 
+        //public async Task<List<ScreenResponse>> GetScreensByTheatreAsync()
+        //{
+        //        Auth();
+        //     return await _http.GetFromJsonAsync<List<ScreenResponse>>("api/superadmin/screens/by-theatre/{theatreId}");
+
+        //}
+        public async Task<List<ScreenResponse>> GetScreensByTheatreAsync(Guid theatreId)
+        {
+            Auth();
+
+            return await _http.GetFromJsonAsync<List<ScreenResponse>>(
+                $"api/superadmin/screens/by-theatre/{theatreId}");
+        }
+
         public async Task AddTheatreAsync(AddTheatreViewModel vm)
         {
             Auth();
-            await _http.PostAsJsonAsync("api/superadmin/theatres",
+
+            var response = await _http.PostAsJsonAsync(
+                "api/superadmin/theatres",
                 new CreateTheatreRequest
                 {
                     Name = vm.Name,
                     Location = vm.Location
                 });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(
+                    $"AddTheatre failed: {(int)response.StatusCode} {response.StatusCode} - {error}");
+            }
         }
+
 
         public async Task AddScreenAsync(AddScreenViewModel vm)
         {
             Auth();
-            await _http.PostAsJsonAsync("api/superadmin/screens",
+
+            var response = await _http.PostAsJsonAsync(
+                "api/superadmin/screens",
                 new CreateScreenRequest
                 {
                     TheatreId = vm.TheatreId,
                     ScreenName = vm.ScreenName,
                     SeatLayoutType = vm.SeatLayoutType
                 });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(
+                    $"AddScreen failed: {(int)response.StatusCode} {response.StatusCode} - {error}");
+            }
         }
+
 
         public async Task<List<ShowTimeResponse>> GetShowTimesAsync()
         {
@@ -97,7 +150,9 @@ namespace MovieBooking.Web.Services
         public async Task AddShowTimeAsync(AddShowTimeViewModel vm)
         {
             Auth();
-            await _http.PostAsJsonAsync("api/superadmin/showtimes",
+
+            var response = await _http.PostAsJsonAsync(
+                "api/superadmin/showtimes",
                 new CreateShowTimeRequest
                 {
                     MovieId = vm.MovieId,
@@ -108,7 +163,15 @@ namespace MovieBooking.Web.Services
                     EndTime = vm.StartTime.AddHours(3),
                     BasePrice = vm.BasePrice
                 });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(
+                    $"AddShowTime failed: {(int)response.StatusCode} {response.StatusCode} - {error}");
+            }
         }
+
 
         public async Task<List<AdminRequestResponse>> GetRequestsAsync()
         {

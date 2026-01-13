@@ -1,72 +1,133 @@
 ﻿@model List<MovieBooking.Web.ApiContracts.Movies.MovieResponse>
-<h2 class="mt-4">🎬 Movies</h2>
 
-<a asp-action="AddMovie" class="btn btn-primary mb-3">➕ Add Movie</a>
-
-<table class="table table-striped shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>Title</th>
-            <th>Duration</th>
-            <th>Release</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var m in Model)
-        {
-            <tr>
-                <td>@m.Title</td>
-                <td>@m.DurationMinutes min</td>
-                <td>@m.ReleaseDate.ToShortDateString()</td@model List<MovieBooking.Web.ApiContracts.Movies.MovieResponse>
-
-<h2 class="mt-4">🎬 Movies</h2>
-
-<a asp-action="AddMovie" class="btn btn-primary mb-3">
-    ➕ Add Movie
-</a>
-
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        No movies available.
-    </div>
+@{
+    ViewData["Title"] = "Movies";
 }
-else
-{
-    <table class="table table-striped shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>Title</th>
-                <th>Duration</th>
-                <th>Release Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
+
+<style>
+    .movie-card {
+        border-radius: 18px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border: none;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+        }
+
+    .movie-title {
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    .movie-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 12px;
+    }
+
+    .empty-state {
+        border: 2px dashed #dee2e6;
+        border-radius: 18px;
+        padding: 40px;
+        text-align: center;
+        background-color: #fafafa;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">🎬 Movies</h2>
+            <small class="text-muted">Manage movies in the system</small>
+        </div>
+
+        <a asp-action="AddMovie" class="btn btn-primary fw-semibold">
+            <i class="bi bi-plus-lg"></i> Add Movie
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- EMPTY STATE -->
+        <div class="empty-state shadow-sm">
+            <h5 class="fw-bold">No Movies Available</h5>
+            <p class="text-muted mb-3">
+                Start by adding movies to your platform.
+            </p>
+            <a asp-action="AddMovie" class="btn btn-outline-primary">
+                ➕ Add Movie
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- MOVIE CARDS -->
+        <div class="row g-4">
             @foreach (var m in Model)
             {
-                <tr>
-                    <td>@m.Title</td>
-                    <td>@m.DurationMinutes min</td>
-                    <td>@m.ReleaseDate.ToString("dd MMM yyyy")</td>
-                    <td>
-                        <span class="badge @(m.IsActive ? "bg-success" : "bg-danger")">
-                            @(m.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card movie-card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
 
-                <td>
-                    <span class="badge @(m.IsActive ? "bg-success" : "bg-danger")">
-                        @(m.IsActive ? "Active" : "Inactive")
-                    </span>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                            <!-- TITLE -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="movie-title">
+                                    <i class="bi bi-film text-muted me-1"></i>
+                                    @m.Title
+                                </div>
+                                @if (m.IsActive)
+                                {
+                                    <span class="badge bg-success status-badge">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger status-badge">
+                                        Inactive
+                                    </span>
+                                }
+                            </div>
+
+                            <!-- META -->
+                            <div class="movie-meta mb-3">
+                                <div>
+                                    <i class="bi bi-clock"></i>
+                                    @m.DurationMinutes min
+                                </div>
+                                <div>
+                                    <i class="bi bi-calendar-event"></i>
+                                    @m.ReleaseDate.ToString("dd MMM yyyy")
+                                </div>
+                            </div>
+
+                            <!-- ACTIONS (OPTIONAL) -->
+                            <div class="mt-auto d-flex gap-2">
+                                <a asp-action="EditMovie"
+                                   asp-route-id="@m.MovieId"
+                                   class="btn btn-sm btn-outline-primary w-100">
+                                    Edit
+                                </a>
+                                <a asp-action="Details"
+                                   asp-route-id="@m.MovieId"
+                                   class="btn btn-sm btn-outline-secondary w-100">
+                                    View
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

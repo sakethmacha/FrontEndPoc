@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using System.Security.Claims
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,34 +8,27 @@
     <title>@ViewData["Title"] - MovieBooking</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet" />
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
           rel="stylesheet" />
 </head>
 <body>
 
     @{
-        var token = Context.Request.Cookies["AuthToken"];
-        var role = Context.Request.Cookies["UserRole"];
-        var isLoggedIn = !string.IsNullOrEmpty(token);
+        var isLoggedIn = User.Identity?.IsAuthenticated ?? false;
     }
 
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
 
-                <!-- BRAND -->
                 <a class="navbar-brand fw-bold"
                    asp-controller="Home"
                    asp-action="Index">
                     🎬 MovieBooking
                 </a>
 
-                <!-- TOGGLER -->
                 <button class="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
@@ -43,40 +38,22 @@
 
                 <div class="collapse navbar-collapse" id="mainNavbar">
 
-                    <!-- LEFT MENU -->
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav me-auto">
 
                         <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
-                            </a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Privacy
-                            </a>
-                        </li>
-                      
-
-                        @* USER *@
-                        @if (isLoggedIn && role == "USER")
+                        @if (User.IsInRole("User"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-controller="Booking"
-                                   asp-action="Index">
+                                <a class="nav-link" asp-controller="Booking" asp-action="Index">
                                     My Bookings
                                 </a>
                             </li>
                         }
 
-                        @* ADMIN *@
-                        @if (isLoggedIn && role == "ADMIN")
+                        @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-warning"
@@ -87,8 +64,7 @@
                             </li>
                         }
 
-                        @* SUPER ADMIN *@
-                        @if (isLoggedIn && role == "SUPER_ADMIN")
+                        @if (User.IsInRole("SuperAdmin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-danger"
@@ -98,18 +74,17 @@
                                 </a>
                             </li>
                         }
+
                     </ul>
 
-                    <!-- RIGHT ACCOUNT DROPDOWN -->
                     <ul class="navbar-nav ms-auto">
-
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-white"
+
+                            <a class="nav-link dropdown-toggle"
                                href="#"
-                               role="button"
                                data-bs-toggle="dropdown">
                                 <i class="fa-solid fa-user"></i>
-                                @(isLoggedIn ? "My Account" : "Account")
+                                @(isLoggedIn? User.Identity!.Name : "Account")
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end">
@@ -120,27 +95,22 @@
                                         <a class="dropdown-item"
                                            asp-controller="Account"
                                            asp-action="Login">
-                                            <i class="fa-solid fa-right-to-bracket me-1"></i>
                                             Login
                                         </a>
                                     </li>
-
                                     <li>
                                         <a class="dropdown-item"
                                            asp-controller="Account"
                                            asp-action="Register">
-                                            <i class="fa-solid fa-user-plus me-1"></i>
                                             Register
                                         </a>
                                     </li>
                                 }
                                 else
                                 {
-                                    <li>
-                                        <span class="dropdown-item-text">
-                                            Role:
-                                            <strong>@role</strong>
-                                        </span>
+                                    <li class="dropdown-item-text">
+                                        Role:
+                                        <strong>@User.Claims.First(c => c.Type == ClaimTypes.Role).Value</strong>
                                     </li>
 
                                     <li><hr class="dropdown-divider" /></li>
@@ -149,15 +119,15 @@
                                         <a class="dropdown-item text-danger"
                                            asp-controller="Account"
                                            asp-action="Logout">
-                                            <i class="fa-solid fa-right-from-bracket me-1"></i>
                                             Logout
                                         </a>
                                     </li>
                                 }
+
                             </ul>
                         </li>
-
                     </ul>
+
                 </div>
             </div>
         </nav>
@@ -165,6 +135,7 @@
 
     <div class="container-fluid">
         <div class="row">
+
             @if (User.IsInRole("SuperAdmin"))
             {
                 @await Html.PartialAsync("_SuperAdminSidebar")
@@ -173,6 +144,7 @@
             <main class="col p-4">
                 @RenderBody()
             </main>
+
         </div>
     </div>
 

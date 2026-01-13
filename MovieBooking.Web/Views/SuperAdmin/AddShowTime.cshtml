@@ -18,14 +18,20 @@
     <div class="row mb-3">
         <div class="col">
             <label>Theatre</label>
-            <select asp-for="TheatreId" class="form-select"
-                    asp-items="@(new SelectList(Model.Theatres, "TheatreId", "Name"))"></select>
+            <select asp-for="TheatreId" class="form-select" id="theatreDropdown"
+                    asp-items="@(new SelectList(Model.Theatres, "TheatreId", "Name"))">
+                <option value="">-- Select Theatre --</option>
+            </select>
         </div>
+
         <div class="col">
-            <label>Screen ID</label>
-            <input asp-for="ScreenId" class="form-control" />
+            <label>Screen</label>
+            <select asp-for="ScreenId" class="form-select" id="screenDropdown" disabled>
+                <option value="">-- Select Screen --</option>
+            </select>
         </div>
     </div>
+
 
     <div class="row">
         <div class="col">
@@ -40,3 +46,57 @@
 
     <button class="btn btn-success mt-4">Save ShowTime</button>
 </form>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const theatreDropdown = document.getElementById("theatreDropdown");
+        const screenDropdown = document.getElementById("screenDropdown");
+
+        const apiBaseUrl = '@(ViewContext.HttpContext.RequestServices
+                        .GetService<IConfiguration>()["ApiSettings:BaseUrl"])';
+
+        theatreDropdown.addEventListener("change", function () {
+
+            const theatreId = this.value;
+
+            // Reset screen dropdown
+            screenDropdown.innerHTML =
+                '<option value="">-- Select Screen --</option>';
+            screenDropdown.disabled = true;
+
+            if (!theatreId) return;
+
+            fetch(`${apiBaseUrl}api/superadmin/screens/by-theatre/${theatreId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("HTTP " + response.status);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    console.log("Screens received:", data);
+
+                    if (!data || data.length === 0) {
+                        screenDropdown.innerHTML =
+                            '<option value="">No screens available</option>';
+                        return;
+                    }
+
+                    data.forEach(screen => {
+                        const option = document.createElement("option");
+                        option.value = screen.screenId || screen.ScreenId;
+                        option.text  = screen.screenName || screen.ScreenName;
+                        screenDropdown.appendChild(option);
+                    });
+
+                    screenDropdown.disabled = false;
+                })
+                .catch(error => {
+                    console.error("Failed to load screens:", error);
+                    screenDropdown.innerHTML =
+                        '<option value="">Failed to load screens</option>';
+                });
+        });
+    });
+</script>

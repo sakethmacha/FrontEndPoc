@@ -18,7 +18,7 @@ namespace MovieBooking.Web.Controllers
             _service = service;
         }
         public IActionResult Dashboard() => View();
-        [HttpGet]
+        [HttpGet("movies")]
         public async Task<IActionResult> Movies()
             => View(await _service.GetMoviesAsync());
 
@@ -28,7 +28,7 @@ namespace MovieBooking.Web.Controllers
         public async Task<IActionResult> AddMovie(AddMovieViewModel vm)
         {
             await _service.AddMovieAsync(vm);
-            return RedirectToAction("Movies");
+            return RedirectToAction("movies");
         }
 
         public async Task<IActionResult> Theatres()
@@ -56,7 +56,10 @@ namespace MovieBooking.Web.Controllers
             await _service.AddScreenAsync(vm);
             return RedirectToAction("Theatres");
         }
-
+        //public async Task<IActionResult> Screens()
+        //{
+        //    return View(await _service.GetScreensByTheatreAsync());
+        //}
         public async Task<IActionResult> ShowTimes()
             => View(await _service.GetShowTimesAsync());
 
