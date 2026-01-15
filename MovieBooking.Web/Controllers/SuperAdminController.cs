@@ -69,13 +69,29 @@ namespace MovieBooking.Web.Controllers
         public async Task<IActionResult> ShowTimes()
             => View(await _service.GetShowTimesAsync());
 
+        //public async Task<IActionResult> AddShowTime()
+        //    => View(await _service.GetAddShowTimeFormAsync());
+        [HttpGet]
         public async Task<IActionResult> AddShowTime()
-            => View(await _service.GetAddShowTimeFormAsync());
-
-        [HttpPost]
-        public async Task<IActionResult> AddShowTime(AddShowTimeViewModel vm)
         {
-            await _service.AddShowTimeAsync(vm);
+            return View(await _service.GetAddShowTimeBulkFormAsync());
+        }
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> AddShowTime(AddShowTimeViewModel vm)
+        //{
+        //    await _service.AddShowTimeAsync(vm);
+        //    return RedirectToAction("ShowTimes");
+        //}
+        [HttpPost]
+        public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            await _service.AddShowTimesBulkAsync(vm);
+
             return RedirectToAction("ShowTimes");
         }
 

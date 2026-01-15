@@ -1,99 +1,136 @@
-﻿@model AddShowTimeViewModel
-<h2 class="mt-4">➕ Add ShowTime</h2>
+﻿@model AddShowTimeBulkViewModel
 
-<form method="post" class="card p-4 shadow-sm">
+<h2 class="mt-4">➕ Schedule Movies</h2>
+
+<form asp-action="AddShowTime" method="post" class="card p-4 shadow-sm">
+
+    <!-- MOVIE & LANGUAGE -->
     <div class="row mb-3">
         <div class="col">
             <label>Movie</label>
-            <select asp-for="MovieId" class="form-select"
+            <select asp-for="MovieId"
+                    class="form-select"
                     asp-items="@(new SelectList(Model.Movies, "MovieId", "Title"))">
                 <option value="">-- Select Movie --</option>
             </select>
         </div>
+
         <div class="col">
             <label>Language</label>
-            <select asp-for="LanguageId" class="form-select"
+            <select asp-for="LanguageId"
+                    class="form-select"
                     asp-items="@(new SelectList(Model.Languages, "LanguageId", "Name"))">
                 <option value="">-- Select Language --</option>
             </select>
-
         </div>
     </div>
 
-    <div class="row mb-3">
-        <div class="col">
-            <label>Theatre</label>
-            <select asp-for="TheatreId" class="form-select" id="theatreDropdown"
-                    asp-items="@(new SelectList(Model.Theatres, "TheatreId", "Name"))">
-                <option value="">-- Select Theatre --</option>
-            </select>
-        </div>
+    <hr />
 
-        <div class="col">
-            <label>Screen</label>
-            <select asp-for="ScreenId" class="form-select" id="screenDropdown" disabled>
-                <option value="">-- Select Screen --</option>
-            </select>
-        </div>
-    </div>
+    <div id="showtimeContainer"></div>
 
+    <button type="button"
+            class="btn btn-outline-primary mt-3"
+            onclick="addShowTimeGroup()">
+        ➕ Add Theatre / Screen
+    </button>
 
-    <div class="row">
-        <div class="col">
-            <label>Start Time</label>
-            <input asp-for="StartTime" type="datetime-local" class="form-control" />
-        </div>
-        <div class="col">
-            <label>Base Price</label>
-            <input asp-for="BasePrice" class="form-control" />
-        </div>
-    </div>
-
-    <button class="btn btn-success mt-4">Save ShowTime</button>
+    <button type="submit"
+            class="btn btn-success mt-4">
+        Save ShowTimes
+    </button>
 </form>
+
 @section Scripts {
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+    <script>
+        let index = 0;
 
-    const theatreDropdown = document.getElementById("theatreDropdown");
-    const screenDropdown = document.getElementById("screenDropdown");
+        function addShowTimeGroup() {
+            const container = document.getElementById("showtimeContainer");
 
-    theatreDropdown.addEventListener("change", async function () {
+            const html = `
+            <div class="border rounded p-3 mt-4 showtime-group">
 
-        const theatreId = this.value;
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">Schedule</h6>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="this.closest('.showtime-group').remove()">
+                        ❌ Remove
+                    </button>
+                </div>
 
-        // Reset screen dropdown
-        screenDropdown.innerHTML = '<option value="">-- Select Screen --</option>';
-        screenDropdown.disabled = true;
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Theatre</label>
+                        <select name="ShowTimes[${index}].TheatreId"
+                                class="form-select theatre-dd"
+                                onchange="loadScreens(this)">
+                            <option value="">-- Select Theatre --</option>
+                            @foreach (var t in Model.Theatres)
+                            {
+                                    <option value="@t.TheatreId">@t.Name</option>
+                            }
+                        </select>
+                    </div>
 
-        if (!theatreId)
-            return;
+                    <div class="col">
+                        <label>Screen</label>
+                        <select name="ShowTimes[${index}].ScreenId"
+                                class="form-select screen-dd">
+                            <option value="">-- Select Screen --</option>
+                        </select>
+                    </div>
+                </div>
 
-        try {
-            const response = await fetch(`/SuperAdmin/GetScreensByTheatre?theatreId=${theatreId}`);
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Date</label>
+                        <input type="date"
+                               name="ShowTimes[${index}].ShowDate"
+                               class="form-control" />
+                    </div>
 
-            if (!response.ok)
-                throw new Error("Failed to load screens");
+                    <div class="col">
+                        <label>Base Price</label>
+                        <input type="number"
+                               step="0.01"
+                               name="ShowTimes[${index}].BasePrice"
+                               class="form-control" />
+                    </div>
+                </div>
 
-            const screens = await response.json();
+                <div class="alert alert-info mt-2">
+                    Theatre timings will be applied automatically.
+                </div>
+            </div>
+            `;
 
-            if (screens.length === 0)
-                return;
-
-            screens.forEach(screen => {
-                const option = document.createElement("option");
-                option.value = screen.screenId;
-                option.text = screen.screenName;
-                screenDropdown.appendChild(option);
-            });
-
-            screenDropdown.disabled = false;
-
-        } catch (err) {
-            console.error(err);
-            alert("Unable to load screens for selected theatre.");
+            container.insertAdjacentHTML("beforeend", html);
+            index++;
         }
-    });
-});
-</script>
+
+        async function loadScreens(select) {
+            const theatreId = select.value;
+            const screenDd = select
+                .closest(".showtime-group")
+                .querySelector(".screen-dd");
+
+            screenDd.innerHTML = '<option>Loading...</option>';
+
+            const res = await fetch(
+                `/SuperAdmin/GetScreensByTheatre?theatreId=${theatreId}`);
+            const screens = await res.json();
+
+            screenDd.innerHTML =
+                '<option value="">-- Select Screen --</option>';
+
+            screens.forEach(s => {
+                const o = document.createElement("option");
+                o.value = s.screenId;
+                o.text = s.screenName;
+                screenDd.appendChild(o);
+            });
+        }
+    </script>
 }

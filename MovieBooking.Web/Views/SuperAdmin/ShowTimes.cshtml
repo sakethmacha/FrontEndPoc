@@ -15,16 +15,17 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var s in Model)
+        @foreach (var st in Model)
         {
             <tr>
-                <td>@s.MovieTitle</td>
-                <td>@s.TheatreName</td>
-                <td>@s.ScreenName</td>
-                <td>@s.Language</td>
-                <td>@s.StartTime</td>
-                <td>₹@s.BasePrice</td>
+                <td>@st.MovieTitle</td>
+                <td>@st.TheatreName</td>
+                <td>@st.ScreenName</td>
+                <td>@st.LanguageName</td>
+                <td>@st.StartTime.ToString("dd-MM-yyyy HH:mm")</td>
+                <td>₹@st.BasePrice</td>
             </tr>
         }
+
     </tbody>
 </table>

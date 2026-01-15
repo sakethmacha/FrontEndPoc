@@ -2,6 +2,7 @@
 using MovieBooking.Web.ApiContracts.Languages;
 using MovieBooking.Web.ApiContracts.Movies;
 using MovieBooking.Web.ApiContracts.Screens;
+using MovieBooking.Web.ApiContracts.Seat;
 using MovieBooking.Web.ApiContracts.ShowTimes;
 using MovieBooking.Web.ApiContracts.Theatres;
 using MovieBooking.Web.Interfaces;
@@ -114,12 +115,20 @@ namespace MovieBooking.Web.Services
 
             var response = await _http.PostAsJsonAsync(
                 "api/superadmin/screens",
-                new CreateScreenRequest
-                {
-                    TheatreId = vm.TheatreId,
-                    ScreenName = vm.ScreenName,
-                    SeatLayoutType = vm.SeatLayoutType
-                });
+               new CreateScreenRequest
+               {
+                   TheatreId = vm.TheatreId,
+                   ScreenName = vm.ScreenName,
+                   SeatLayoutType = vm.SeatLayoutType,
+
+                   SeatRows = vm.SeatRows.Select(r => new CreateSeatRowRequest
+                   {
+                       SeatRow = r.SeatRow,
+                       SeatCount = r.SeatCount,
+                       SeatType = r.SeatType,
+                       PriceMultiplier = r.PriceMultiplier
+                   }).ToList()
+               });
 
             if (!response.IsSuccessStatusCode)
             {
@@ -146,6 +155,19 @@ namespace MovieBooking.Web.Services
                 Languages = await _http.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages")
             };
         }
+        public async Task<AddShowTimeBulkViewModel> GetAddShowTimeBulkFormAsync()
+        {
+            Auth();
+
+            return new AddShowTimeBulkViewModel
+            {
+                Movies = await _http.GetFromJsonAsync<List<MovieResponse>>("api/superadmin/movies"),
+                Theatres = await _http.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres"),
+                Languages = await _http.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages"),
+                ShowTimes = new List<ShowTimeItemVm>() // empty initially
+            };
+        }
+
 
         public async Task AddShowTimeAsync(AddShowTimeViewModel vm)
         {
@@ -159,8 +181,7 @@ namespace MovieBooking.Web.Services
                     TheatreId = vm.TheatreId,
                     ScreenId = vm.ScreenId,
                     LanguageId = vm.LanguageId,
-                    StartTime = vm.StartTime,
-                    EndTime = vm.StartTime.AddHours(3),
+                    ShowDate  =vm.ShowDate,
                     BasePrice = vm.BasePrice
                 });
 
@@ -184,6 +205,32 @@ namespace MovieBooking.Web.Services
             Auth();
             await _http.PutAsync($"api/superadmin/requests/{id}/approve", null);
         }
+        public async Task AddShowTimesBulkAsync(AddShowTimeBulkViewModel vm)
+        {
+            Auth();
+
+            foreach (var item in vm.ShowTimes)
+            {
+                var response = await _http.PostAsJsonAsync(
+                    "api/superadmin/showtimes",
+                    new CreateShowTimeRequest
+                    {
+                        TheatreId = item.TheatreId,
+                        ScreenId = item.ScreenId,
+                        MovieId = vm.MovieId,
+                        LanguageId = vm.LanguageId,
+                        ShowDate = item.ShowDate,
+                        BasePrice = item.BasePrice
+                    });
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    throw new Exception($"Bulk AddShowTime failed: {error}");
+                }
+            }
+        }
+
 
         public async Task RejectRequestAsync(Guid id)
         {

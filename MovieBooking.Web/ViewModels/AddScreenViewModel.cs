@@ -8,5 +8,7 @@ namespace MovieBooking.Web.ViewModels
         public string ScreenName { get; set; }
         public string SeatLayoutType { get; set; }
         public List<TheatreResponse> Theatres { get; set; } = new();
+
+        public List<SeatRowViewModel> SeatRows { get; set; } = new();
     }
 }

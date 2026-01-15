@@ -24,6 +24,9 @@ namespace MovieBooking.Web.Interfaces
         Task<List<AdminRequestResponse>> GetRequestsAsync();
         Task ApproveRequestAsync(Guid id);
         Task RejectRequestAsync(Guid id);
+        Task AddShowTimesBulkAsync(AddShowTimeBulkViewModel vm);
+
+        Task<AddShowTimeBulkViewModel> GetAddShowTimeBulkFormAsync();
     }
 
 }

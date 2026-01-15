@@ -11,7 +11,7 @@ namespace MovieBooking.Web.ViewModels
         public Guid TheatreId { get; set; }
         public Guid ScreenId { get; set; }
         public Guid LanguageId { get; set; }
-        public DateTime StartTime { get; set; }
+        public DateOnly ShowDate { get; set; }
         public decimal BasePrice { get; set; }
 
         public List<MovieResponse> Movies { get; set; } = new();
