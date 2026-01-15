@@ -56,10 +56,16 @@ namespace MovieBooking.Web.Controllers
             await _service.AddScreenAsync(vm);
             return RedirectToAction("Theatres");
         }
-        //public async Task<IActionResult> Screens()
-        //{
-        //    return View(await _service.GetScreensByTheatreAsync());
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetScreensByTheatre(Guid theatreId)
+        {
+            if (theatreId == Guid.Empty)
+                return Json(new List<object>());
+
+            var screens = await _service.GetScreensByTheatreAsync(theatreId);
+            return Json(screens);
+        }
+
         public async Task<IActionResult> ShowTimes()
             => View(await _service.GetShowTimesAsync());
 

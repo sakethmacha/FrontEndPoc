@@ -73,12 +73,12 @@ namespace MovieBooking.Web.Services
             return await _http.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres");
         }
 
-        //public async Task<List<ScreenResponse>> GetScreensByTheatreAsync()
-        //{
-        //        Auth();
-        //     return await _http.GetFromJsonAsync<List<ScreenResponse>>("api/superadmin/screens/by-theatre/{theatreId}");
+        public async Task<List<ScreenResponse>> GetScreensByTheatreAsync()
+        {
+            Auth();
+            return await _http.GetFromJsonAsync<List<ScreenResponse>>("api/superadmin/screens/by-theatre/{theatreId}");
 
-        //}
+        }
         public async Task<List<ScreenResponse>> GetScreensByTheatreAsync(Guid theatreId)
         {
             Auth();

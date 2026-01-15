@@ -6,12 +6,17 @@
         <div class="col">
             <label>Movie</label>
             <select asp-for="MovieId" class="form-select"
-                    asp-items="@(new SelectList(Model.Movies, "MovieId", "Title"))"></select>
+                    asp-items="@(new SelectList(Model.Movies, "MovieId", "Title"))">
+                <option value="">-- Select Movie --</option>
+            </select>
         </div>
         <div class="col">
             <label>Language</label>
             <select asp-for="LanguageId" class="form-select"
-                    asp-items="@(new SelectList(Model.Languages, "LanguageId", "Name"))"></select>
+                    asp-items="@(new SelectList(Model.Languages, "LanguageId", "Name"))">
+                <option value="">-- Select Language --</option>
+            </select>
+
         </div>
     </div>
 
@@ -46,57 +51,49 @@
 
     <button class="btn btn-success mt-4">Save ShowTime</button>
 </form>
+@section Scripts {
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        const theatreDropdown = document.getElementById("theatreDropdown");
-        const screenDropdown = document.getElementById("screenDropdown");
+    const theatreDropdown = document.getElementById("theatreDropdown");
+    const screenDropdown = document.getElementById("screenDropdown");
 
-        const apiBaseUrl = '@(ViewContext.HttpContext.RequestServices
-                        .GetService<IConfiguration>()["ApiSettings:BaseUrl"])';
+    theatreDropdown.addEventListener("change", async function () {
 
-        theatreDropdown.addEventListener("change", function () {
+        const theatreId = this.value;
 
-            const theatreId = this.value;
+        // Reset screen dropdown
+        screenDropdown.innerHTML = '<option value="">-- Select Screen --</option>';
+        screenDropdown.disabled = true;
 
-            // Reset screen dropdown
-            screenDropdown.innerHTML =
-                '<option value="">-- Select Screen --</option>';
-            screenDropdown.disabled = true;
+        if (!theatreId)
+            return;
 
-            if (!theatreId) return;
+        try {
+            const response = await fetch(`/SuperAdmin/GetScreensByTheatre?theatreId=${theatreId}`);
 
-            fetch(`${apiBaseUrl}api/superadmin/screens/by-theatre/${theatreId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("HTTP " + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
+            if (!response.ok)
+                throw new Error("Failed to load screens");
 
-                    console.log("Screens received:", data);
+            const screens = await response.json();
 
-                    if (!data || data.length === 0) {
-                        screenDropdown.innerHTML =
-                            '<option value="">No screens available</option>';
-                        return;
-                    }
+            if (screens.length === 0)
+                return;
 
-                    data.forEach(screen => {
-                        const option = document.createElement("option");
-                        option.value = screen.screenId || screen.ScreenId;
-                        option.text  = screen.screenName || screen.ScreenName;
-                        screenDropdown.appendChild(option);
-                    });
+            screens.forEach(screen => {
+                const option = document.createElement("option");
+                option.value = screen.screenId;
+                option.text = screen.screenName;
+                screenDropdown.appendChild(option);
+            });
 
-                    screenDropdown.disabled = false;
-                })
-                .catch(error => {
-                    console.error("Failed to load screens:", error);
-                    screenDropdown.innerHTML =
-                        '<option value="">Failed to load screens</option>';
-                });
-        });
+            screenDropdown.disabled = false;
+
+        } catch (err) {
+            console.error(err);
+            alert("Unable to load screens for selected theatre.");
+        }
     });
+});
 </script>
+}
