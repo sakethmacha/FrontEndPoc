@@ -69,8 +69,7 @@ namespace MovieBooking.Web.Controllers
         public async Task<IActionResult> ShowTimes()
             => View(await _service.GetShowTimesAsync());
 
-        //public async Task<IActionResult> AddShowTime()
-        //    => View(await _service.GetAddShowTimeFormAsync());
+       
         [HttpGet]
         public async Task<IActionResult> AddShowTime()
         {
@@ -78,12 +77,6 @@ namespace MovieBooking.Web.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> AddShowTime(AddShowTimeViewModel vm)
-        //{
-        //    await _service.AddShowTimeAsync(vm);
-        //    return RedirectToAction("ShowTimes");
-        //}
         [HttpPost]
         public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel vm)
         {

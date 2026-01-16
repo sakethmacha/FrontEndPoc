@@ -97,7 +97,12 @@ namespace MovieBooking.Web.Services
                 new CreateTheatreRequest
                 {
                     Name = vm.Name,
-                    Location = vm.Location
+                    Location = vm.Location,
+                      TimeSlots = vm.TimeSlots.Select(ts => new TimeSlotRequest
+                      {
+                          StartTime = ts.StartTime,
+                          EndTime = ts.EndTime
+                      }).ToList()
                 });
 
             if (!response.IsSuccessStatusCode)
