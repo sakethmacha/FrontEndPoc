@@ -1,0 +1,48 @@
+﻿@model RegisterViewModel
+
+<!-- NAME -->
+<div class="mb-3">
+    <label asp-for="Name" class="form-label fw-semibold"></label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="bi bi-person"></i>
+        </span>
+        <input asp-for="Name"
+               class="form-control"
+               placeholder="John Doe" />
+    </div>
+    <span asp-validation-for="Name" class="text-danger small"></span>
+</div>
+
+<!-- EMAIL -->
+<div class="mb-3">
+    <label asp-for="Email" class="form-label fw-semibold"></label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="bi bi-envelope"></i>
+        </span>
+        <input asp-for="Email"
+               class="form-control"
+               placeholder="john@email.com" />
+    </div>
+    <span asp-validation-for="Email" class="text-danger small"></span>
+</div>
+
+<!-- PASSWORD -->
+<div class="mb-3">
+    <label asp-for="Password" class="form-label fw-semibold"></label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="bi bi-lock"></i>
+        </span>
+        <input asp-for="Password"
+               type="password"
+               class="form-control password-input"
+               placeholder="••••••••" />
+        <span class="input-group-text toggle-password"
+              onclick="togglePassword(this)">
+            <i class="bi bi-eye"></i>
+        </span>
+    </div>
+    <span asp-validation-for="Password" class="text-danger small"></span>
+</div>

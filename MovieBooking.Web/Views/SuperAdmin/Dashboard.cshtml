@@ -3,24 +3,69 @@
 }
 
 <style>
+    body {
+        background-color: #f5f7fb;
+    }
+
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .section-subtitle {
+        color: #6c757d;
+        margin-bottom: 32px;
+    }
+
+    /* ---------- STATS ---------- */
+    .stats-card {
+        border-radius: 14px;
+        border: none;
+        min-height: 95px;
+        background: #fff;
+        transition: box-shadow 0.2s ease;
+    }
+
+        .stats-card:hover {
+            box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+        }
+
+    .stats-value {
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .stats-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    /* ---------- DASHBOARD CARDS ---------- */
     .dashboard-card {
         border: none;
-        border-radius: 16px;
+        border-radius: 18px;
         color: #fff;
+        min-height: 180px;
         transition: transform 0.25s ease, box-shadow 0.25s ease;
-        min-height: 160px;
     }
 
         .dashboard-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.18);
         }
 
     .icon-box {
-        font-size: 38px;
+        font-size: 44px;
         opacity: 0.9;
     }
 
+    .dashboard-card p {
+        font-size: 0.9rem;
+        opacity: 0.85;
+    }
+
+    /* ---------- COLORS ---------- */
     .bg-movies {
         background: linear-gradient(135deg, #ff416c, #ff4b2b);
     }
@@ -37,53 +82,32 @@
         background: linear-gradient(135deg, #11998e, #38ef7d);
     }
 
-    .stats-card {
-        border-radius: 14px;
-        border: none;
-        min-height: 90px;
+    .bg-admins {
+        background: linear-gradient(135deg, #ffb347, #ffcc33);
     }
 </style>
 
 <div class="container mt-4">
-    <h2 class="fw-bold mb-1">🎬 Super Admin Dashboard</h2>
-    <p class="text-muted mb-4">Central control panel for system management</p>
 
-    <!-- Stats Placeholder Row -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card stats-card shadow-sm d-flex align-items-center justify-content-center">
-                <span class="text-muted">Total Movies</span>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card shadow-sm d-flex align-items-center justify-content-center">
-                <span class="text-muted">Theatres</span>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card shadow-sm d-flex align-items-center justify-content-center">
-                <span class="text-muted">Active ShowTimes</span>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card stats-card shadow-sm d-flex align-items-center justify-content-center">
-                <span class="text-muted">Pending Requests</span>
-            </div>
-        </div>
-    </div>
+    <!-- HEADER -->
+    <h2 class="section-title">🎬 Super Admin Dashboard</h2>
+    <p class="section-subtitle">
+        Central control panel for system management
+    </p>
 
-    <!-- Dashboard Action Cards -->
+   
+
+    <!-- ACTION CARDS -->
     <div class="row g-4">
+
         <div class="col-md-3">
             <a asp-action="Movies" class="text-decoration-none">
-                <div class="card dashboard-card bg-movies shadow-sm">
+                <div class="card dashboard-card bg-movies">
                     <div class="card-body d-flex flex-column justify-content-between">
-                        <div class="icon-box">
-                            <i class="bi bi-film"></i>
-                        </div>
+                        <div class="icon-box"><i class="bi bi-film"></i></div>
                         <div>
                             <h5 class="fw-bold">Movies</h5>
-                            <p class="mb-0 opacity-75">Add, update & manage movies</p>
+                            <p>Add, update & manage movies</p>
                         </div>
                     </div>
                 </div>
@@ -92,14 +116,12 @@
 
         <div class="col-md-3">
             <a asp-action="Theatres" class="text-decoration-none">
-                <div class="card dashboard-card bg-theatres shadow-sm">
+                <div class="card dashboard-card bg-theatres">
                     <div class="card-body d-flex flex-column justify-content-between">
-                        <div class="icon-box">
-                            <i class="bi bi-building"></i>
-                        </div>
+                        <div class="icon-box"><i class="bi bi-building"></i></div>
                         <div>
                             <h5 class="fw-bold">Theatres</h5>
-                            <p class="mb-0 opacity-75">Manage theatres & screens</p>
+                            <p>Manage theatres & screens</p>
                         </div>
                     </div>
                 </div>
@@ -108,14 +130,12 @@
 
         <div class="col-md-3">
             <a asp-action="ShowTimes" class="text-decoration-none">
-                <div class="card dashboard-card bg-showtimes shadow-sm">
+                <div class="card dashboard-card bg-showtimes">
                     <div class="card-body d-flex flex-column justify-content-between">
-                        <div class="icon-box">
-                            <i class="bi bi-clock-history"></i>
-                        </div>
+                        <div class="icon-box"><i class="bi bi-clock-history"></i></div>
                         <div>
                             <h5 class="fw-bold">ShowTimes</h5>
-                            <p class="mb-0 opacity-75">Schedule movie showtimes</p>
+                            <p>Schedule movie showtimes</p>
                         </div>
                     </div>
                 </div>
@@ -124,18 +144,31 @@
 
         <div class="col-md-3">
             <a asp-action="Requests" class="text-decoration-none">
-                <div class="card dashboard-card bg-requests shadow-sm">
+                <div class="card dashboard-card bg-requests">
                     <div class="card-body d-flex flex-column justify-content-between">
-                        <div class="icon-box">
-                            <i class="bi bi-check2-square"></i>
-                        </div>
+                        <div class="icon-box"><i class="bi bi-check2-square"></i></div>
                         <div>
                             <h5 class="fw-bold">Requests</h5>
-                            <p class="mb-0 opacity-75">Approve or reject requests</p>
+                            <p>Approve or reject requests</p>
                         </div>
                     </div>
                 </div>
             </a>
         </div>
+
+        <div class="col-md-3">
+            <a asp-action="GetAdmins" class="text-decoration-none">
+                <div class="card dashboard-card bg-admins">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <div class="icon-box"><i class="bi bi-shield-lock"></i></div>
+                        <div>
+                            <h5 class="fw-bold">Manage Admins</h5>
+                            <p>Create & manage admins</p>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
     </div>
 </div>

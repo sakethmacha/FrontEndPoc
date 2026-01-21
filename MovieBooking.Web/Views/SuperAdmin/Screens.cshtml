@@ -1,179 +1,179 @@
-﻿@model List<MovieBooking.Web.ApiContracts.Screens.ScreenResponse>
+﻿odel List<MovieBooking.Web.ApiContracts.Screens.ScreenResponse>
 
 @{
     ViewData["Title"] = "Screens";
 }
 
-<style>
-    .screen-card {
-        border-radius: 18px;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
-        border: none;
-    }
-
-        .screen-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+    <style>
+        .screen-card {
+            border-radius: 18px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border: none;
         }
 
-    .screen-title {
-        font-weight: 600;
-        font-size: 1.05rem;
-    }
+            .screen-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+            }
 
-    .screen-meta {
-        font-size: 0.9rem;
-        color: #6c757d;
-    }
+        .screen-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
 
-    .status-badge {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 12px;
-    }
+        .screen-meta {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
 
-    .empty-state {
-        border: 2px dashed #dee2e6;
-        border-radius: 18px;
-        padding: 40px;
-        text-align: center;
-        background-color: #fafafa;
-    }
-</style>
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            border-radius: 12px;
+        }
 
-<div class="container mt-4">
+        .empty-state {
+            border: 2px dashed #dee2e6;
+            border-radius: 18px;
+            padding: 40px;
+            text-align: center;
+            background-color: #fafafa;
+        }
+    </style>
 
-    <!-- HEADER -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-0">📺 Screens</h2>
-            <small class="text-muted">Manage theatre screens</small>
-        </div>
+    <div class="container mt-4">
 
-        <a asp-action="AddScreen" class="btn btn-primary fw-semibold">
-            <i class="bi bi-plus-lg"></i> Add Screen
-        </a>
-    </div>
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">📺 Screens</h2>
+                <small class="text-muted">Manage theatre screens</small>
+            </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (!Model.Any())
-    {
-        <!-- EMPTY STATE -->
-        <div class="empty-state shadow-sm">
-            <h5 class="fw-bold">No Screens Available</h5>
-            <p class="text-muted mb-3">
-                Add screens to your theatres.
-            </p>
-            <a asp-action="AddScreen" class="btn btn-outline-primary">
-                ➕ Add Screen
+            <a asp-action="AddScreen" class="btn btn-primary fw-semibold">
+                <i class="bi bi-plus-lg"></i> Add Screen
             </a>
         </div>
-    }
-    else
-    {
-        <!-- SCREEN CARDS -->
-        <div class="row g-4">
-            @foreach (var s in Model)
-            {
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card screen-card shadow-sm h-100">
-                        <div class="card-body d-flex flex-column">
 
-                            <!-- TITLE & STATUS -->
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div class="screen-title">
-                                    <i class="bi bi-tv text-muted me-1"></i>
-                                    @s.ScreenName
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @if (Model==null)
+        {
+            <!-- EMPTY STATE -->
+            <div class="empty-state shadow-sm">
+                <h5 class="fw-bold">No Screens Available</h5>
+                <p class="text-muted mb-3">
+                    Add screens to your theatres.
+                </p>
+                <a asp-action="AddScreen" class="btn btn-outline-primary">
+                    ➕ Add Screen
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- SCREEN CARDS -->
+            <div class="row g-4">
+                @foreach (var s in Model)
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="card screen-card shadow-sm h-100">
+                            <div class="card-body d-flex flex-column">
+
+                                <!-- TITLE & STATUS -->
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="screen-title">
+                                        <i class="bi bi-tv text-muted me-1"></i>
+                                        @s.ScreenName
+                                    </div>
+
+                                    @if (s.IsActive)
+                                    {
+                                        <span class="badge bg-success status-badge">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger status-badge">
+                                            Inactive
+                                        </span>
+                                    }
                                 </div>
 
-                                @if (s.IsActive)
-                                {
-                                    <span class="badge bg-success status-badge">
-                                        Active
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger status-badge">
-                                        Inactive
-                                    </span>
-                                }
-                            </div>
-
-                            <!-- META -->
-                            <div class="screen-meta mb-3">
-                                <div>
-                                    <i class="bi bi-layout-three-columns"></i>
-                                    @s.SeatLayoutType
+                                <!-- META -->
+                                <div class="screen-meta mb-3">
+                                    <div>
+                                        <i class="bi bi-layout-three-columns"></i>
+                                        @s.SeatLayoutType
+                                    </div>
                                 </div>
+
+                                <!-- ACTIONS -->
+                                <div class="mt-auto d-flex gap-2">
+                                    <a asp-action="EditScreen"
+                                       asp-route-id="@s.ScreenId"
+                                       class="btn btn-sm btn-outline-primary flex-fill">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger flex-fill"
+                                            onclick="confirmDelete('@s.ScreenId', '@s.ScreenName')">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </div>
+
                             </div>
-
-                            <!-- ACTIONS -->
-                            <div class="mt-auto d-flex gap-2">
-                                <a asp-action="EditScreen"
-                                   asp-route-id="@s.ScreenId"
-                                   class="btn btn-sm btn-outline-primary flex-fill">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-danger flex-fill"
-                                        onclick="confirmDelete('@s.ScreenId', '@s.ScreenName')">
-                                    <i class="bi bi-trash"></i> Delete
-                                </button>
-                            </div>
-
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
-</div>
+                }
+            </div>
+        }
+    </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete <strong id="screenName"></strong>?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="deleteForm" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete <strong id="screenName"></strong>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 @section Scripts {
-    <script>
-        function confirmDelete(screenId, screenName) {
-            document.getElementById('screenName').textContent = screenName;
-            document.getElementById('deleteForm').action = '/SuperAdmin/DeleteScreen/' + screenId;
-            var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
-        }
-    </script>
+        <script>
+            function confirmDelete(screenId, screenName) {
+                document.getElementById('screenName').textContent = screenName;
+                document.getElementById('deleteForm').action = '/SuperAdmin/DeleteScreen/' + screenId;
+                var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                modal.show();
+            }
+        </script>
 }

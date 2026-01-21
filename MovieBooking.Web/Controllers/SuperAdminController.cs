@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieBooking.Web.ApiContracts.Admin;
 using MovieBooking.Web.Interfaces;
 using MovieBooking.Web.ViewModels;
 
@@ -17,6 +18,96 @@ namespace MovieBooking.Web.Controllers
 
         public IActionResult Dashboard() => View();
 
+        [HttpGet]
+        public IActionResult CreateAdmin()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAdmin(AddAdminViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                await _service.CreateAdminAsync(model);
+
+                TempData["Success"] = "Admin created successfully";
+                return RedirectToAction("GetAdmins");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(model);
+            }
+        }
+
+        // ---------- EDIT ADMIN (GET) ----------
+        [HttpGet]
+        public async Task<IActionResult> EditAdmin(Guid id)
+        {
+            var admin = await _service.GetAdminByIdAsync(id);
+
+            var model = new AddAdminViewModel
+            {
+                UserId = admin.UserId,
+                Name = admin.Name,
+                Email = admin.Email
+            };
+
+            return View(model);
+        }
+
+        // ---------- EDIT ADMIN (POST) ----------
+        [HttpPost]
+        public async Task<IActionResult> EditAdmin(AddAdminViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                var dto = new AddAdminViewModel
+                {
+                    Name = model.Name,
+                    Email = model.Email
+                };
+                await _service.UpdateAdminAsync(model.UserId, dto);
+
+                TempData["Success"] = "Admin updated successfully";
+                return RedirectToAction("GetAdmins");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(model);
+            }
+        }
+
+        // ---------- DELETE (DEACTIVATE) ADMIN ----------
+        [HttpPost]
+        public async Task<IActionResult> DeleteAdmin(Guid id)
+        {
+            try
+            {
+                await _service.DeactivateAdminAsync(id);
+                TempData["Success"] = "Admin deactivated successfully";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction("GetAdmins");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAdmins()
+        {
+            return View(await _service.GetAdminsAsync());
+        }
         // ========== MOVIES ==========
 
         [HttpGet("movies")]
@@ -45,7 +136,7 @@ namespace MovieBooking.Web.Controllers
                 Description = movie.Description ?? string.Empty,
                 DurationMinutes = movie.DurationMinutes,
                 ReleaseDate = movie.ReleaseDate,
-                PosterUrl = string.Empty
+                PosterUrl = movie.PosterUrl
             };
             ViewBag.MovieId = id;
             return View(vm);
@@ -163,7 +254,7 @@ namespace MovieBooking.Web.Controllers
             }
 
             await _service.AddScreenAsync(vm);
-            return RedirectToAction("Screens");
+            return RedirectToAction("Theatres");
         }
 
         [HttpGet]
@@ -214,7 +305,7 @@ namespace MovieBooking.Web.Controllers
             {
                 TempData["Error"] = ex.Message;
             }
-            return RedirectToAction("Screens");
+            return RedirectToAction("GetScreenByTheatre");
         }
 
         [HttpGet]
@@ -223,7 +314,7 @@ namespace MovieBooking.Web.Controllers
             if (theatreId == Guid.Empty)
                 return Json(new List<object>());
             var screens = await _service.GetScreensByTheatreAsync(theatreId);
-            return Json(screens);
+            return View(screens);
         }
 
         // ========== SHOWTIMES ==========
@@ -239,6 +330,7 @@ namespace MovieBooking.Web.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel vm)
+
         {
             if (!ModelState.IsValid)
                 return View(vm);
@@ -251,20 +343,15 @@ namespace MovieBooking.Web.Controllers
         public async Task<IActionResult> EditShowTime(Guid id)
         {
             var showTime = await _service.GetShowTimeByIdAsync(id);
-            var vm = new AddShowTimeViewModel
+           
+            var model = new AddShowTimeBulkViewModel
             {
-                MovieId = Guid.Empty,
-                TheatreId = Guid.Empty,
-                ScreenId = Guid.Empty,
-                LanguageId = Guid.Empty,
-                ShowDate = DateOnly.FromDateTime(showTime.StartTime),
-                BasePrice = showTime.BasePrice,
                 Movies = await _service.GetMoviesAsync(),
                 Theatres = await _service.GetTheatresAsync(),
                 Languages = await _service.GetLanguagesAsync()
             };
             ViewBag.ShowTimeId = id;
-            return View(vm);
+            return View(model);
         }
 
         [HttpPost]

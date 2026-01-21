@@ -5,6 +5,7 @@ using MovieBooking.Web.ApiContracts.Screens;
 using MovieBooking.Web.ApiContracts.Seat;
 using MovieBooking.Web.ApiContracts.ShowTimes;
 using MovieBooking.Web.ApiContracts.Theatres;
+using MovieBooking.Web.ApiContracts.Admin;
 using MovieBooking.Web.Interfaces;
 using MovieBooking.Web.ViewModels;
 using System.Net.Http.Headers;
@@ -37,7 +38,45 @@ namespace MovieBooking.Web.Services
         }
 
         // ========== EXISTING METHODS ==========
+        public async Task CreateAdminAsync(AddAdminViewModel model)
+        {
+            //  mapping belongs HERE, not controller
+            var response = await _http.PostAsJsonAsync(
+                "api/superadmin/admins",
+            new CreateAdminDto
+            {
+                Name = model.Name,
+                Email = model.Email,
+                Password = model.Password
+            });
+        }
+        public async Task<AdminDto> GetAdminByIdAsync(Guid adminId)
+        {
+            return await _http.GetFromJsonAsync<AdminDto>(
+                $"api/superadmin/admins/{adminId}"
+            )!;
+        }
 
+        public async Task UpdateAdminAsync(Guid adminId, AddAdminViewModel dto)
+        {
+            var response = await _http.PutAsJsonAsync(
+                $"api/superadmin/admins/{adminId}", dto);
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        public async Task DeactivateAdminAsync(Guid adminId)
+        {
+            var response = await _http.DeleteAsync(
+                $"api/superadmin/admins/{adminId}");
+
+            response.EnsureSuccessStatusCode();
+        }
+        public async Task<List<AdminDto>> GetAdminsAsync()
+        {
+            Auth();
+            return await _http.GetFromJsonAsync<List<AdminDto>>("api/superadmin/admins");
+        }
         public async Task<List<MovieResponse>> GetMoviesAsync()
         {
             Auth();

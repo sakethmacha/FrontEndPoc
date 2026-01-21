@@ -1,4 +1,5 @@
-﻿using MovieBooking.Web.ApiContracts.AdminRequests;
+﻿using MovieBooking.Web.ApiContracts.Admin;
+using MovieBooking.Web.ApiContracts.AdminRequests;
 using MovieBooking.Web.ApiContracts.Languages;
 using MovieBooking.Web.ApiContracts.Movies;
 using MovieBooking.Web.ApiContracts.Screens;
@@ -10,8 +11,12 @@ namespace MovieBooking.Web.Interfaces
 {
     public interface ISuperAdminMvcService
     {
-        // Existing methods
+        Task CreateAdminAsync(AddAdminViewModel model);
+        Task<List<AdminDto>> GetAdminsAsync();
         Task<List<MovieResponse>> GetMoviesAsync();
+        Task<AdminDto> GetAdminByIdAsync(Guid adminId);
+        Task UpdateAdminAsync(Guid adminId, AddAdminViewModel dto);
+        Task DeactivateAdminAsync(Guid adminId);
         Task AddMovieAsync(AddMovieViewModel vm);
         Task<List<TheatreResponse>> GetTheatresAsync();
         Task AddTheatreAsync(AddTheatreViewModel vm);
