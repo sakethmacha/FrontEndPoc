@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MovieBooking.Web.ApiContracts.Admin;
 using MovieBooking.Web.Interfaces;
 using MovieBooking.Web.ViewModels;
 
 namespace MovieBooking.Web.Controllers
 {
-   // [Authorize(Roles = "SuperAdmin")]
+   [Authorize(Roles = "SuperAdmin")]
     public class SuperAdminController : Controller
     {
-        private readonly ISuperAdminMvcService _service;
+        private readonly ISuperAdminMvcService SuperAdminService;
 
-        public SuperAdminController(ISuperAdminMvcService service)
+        public SuperAdminController(ISuperAdminMvcService superAdminService)
         {
-            _service = service;
+            SuperAdminService = superAdminService;
         }
 
         public IActionResult Dashboard() => View();
@@ -25,14 +24,14 @@ namespace MovieBooking.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAdmin(AddAdminViewModel model)
+        public async Task<IActionResult> CreateAdmin(AddAdminViewModel addAdminViewModel)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View(addAdminViewModel);
 
             try
             {
-                await _service.CreateAdminAsync(model);
+                await SuperAdminService.CreateAdminAsync(addAdminViewModel);
 
                 TempData["Success"] = "Admin created successfully";
                 return RedirectToAction("GetAdmins");
@@ -40,7 +39,7 @@ namespace MovieBooking.Web.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(model);
+                return View(addAdminViewModel);
             }
         }
 
@@ -48,7 +47,7 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> EditAdmin(Guid id)
         {
-            var admin = await _service.GetAdminByIdAsync(id);
+            var admin = await SuperAdminService.GetAdminByIdAsync(id);
 
             var model = new AddAdminViewModel
             {
@@ -62,19 +61,14 @@ namespace MovieBooking.Web.Controllers
 
         // ---------- EDIT ADMIN (POST) ----------
         [HttpPost]
-        public async Task<IActionResult> EditAdmin(AddAdminViewModel model)
+        public async Task<IActionResult> EditAdmin(AddAdminViewModel addAdminViewModel)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View(addAdminViewModel);
 
             try
             {
-                var dto = new AddAdminViewModel
-                {
-                    Name = model.Name,
-                    Email = model.Email
-                };
-                await _service.UpdateAdminAsync(model.UserId, dto);
+                await SuperAdminService.UpdateAdminAsync(addAdminViewModel.UserId, addAdminViewModel);
 
                 TempData["Success"] = "Admin updated successfully";
                 return RedirectToAction("GetAdmins");
@@ -82,7 +76,7 @@ namespace MovieBooking.Web.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(model);
+                return View(addAdminViewModel);
             }
         }
 
@@ -92,7 +86,7 @@ namespace MovieBooking.Web.Controllers
         {
             try
             {
-                await _service.DeactivateAdminAsync(id);
+                await SuperAdminService.DeactivateAdminAsync(id);
                 TempData["Success"] = "Admin deactivated successfully";
             }
             catch (Exception ex)
@@ -106,31 +100,31 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAdmins()
         {
-            return View(await _service.GetAdminsAsync());
+            return View(await SuperAdminService.GetAdminsAsync());
         }
         // ========== MOVIES ==========
 
         [HttpGet("movies")]
         public async Task<IActionResult> Movies()
-            => View(await _service.GetMoviesAsync());
+            => View(await SuperAdminService.GetMoviesAsync());
 
         public IActionResult AddMovie() => View();
 
         [HttpPost]
-        public async Task<IActionResult> AddMovie(AddMovieViewModel vm)
+        public async Task<IActionResult> AddMovie(AddMovieViewModel addMovieViewModel)
         {
             if (!ModelState.IsValid)
-                return View(vm);
+                return View(addMovieViewModel);
 
-            await _service.AddMovieAsync(vm);
+            await SuperAdminService.AddMovieAsync(addMovieViewModel);
             return RedirectToAction("Movies");
         }
 
         [HttpGet]
         public async Task<IActionResult> EditMovie(Guid id)
         {
-            var movie = await _service.GetMovieByIdAsync(id);
-            var vm = new AddMovieViewModel
+            var movie = await SuperAdminService.GetMovieByIdAsync(id);
+            var addMovieViewModel = new AddMovieViewModel
             {
                 Title = movie.Title,
                 Description = movie.Description ?? string.Empty,
@@ -139,19 +133,19 @@ namespace MovieBooking.Web.Controllers
                 PosterUrl = movie.PosterUrl
             };
             ViewBag.MovieId = id;
-            return View(vm);
+            return View(addMovieViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditMovie(Guid id, AddMovieViewModel vm)
+        public async Task<IActionResult> EditMovie(Guid id, AddMovieViewModel addMovieViewModel)
         {
             if (!ModelState.IsValid)
             {
                 ViewBag.MovieId = id;
-                return View(vm);
+                return View(addMovieViewModel);
             }
 
-            await _service.UpdateMovieAsync(id, vm);
+            await SuperAdminService.UpdateMovieAsync(id, addMovieViewModel);
             return RedirectToAction("Movies");
         }
 
@@ -160,7 +154,7 @@ namespace MovieBooking.Web.Controllers
         {
             try
             {
-                await _service.DeleteMovieAsync(id);
+                await SuperAdminService.DeleteMovieAsync(id);
                 TempData["Success"] = "Movie deleted successfully";
             }
             catch (Exception ex)
@@ -174,45 +168,45 @@ namespace MovieBooking.Web.Controllers
 
         public async Task<IActionResult> Theatres()
         {
-            return View(await _service.GetTheatresAsync());
+            return View(await SuperAdminService.GetTheatresAsync());
         }
 
         public IActionResult AddTheatre() => View();
 
         [HttpPost]
-        public async Task<IActionResult> AddTheatre(AddTheatreViewModel vm)
+        public async Task<IActionResult> AddTheatre(AddTheatreViewModel addTheatreViewModel)
         {
             if (!ModelState.IsValid)
-                return View(vm);
+                return View(addTheatreViewModel);
 
-            await _service.AddTheatreAsync(vm);
+            await SuperAdminService.AddTheatreAsync(addTheatreViewModel);
             return RedirectToAction("Theatres");
         }
 
         [HttpGet]
         public async Task<IActionResult> EditTheatre(Guid id)
         {
-            var theatre = await _service.GetTheatreByIdAsync(id);
-            var vm = new AddTheatreViewModel
+            var theatre = await SuperAdminService.GetTheatreByIdAsync(id);
+            var addTheatreViewModel = new AddTheatreViewModel
             {
                 Name = theatre.Name,
                 Location = theatre.Location,
                 TimeSlots = new List<TimeSlotViewModel>()
             };
             ViewBag.TheatreId = id;
-            return View(vm);
+            return View(addTheatreViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditTheatre(Guid id, AddTheatreViewModel vm)
+        public async Task<IActionResult> EditTheatre(Guid id, AddTheatreViewModel addTheatreViewModel)
         {
             if (!ModelState.IsValid)
             {
                 ViewBag.TheatreId = id;
-                return View(vm);
+                return View(addTheatreViewModel);
             }
 
-            await _service.UpdateTheatreAsync(id, vm);
+            await SuperAdminService.UpdateTheatreAsync(id, addTheatreViewModel);
             return RedirectToAction("Theatres");
         }
 
@@ -221,7 +215,7 @@ namespace MovieBooking.Web.Controllers
         {
             try
             {
-                await _service.DeleteTheatreAsync(id);
+                await SuperAdminService.DeleteTheatreAsync(id);
                 TempData["Success"] = "Theatre deleted successfully";
             }
             catch (Exception ex)
@@ -235,33 +229,33 @@ namespace MovieBooking.Web.Controllers
 
         public async Task<IActionResult> Screens()
         {
-            return View(await _service.GetScreensAsync());
+            return View(await SuperAdminService.GetScreensAsync());
         }
 
         public async Task<IActionResult> AddScreen()
             => View(new AddScreenViewModel
             {
-                Theatres = await _service.GetTheatresAsync()
+                Theatres = await SuperAdminService.GetTheatresAsync()
             });
 
         [HttpPost]
-        public async Task<IActionResult> AddScreen(AddScreenViewModel vm)
+        public async Task<IActionResult> AddScreen(AddScreenViewModel addScreenViewModel)
         {
             if (!ModelState.IsValid)
             {
-                vm.Theatres = await _service.GetTheatresAsync();
-                return View(vm);
+                addScreenViewModel.Theatres = await SuperAdminService.GetTheatresAsync();
+                return View(addScreenViewModel);
             }
 
-            await _service.AddScreenAsync(vm);
+            await SuperAdminService.AddScreenAsync(addScreenViewModel);
             return RedirectToAction("Theatres");
         }
 
         [HttpGet]
         public async Task<IActionResult> EditScreen(Guid id)
         {
-            var screen = await _service.GetScreenByIdAsync(id);
-            var vm = new AddScreenViewModel
+            var screen = await SuperAdminService.GetScreenByIdAsync(id);
+            var addScreenViewModel = new AddScreenViewModel
             {
                 TheatreId = screen.TheatreId,
                 ScreenName = screen.ScreenName,
@@ -273,23 +267,23 @@ namespace MovieBooking.Web.Controllers
                     SeatType = sr.SeatType,
                     PriceMultiplier = sr.PriceMultiplier
                 }).ToList(),
-                Theatres = await _service.GetTheatresAsync()
+                Theatres = await SuperAdminService.GetTheatresAsync()
             };
             ViewBag.ScreenId = id;
-            return View(vm);
+            return View(addScreenViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditScreen(Guid id, AddScreenViewModel vm)
+        public async Task<IActionResult> EditScreen(Guid id, AddScreenViewModel addScreenViewModel)
         {
             if (!ModelState.IsValid)
             {
-                vm.Theatres = await _service.GetTheatresAsync();
+                addScreenViewModel.Theatres = await SuperAdminService.GetTheatresAsync();
                 ViewBag.ScreenId = id;
-                return View(vm);
+                return View(addScreenViewModel);
             }
 
-            await _service.UpdateScreenAsync(id, vm);
+            await SuperAdminService.UpdateScreenAsync(id, addScreenViewModel);
             return RedirectToAction("Screens");
         }
 
@@ -298,7 +292,7 @@ namespace MovieBooking.Web.Controllers
         {
             try
             {
-                await _service.DeleteScreenAsync(id);
+                await SuperAdminService.DeleteScreenAsync(id);
                 TempData["Success"] = "Screen deleted successfully";
             }
             catch (Exception ex)
@@ -313,60 +307,60 @@ namespace MovieBooking.Web.Controllers
         {
             if (theatreId == Guid.Empty)
                 return Json(new List<object>());
-            var screens = await _service.GetScreensByTheatreAsync(theatreId);
+            var screens = await SuperAdminService.GetScreensByTheatreAsync(theatreId);
             return View(screens);
         }
 
         // ========== SHOWTIMES ==========
 
         public async Task<IActionResult> ShowTimes()
-            => View(await _service.GetShowTimesAsync());
+            => View(await SuperAdminService.GetShowTimesAsync());
 
         [HttpGet]
         public async Task<IActionResult> AddShowTime()
         {
-            return View(await _service.GetAddShowTimeBulkFormAsync());
+            return View(await SuperAdminService.GetAddShowTimeBulkFormAsync());
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel vm)
+        public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel addShowTimeBulkViewModel)
 
         {
             if (!ModelState.IsValid)
-                return View(vm);
+                return View(addShowTimeBulkViewModel);
 
-            await _service.AddShowTimesBulkAsync(vm);
+            await SuperAdminService.AddShowTimesBulkAsync(addShowTimeBulkViewModel);
             return RedirectToAction("ShowTimes");
         }
 
         [HttpGet]
         public async Task<IActionResult> EditShowTime(Guid id)
         {
-            var showTime = await _service.GetShowTimeByIdAsync(id);
+            var showTime = await SuperAdminService.GetShowTimeByIdAsync(id);
            
-            var model = new AddShowTimeBulkViewModel
+            var addShowTimeBulkViewModel = new AddShowTimeBulkViewModel
             {
-                Movies = await _service.GetMoviesAsync(),
-                Theatres = await _service.GetTheatresAsync(),
-                Languages = await _service.GetLanguagesAsync()
+                Movies = await SuperAdminService.GetMoviesAsync(),
+                Theatres = await SuperAdminService.GetTheatresAsync(),
+                Languages = await SuperAdminService.GetLanguagesAsync()
             };
             ViewBag.ShowTimeId = id;
-            return View(model);
+            return View(addShowTimeBulkViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditShowTime(Guid id, AddShowTimeViewModel vm)
+        public async Task<IActionResult> EditShowTime(Guid id, AddShowTimeViewModel addShowTimeViewModel)
         {
             if (!ModelState.IsValid)
             {
-                vm.Movies = await _service.GetMoviesAsync();
-                vm.Theatres = await _service.GetTheatresAsync();
-                vm.Languages = await _service.GetLanguagesAsync();
+                addShowTimeViewModel.Movies = await SuperAdminService.GetMoviesAsync();
+                addShowTimeViewModel.Theatres = await SuperAdminService.GetTheatresAsync();
+                addShowTimeViewModel.Languages = await SuperAdminService.GetLanguagesAsync();
                 ViewBag.ShowTimeId = id;
-                return View(vm);
+                return View(addShowTimeViewModel);
             }
 
-            await _service.UpdateShowTimeAsync(id, vm);
+            await SuperAdminService.UpdateShowTimeAsync(id, addShowTimeViewModel);
             return RedirectToAction("ShowTimes");
         }
 
@@ -375,7 +369,7 @@ namespace MovieBooking.Web.Controllers
         {
             try
             {
-                await _service.DeleteShowTimeAsync(id);
+                await SuperAdminService.DeleteShowTimeAsync(id);
                 TempData["Success"] = "ShowTime deleted successfully";
             }
             catch (Exception ex)
@@ -389,7 +383,7 @@ namespace MovieBooking.Web.Controllers
 
         public async Task<IActionResult> Languages()
         {
-            return View(await _service.GetLanguagesAsync());
+            return View(await SuperAdminService.GetLanguagesAsync());
         }
 
         public IActionResult AddLanguage() => View();
@@ -403,14 +397,14 @@ namespace MovieBooking.Web.Controllers
                 return View();
             }
 
-            await _service.AddLanguageAsync(name);
+            await SuperAdminService.AddLanguageAsync(name);
             return RedirectToAction("Languages");
         }
 
         [HttpGet]
         public async Task<IActionResult> EditLanguage(Guid id)
         {
-            var language = await _service.GetLanguageByIdAsync(id);
+            var language = await SuperAdminService.GetLanguageByIdAsync(id);
             ViewBag.LanguageId = id;
             ViewBag.LanguageName = language.Name;
             return View();
@@ -426,7 +420,7 @@ namespace MovieBooking.Web.Controllers
                 return View();
             }
 
-            await _service.UpdateLanguageAsync(id, name);
+            await SuperAdminService.UpdateLanguageAsync(id, name);
             return RedirectToAction("Languages");
         }
 
@@ -435,7 +429,7 @@ namespace MovieBooking.Web.Controllers
         {
             try
             {
-                await _service.DeleteLanguageAsync(id);
+                await SuperAdminService.DeleteLanguageAsync(id);
                 TempData["Success"] = "Language deleted successfully";
             }
             catch (Exception ex)
@@ -448,17 +442,17 @@ namespace MovieBooking.Web.Controllers
         // ========== REQUESTS ==========
 
         public async Task<IActionResult> Requests()
-            => View(await _service.GetRequestsAsync());
+            => View(await SuperAdminService.GetRequestsAsync());
 
         public async Task<IActionResult> Approve(Guid id)
         {
-            await _service.ApproveRequestAsync(id);
+            await SuperAdminService.ApproveRequestAsync(id);
             return RedirectToAction("Requests");
         }
 
         public async Task<IActionResult> Reject(Guid id)
         {
-            await _service.RejectRequestAsync(id);
+            await SuperAdminService.RejectRequestAsync(id);
             return RedirectToAction("Requests");
         }
     }

@@ -10,11 +10,11 @@ namespace MovieBooking.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IAuthenticationMvcService _authService;
+        private readonly IAuthenticationMvcService AuthenticationService;
 
-        public AccountController(IAuthenticationMvcService authService)
+        public AccountController(IAuthenticationMvcService authenticationService)
         {
-            _authService = authService;
+            AuthenticationService = authenticationService;
         }
 
         // ---------------- LOGIN (GET) ----------------
@@ -27,17 +27,17 @@ namespace MovieBooking.Web.Controllers
 
         // ---------------- LOGIN (POST) ----------------
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model,string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel,string? returnUrl = null)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View(loginViewModel);
 
-            var result = await _authService.LoginAsync(model);
+            var result = await AuthenticationService.LoginAsync(loginViewModel);
 
             if (result == null)
             {
                 ModelState.AddModelError("", "Invalid credentials");
-                return View(model);
+                return View(loginViewModel);
             }
 
             var handler = new JwtSecurityTokenHandler();
@@ -81,17 +81,17 @@ namespace MovieBooking.Web.Controllers
         public IActionResult Register() => View();
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel registerViewModel)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View(registerViewModel);
 
-            var result = await _authService.RegisterAsync(model);
+            var result = await AuthenticationService.RegisterAsync(registerViewModel);
 
             if (result == null)
             {
                 ModelState.AddModelError("", "Registration failed");
-                return View(model);
+                return View(registerViewModel);
             }
 
             return RedirectToAction("Login");

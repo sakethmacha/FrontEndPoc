@@ -1,11 +1,11 @@
-﻿using MovieBooking.Web.ApiContracts.AdminRequests;
+﻿using MovieBooking.Web.ApiContracts.Admin;
+using MovieBooking.Web.ApiContracts.AdminRequests;
 using MovieBooking.Web.ApiContracts.Languages;
 using MovieBooking.Web.ApiContracts.Movies;
 using MovieBooking.Web.ApiContracts.Screens;
 using MovieBooking.Web.ApiContracts.Seat;
 using MovieBooking.Web.ApiContracts.ShowTimes;
 using MovieBooking.Web.ApiContracts.Theatres;
-using MovieBooking.Web.ApiContracts.Admin;
 using MovieBooking.Web.Interfaces;
 using MovieBooking.Web.ViewModels;
 using System.Net.Http.Headers;
@@ -14,18 +14,18 @@ namespace MovieBooking.Web.Services
 {
     public class SuperAdminMvcService : ISuperAdminMvcService
     {
-        private readonly HttpClient _http;
-        private readonly IHttpContextAccessor _ctx;
+        private readonly HttpClient HttpClient;
+        private readonly IHttpContextAccessor HttpContextAccessor;
 
-        public SuperAdminMvcService(HttpClient http, IHttpContextAccessor ctx)
+        public SuperAdminMvcService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
-            _http = http;
-            _ctx = ctx;
+            HttpClient = httpClient;
+            HttpContextAccessor = httpContextAccessor;
         }
 
-        private void Auth()
+        private void Authentication()
         {
-            var token = _ctx.HttpContext!
+            var token = HttpContextAccessor.HttpContext!
                 .User
                 .FindFirst("access_token")?
                 .Value;
@@ -33,69 +33,69 @@ namespace MovieBooking.Web.Services
             if (string.IsNullOrEmpty(token))
                 throw new UnauthorizedAccessException("JWT token missing");
 
-            _http.DefaultRequestHeaders.Authorization =
+            HttpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
         }
 
         // ========== EXISTING METHODS ==========
-        public async Task CreateAdminAsync(AddAdminViewModel model)
+        public async Task CreateAdminAsync(AddAdminViewModel addAdminViewModel)
         {
             //  mapping belongs HERE, not controller
-            var response = await _http.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/superadmin/admins",
             new CreateAdminDto
             {
-                Name = model.Name,
-                Email = model.Email,
-                Password = model.Password
+                Name = addAdminViewModel.Name,
+                Email = addAdminViewModel.Email,
+                Password = addAdminViewModel.Password
             });
         }
         public async Task<AdminDto> GetAdminByIdAsync(Guid adminId)
         {
-            return await _http.GetFromJsonAsync<AdminDto>(
+            return await HttpClient.GetFromJsonAsync<AdminDto>(
                 $"api/superadmin/admins/{adminId}"
             )!;
         }
 
-        public async Task UpdateAdminAsync(Guid adminId, AddAdminViewModel dto)
+        public async Task UpdateAdminAsync(Guid adminId, AddAdminViewModel addAdminViewModel)
         {
-            var response = await _http.PutAsJsonAsync(
-                $"api/superadmin/admins/{adminId}", dto);
+            var response = await HttpClient.PutAsJsonAsync(
+                $"api/superadmin/admins/{adminId}", addAdminViewModel);
 
             response.EnsureSuccessStatusCode();
         }
 
         public async Task DeactivateAdminAsync(Guid adminId)
         {
-            var response = await _http.DeleteAsync(
+            var response = await HttpClient.DeleteAsync(
                 $"api/superadmin/admins/{adminId}");
 
             response.EnsureSuccessStatusCode();
         }
         public async Task<List<AdminDto>> GetAdminsAsync()
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<AdminDto>>("api/superadmin/admins");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<AdminDto>>("api/superadmin/admins");
         }
         public async Task<List<MovieResponse>> GetMoviesAsync()
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<MovieResponse>>("api/superadmin/movies");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<MovieResponse>>("api/superadmin/movies");
         }
 
-        public async Task AddMovieAsync(AddMovieViewModel vm)
+        public async Task AddMovieAsync(AddMovieViewModel addMovieViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/superadmin/movies",
                 new AddMovieRequest
                 {
-                    Title = vm.Title,
-                    Description = vm.Description,
-                    DurationMinutes = vm.DurationMinutes,
-                    ReleaseDate = vm.ReleaseDate,
-                    PosterUrl = vm.PosterUrl
+                    Title = addMovieViewModel.Title,
+                    Description = addMovieViewModel.Description,
+                    DurationMinutes = addMovieViewModel.DurationMinutes,
+                    ReleaseDate = addMovieViewModel.ReleaseDate,
+                    PosterUrl = addMovieViewModel.PosterUrl
                 });
 
             if (!response.IsSuccessStatusCode)
@@ -108,28 +108,28 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<TheatreResponse>> GetTheatresAsync()
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres");
         }
 
         public async Task<List<ScreenResponse>> GetScreensByTheatreAsync(Guid theatreId)
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<ScreenResponse>>(
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<ScreenResponse>>(
                 $"api/superadmin/screens/by-theatre/{theatreId}");
         }
 
-        public async Task AddTheatreAsync(AddTheatreViewModel vm)
+        public async Task AddTheatreAsync(AddTheatreViewModel addTheatreViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/superadmin/theatres",
                 new CreateTheatreRequest
                 {
-                    Name = vm.Name,
-                    Location = vm.Location,
-                    TimeSlots = vm.TimeSlots.Select(ts => new TimeSlotRequest
+                    Name = addTheatreViewModel.Name,
+                    Location = addTheatreViewModel.Location,
+                    TimeSlots = addTheatreViewModel.TimeSlots.Select(ts => new TimeSlotRequest
                     {
                         StartTime = ts.StartTime,
                         EndTime = ts.EndTime
@@ -144,18 +144,18 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task AddScreenAsync(AddScreenViewModel vm)
+        public async Task AddScreenAsync(AddScreenViewModel addScreenViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/superadmin/screens",
                 new CreateScreenRequest
                 {
-                    TheatreId = vm.TheatreId,
-                    ScreenName = vm.ScreenName,
-                    SeatLayoutType = vm.SeatLayoutType,
-                    SeatRows = vm.SeatRows.Select(r => new CreateSeatRowRequest
+                    TheatreId = addScreenViewModel.TheatreId,
+                    ScreenName = addScreenViewModel.ScreenName,
+                    SeatLayoutType = addScreenViewModel.SeatLayoutType,
+                    SeatRows = addScreenViewModel.SeatRows.Select(r => new CreateSeatRowRequest
                     {
                         SeatRow = r.SeatRow,
                         SeatCount = r.SeatCount,
@@ -174,54 +174,54 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<ScreenResponse>> GetScreensAsync()
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<ScreenResponse>>("api/superadmin/screens");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<ScreenResponse>>("api/superadmin/screens");
         }
 
         public async Task<List<ShowTimeResponse>> GetShowTimesAsync()
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<ShowTimeResponse>>("api/superadmin/showtimes");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<ShowTimeResponse>>("api/superadmin/showtimes");
         }
 
         public async Task<AddShowTimeViewModel> GetAddShowTimeFormAsync()
         {
-            Auth();
+            Authentication();
             return new AddShowTimeViewModel
             {
-                Movies = await _http.GetFromJsonAsync<List<MovieResponse>>("api/superadmin/movies"),
-                Theatres = await _http.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres"),
-                Languages = await _http.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages")
+                Movies = await HttpClient.GetFromJsonAsync<List<MovieResponse>>("api/superadmin/movies"),
+                Theatres = await HttpClient.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres"),
+                Languages = await HttpClient.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages")
             };
         }
 
         public async Task<AddShowTimeBulkViewModel> GetAddShowTimeBulkFormAsync()
         {
-            Auth();
+            Authentication();
 
             return new AddShowTimeBulkViewModel
             {
-                Movies = await _http.GetFromJsonAsync<List<MovieResponse>>("api/superadmin/movies"),
-                Theatres = await _http.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres"),
-                Languages = await _http.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages"),
+                Movies = await HttpClient.GetFromJsonAsync<List<MovieResponse>>("api/superadmin/movies"),
+                Theatres = await HttpClient.GetFromJsonAsync<List<TheatreResponse>>("api/superadmin/theatres"),
+                Languages = await HttpClient.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages"),
                 ShowTimes = new List<ShowTimeItemVm>()
             };
         }
 
-        public async Task AddShowTimeAsync(AddShowTimeViewModel vm)
+        public async Task AddShowTimeAsync(AddShowTimeViewModel addShowTimeViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/superadmin/showtimes",
                 new CreateShowTimeRequest
                 {
-                    MovieId = vm.MovieId,
-                    TheatreId = vm.TheatreId,
-                    ScreenId = vm.ScreenId,
-                    LanguageId = vm.LanguageId,
-                    ShowDate = vm.ShowDate,
-                    BasePrice = vm.BasePrice
+                    MovieId = addShowTimeViewModel.MovieId,
+                    TheatreId = addShowTimeViewModel.TheatreId,
+                    ScreenId = addShowTimeViewModel.ScreenId,
+                    LanguageId = addShowTimeViewModel.LanguageId,
+                    ShowDate = addShowTimeViewModel.ShowDate,
+                    BasePrice = addShowTimeViewModel.BasePrice
                 });
 
             if (!response.IsSuccessStatusCode)
@@ -232,20 +232,20 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task AddShowTimesBulkAsync(AddShowTimeBulkViewModel vm)
+        public async Task AddShowTimesBulkAsync(AddShowTimeBulkViewModel addShowTimeBulkViewModel)
         {
-            Auth();
+            Authentication();
 
-            foreach (var item in vm.ShowTimes)
+            foreach (var item in addShowTimeBulkViewModel.ShowTimes)
             {
-                var response = await _http.PostAsJsonAsync(
+                var response = await HttpClient.PostAsJsonAsync(
                     "api/superadmin/showtimes",
                     new CreateShowTimeRequest
                     {
                         TheatreId = item.TheatreId,
                         ScreenId = item.ScreenId,
-                        MovieId = vm.MovieId,
-                        LanguageId = vm.LanguageId,
+                        MovieId = addShowTimeBulkViewModel.MovieId,
+                        LanguageId = addShowTimeBulkViewModel.LanguageId,
                         ShowDate = item.ShowDate,
                         BasePrice = item.BasePrice
                     });
@@ -260,75 +260,75 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<AdminRequestResponse>> GetRequestsAsync()
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<AdminRequestResponse>>("api/superadmin/requests");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<AdminRequestResponse>>("api/superadmin/requests");
         }
 
         public async Task ApproveRequestAsync(Guid id)
         {
-            Auth();
-            await _http.PutAsync($"api/superadmin/requests/{id}/approve", null);
+            Authentication();
+            await HttpClient.PutAsync($"api/superadmin/requests/{id}/approve", null);
         }
 
         public async Task RejectRequestAsync(Guid id)
         {
-            Auth();
-            await _http.PutAsync($"api/superadmin/requests/{id}/reject", null);
+            Authentication();
+            await HttpClient.PutAsync($"api/superadmin/requests/{id}/reject", null);
         }
 
         public async Task<List<LanguageResponse>> GetLanguagesAsync()
         {
-            Auth();
-            return await _http.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages");
         }
 
         // ========== NEW: GET BY ID METHODS ==========
 
         public async Task<MovieResponse> GetMovieByIdAsync(Guid movieId)
         {
-            Auth();
-            return await _http.GetFromJsonAsync<MovieResponse>($"api/superadmin/movies/{movieId}");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<MovieResponse>($"api/superadmin/movies/{movieId}");
         }
 
         public async Task<TheatreResponse> GetTheatreByIdAsync(Guid theatreId)
         {
-            Auth();
-            return await _http.GetFromJsonAsync<TheatreResponse>($"api/superadmin/theatres/{theatreId}");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<TheatreResponse>($"api/superadmin/theatres/{theatreId}");
         }
 
         public async Task<CreateScreenRequest> GetScreenByIdAsync(Guid screenId)
         {
-            Auth();
-            return await _http.GetFromJsonAsync<CreateScreenRequest>($"api/superadmin/screens/{screenId}");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<CreateScreenRequest>($"api/superadmin/screens/{screenId}");
         }
 
         public async Task<ShowTimeResponse> GetShowTimeByIdAsync(Guid showTimeId)
         {
-            Auth();
-            return await _http.GetFromJsonAsync<ShowTimeResponse>($"api/superadmin/showtimes/{showTimeId}");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<ShowTimeResponse>($"api/superadmin/showtimes/{showTimeId}");
         }
 
         public async Task<LanguageResponse> GetLanguageByIdAsync(Guid languageId)
         {
-            Auth();
-            return await _http.GetFromJsonAsync<LanguageResponse>($"api/superadmin/languages/{languageId}");
+            Authentication();
+            return await HttpClient.GetFromJsonAsync<LanguageResponse>($"api/superadmin/languages/{languageId}");
         }
 
         // ========== NEW: UPDATE METHODS ==========
 
-        public async Task UpdateMovieAsync(Guid movieId, AddMovieViewModel vm)
+        public async Task UpdateMovieAsync(Guid movieId, AddMovieViewModel addMovieViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PutAsJsonAsync(
+            var response = await HttpClient.PutAsJsonAsync(
                 $"api/superadmin/movies/{movieId}",
                 new AddMovieRequest
                 {
-                    Title = vm.Title,
-                    Description = vm.Description,
-                    DurationMinutes = vm.DurationMinutes,
-                    ReleaseDate = vm.ReleaseDate,
-                    PosterUrl = vm.PosterUrl
+                    Title = addMovieViewModel.Title,
+                    Description = addMovieViewModel.Description,
+                    DurationMinutes = addMovieViewModel.DurationMinutes,
+                    ReleaseDate = addMovieViewModel.ReleaseDate,
+                    PosterUrl = addMovieViewModel.PosterUrl
                 });
 
             if (!response.IsSuccessStatusCode)
@@ -339,17 +339,17 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task UpdateTheatreAsync(Guid theatreId, AddTheatreViewModel vm)
+        public async Task UpdateTheatreAsync(Guid theatreId, AddTheatreViewModel addTheatreViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PutAsJsonAsync(
+            var response = await HttpClient.PutAsJsonAsync(
                 $"api/superadmin/theatres/{theatreId}",
                 new CreateTheatreRequest
                 {
-                    Name = vm.Name,
-                    Location = vm.Location,
-                    TimeSlots = vm.TimeSlots.Select(ts => new TimeSlotRequest
+                    Name = addTheatreViewModel.Name,
+                    Location = addTheatreViewModel.Location,
+                    TimeSlots = addTheatreViewModel.TimeSlots.Select(ts => new TimeSlotRequest
                     {
                         StartTime = ts.StartTime,
                         EndTime = ts.EndTime
@@ -364,18 +364,18 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task UpdateScreenAsync(Guid screenId, AddScreenViewModel vm)
+        public async Task UpdateScreenAsync(Guid screenId, AddScreenViewModel addScreenViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PutAsJsonAsync(
+            var response = await HttpClient.PutAsJsonAsync(
                 $"api/superadmin/screens/{screenId}",
                 new CreateScreenRequest
                 {
-                    TheatreId = vm.TheatreId,
-                    ScreenName = vm.ScreenName,
-                    SeatLayoutType = vm.SeatLayoutType,
-                    SeatRows = vm.SeatRows.Select(r => new CreateSeatRowRequest
+                    TheatreId = addScreenViewModel.TheatreId,
+                    ScreenName = addScreenViewModel.ScreenName,
+                    SeatLayoutType = addScreenViewModel.SeatLayoutType,
+                    SeatRows = addScreenViewModel.SeatRows.Select(r => new CreateSeatRowRequest
                     {
                         SeatRow = r.SeatRow,
                         SeatCount = r.SeatCount,
@@ -392,20 +392,20 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task UpdateShowTimeAsync(Guid showTimeId, AddShowTimeViewModel vm)
+        public async Task UpdateShowTimeAsync(Guid showTimeId, AddShowTimeViewModel addShowTimeViewModel)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PutAsJsonAsync(
+            var response = await HttpClient.PutAsJsonAsync(
                 $"api/superadmin/showtimes/{showTimeId}",
                 new CreateShowTimeRequest
                 {
-                    MovieId = vm.MovieId,
-                    TheatreId = vm.TheatreId,
-                    ScreenId = vm.ScreenId,
-                    LanguageId = vm.LanguageId,
-                    ShowDate = vm.ShowDate,
-                    BasePrice = vm.BasePrice
+                    MovieId = addShowTimeViewModel.MovieId,
+                    TheatreId = addShowTimeViewModel.TheatreId,
+                    ScreenId = addShowTimeViewModel.ScreenId,
+                    LanguageId = addShowTimeViewModel.LanguageId,
+                    ShowDate = addShowTimeViewModel.ShowDate,
+                    BasePrice = addShowTimeViewModel.BasePrice
                 });
 
             if (!response.IsSuccessStatusCode)
@@ -418,9 +418,9 @@ namespace MovieBooking.Web.Services
 
         public async Task UpdateLanguageAsync(Guid languageId, string name)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PutAsJsonAsync(
+            var response = await HttpClient.PutAsJsonAsync(
                 $"api/superadmin/languages/{languageId}",
                 new { Name = name });
 
@@ -436,9 +436,9 @@ namespace MovieBooking.Web.Services
 
         public async Task DeleteMovieAsync(Guid movieId)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.DeleteAsync($"api/superadmin/movies/{movieId}");
+            var response = await HttpClient.DeleteAsync($"api/superadmin/movies/{movieId}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -450,9 +450,9 @@ namespace MovieBooking.Web.Services
 
         public async Task DeleteTheatreAsync(Guid theatreId)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.DeleteAsync($"api/superadmin/theatres/{theatreId}");
+            var response = await HttpClient.DeleteAsync($"api/superadmin/theatres/{theatreId}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -464,9 +464,9 @@ namespace MovieBooking.Web.Services
 
         public async Task DeleteScreenAsync(Guid screenId)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.DeleteAsync($"api/superadmin/screens/{screenId}");
+            var response = await HttpClient.DeleteAsync($"api/superadmin/screens/{screenId}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -478,9 +478,9 @@ namespace MovieBooking.Web.Services
 
         public async Task DeleteShowTimeAsync(Guid showTimeId)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.DeleteAsync($"api/superadmin/showtimes/{showTimeId}");
+            var response = await HttpClient.DeleteAsync($"api/superadmin/showtimes/{showTimeId}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -492,9 +492,9 @@ namespace MovieBooking.Web.Services
 
         public async Task DeleteLanguageAsync(Guid languageId)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.DeleteAsync($"api/superadmin/languages/{languageId}");
+            var response = await HttpClient.DeleteAsync($"api/superadmin/languages/{languageId}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -506,9 +506,9 @@ namespace MovieBooking.Web.Services
 
         public async Task AddLanguageAsync(string name)
         {
-            Auth();
+            Authentication();
 
-            var response = await _http.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/superadmin/languages",
                 new { Name = name });
 
