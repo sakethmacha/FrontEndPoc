@@ -1,6 +1,4 @@
-﻿using MovieBooking.Web.ApiContracts.Theatres;
-
-namespace MovieBooking.Web.ViewModels
+﻿namespace MovieBooking.Web.ViewModels
 {
     public class AddTheatreViewModel
     {

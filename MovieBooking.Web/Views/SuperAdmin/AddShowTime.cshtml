@@ -119,7 +119,7 @@
             screenDd.innerHTML = '<option>Loading...</option>';
 
             const res = await fetch(
-                `/SuperAdmin/GetScreensByTheatre?theatreId=${theatreId}`);
+                `/SuperAdmin/screens/by-theatre/{theatreId}`);
             const screens = await res.json();
 
             screenDd.innerHTML =
@@ -134,3 +134,162 @@
         }
     </script>
 }
+@* @model AddShowTimeBulkViewModel
+
+<h2 class="mt-4">➕ Schedule Movies</h2>
+
+<form asp-action="AddShowTime" method="post" class="card p-4 shadow-sm">
+
+    <!-- MOVIE & LANGUAGE -->
+    <div class="row mb-3">
+        <div class="col">
+            <label>Movie</label>
+            <select asp-for="MovieId"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Movies, "MovieId", "Title"))">
+                <option value="">-- Select Movie --</option>
+            </select>
+        </div>
+
+        <div class="col">
+            <label>Language</label>
+            <select asp-for="LanguageId"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Languages, "LanguageId", "Name"))">
+                <option value="">-- Select Language --</option>
+            </select>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Container -->
+    <div id="showtimeContainer"></div>
+
+    <button type="button"
+            class="btn btn-outline-primary mt-3"
+            onclick="addShowTimeGroup()">
+        ➕ Add Theatre / Screen
+    </button>
+
+    <button type="submit"
+            class="btn btn-success mt-4">
+        Save ShowTimes
+    </button>
+</form>
+
+<!-- 🔹 THEATRE TEMPLATE (IMPORTANT FIX) -->
+<select id="theatreTemplate" class="d-none">
+    <option value="">-- Select Theatre --</option>
+    @foreach (var t in Model.Theatres)
+    {
+        <option value="@t.TheatreId">@t.Name</option>
+    }
+</select>
+
+@section Scripts {
+    <script>
+        let index = 0;
+
+        function addShowTimeGroup() {
+
+            const container = document.getElementById("showtimeContainer");
+            const theatreOptions =
+                document.getElementById("theatreTemplate").innerHTML;
+
+            const html = `
+            <div class="border rounded p-3 mt-4 showtime-group">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">Schedule</h6>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="this.closest('.showtime-group').remove()">
+                        ❌ Remove
+                    </button>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Theatre</label>
+                        <select name="ShowTimes[${index}].TheatreId"
+                                class="form-select theatre-dd"
+                                onchange="loadScreens(this)">
+                            ${theatreOptions}
+                        </select>
+                    </div>
+
+                    <div class="col">
+                        <label>Screen</label>
+                        <select name="ShowTimes[${index}].ScreenId"
+                                class="form-select screen-dd">
+                            <option value="">-- Select Screen --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Date</label>
+                        <input type="date"
+                               name="ShowTimes[${index}].ShowDate"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col">
+                        <label>Base Price</label>
+                        <input type="number"
+                               step="0.01"
+                               name="ShowTimes[${index}].BasePrice"
+                               class="form-control" />
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-2">
+                    Theatre timings will be applied automatically.
+                </div>
+            </div>
+            `;
+
+            container.insertAdjacentHTML("beforeend", html);
+            index++;
+        }
+
+        async function loadScreens(select) {
+
+            const theatreId = select.value;
+            const screenDd = select
+                .closest(".showtime-group")
+                .querySelector(".screen-dd");
+
+            if (!theatreId) {
+                screenDd.innerHTML = '<option value="">-- Select Screen --</option>';
+                return;
+            }
+
+            screenDd.innerHTML = '<option>Loading...</option>';
+
+            try {
+                const res = await fetch(
+                    `/SuperAdmin/GetScreensByTheatre?theatreId=${theatreId}`);
+
+                const screens = await res.json();
+
+                screenDd.innerHTML =
+                    '<option value="">-- Select Screen --</option>';
+
+                screens.forEach(s => {
+                    const o = document.createElement("option");
+                    o.value = s.screenId;
+                    o.text = s.screenName;
+                    screenDd.appendChild(o);
+                });
+
+            } catch (e) {
+                console.error(e);
+                screenDd.innerHTML =
+                    '<option value="">Error loading screens</option>';
+            }
+        }
+    </script>
+} *@
