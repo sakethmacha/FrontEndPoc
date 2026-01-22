@@ -21,6 +21,11 @@ namespace MovieBooking.Web
                 var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
                 Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
             });
+            builder.Services.AddHttpClient<IBookingMvcService, BookingMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
             builder.Services.AddDistributedMemoryCache();
             
             builder.Services
