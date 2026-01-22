@@ -1,5 +1,122 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MovieBooking.Web.ViewModels.Booking.PaymentViewModel
 @{
+    ViewData["Title"] = "Payment";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-credit-card"></i> Payment</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Booking Summary -->
+                    <div class="alert alert-info">
+                        <h5>Booking Summary</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Booking ID:</strong> @Model.BookingReference</p>
+                                <p><strong>Movie:</strong> @Model.MovieTitle</p>
+                                <p><strong>Theatre:</strong> @Model.TheatreName</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Show Time:</strong> @Model.ShowTime.ToString("ddd, dd MMM - hh:mm tt")</p>
+                                <p><strong>Seats:</strong> @Model.Seats</p>
+                                <p><strong class="text-danger">Amount: ₹@Model.Amount.ToString("F2")</strong></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Options -->
+                    <form asp-action="ProcessPayment" method="post" id="paymentForm">
+                        <input type="hidden" name="BookingId" value="@Model.BookingId" />
+                        <input type="hidden" name="PaymentGateway" value="Razorpay" />
+
+                        <div class="mb-4">
+                            <h5>Select Payment Method</h5>
+                            <hr>
+
+                            <div class="form-check mb-3 p-3 border rounded">
+                                <input class="form-check-input" type="radio" name="PaymentMethod"
+                                       value="CARD" id="cardPayment" checked>
+                                <label class="form-check-label w-100" for="cardPayment">
+                                    <i class="bi bi-credit-card fs-4"></i>
+                                    <strong class="ms-2">Credit/Debit Card</strong>
+                                    <p class="text-muted small mb-0 ms-5">Pay securely using your card</p>
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-3 p-3 border rounded">
+                                <input class="form-check-input" type="radio" name="PaymentMethod"
+                                       value="UPI" id="upiPayment">
+                                <label class="form-check-label w-100" for="upiPayment">
+                                    <i class="bi bi-phone fs-4"></i>
+                                    <strong class="ms-2">UPI</strong>
+                                    <p class="text-muted small mb-0 ms-5">Pay using Google Pay, PhonePe, Paytm, etc.</p>
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-3 p-3 border rounded">
+                                <input class="form-check-input" type="radio" name="PaymentMethod"
+                                       value="NETBANKING" id="netbankingPayment">
+                                <label class="form-check-label w-100" for="netbankingPayment">
+                                    <i class="bi bi-bank fs-4"></i>
+                                    <strong class="ms-2">Net Banking</strong>
+                                    <p class="text-muted small mb-0 ms-5">Pay directly from your bank account</p>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Amount Breakdown -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6>Payment Details</h6>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Ticket Amount:</span>
+                                    <span>₹@Model.Amount.ToString("F2")</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Convenience Fee:</span>
+                                    <span>₹0.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total Payable:</strong>
+                                    <strong class="text-danger">₹@Model.Amount.ToString("F2")</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-lock-fill"></i> Pay ₹@Model.Amount.ToString("F2")
+                            </button>
+                            <a href="@Url.Action("MyBookings")" class="btn btn-outline-secondary">
+                                Cancel Payment
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Security Notice -->
+                    <div class="mt-4 text-center text-muted">
+                        <small>
+                            <i class="bi bi-shield-check"></i>
+                            Your payment information is secure and encrypted
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#paymentForm').submit(function (e) {
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Processing...');
+        });
+    </script>
 }

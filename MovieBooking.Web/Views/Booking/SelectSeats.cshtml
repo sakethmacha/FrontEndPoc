@@ -1,5 +1,331 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MovieBooking.Web.ApiContracts.Booking.SeatLayoutResponse
 @{
+    ViewData["Title"] = "Select Seats";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Movie Info -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4>@Model.MovieTitle</h4>
+                    <p class="mb-0">
+                        <i class="bi bi-building"></i> @Model.TheatreName - @Model.ScreenName
+                        <span class="ms-3">
+                            <i class="bi bi-clock"></i> @Model.StartTime.ToString("ddd, dd MMM yyyy - hh:mm tt")
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Seat Layout -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Screen -->
+                    <div class="text-center mb-4">
+                        <div class="screen">
+                            <i class="bi bi-display"></i> SCREEN THIS WAY
+                        </div>
+                    </div>
+
+                    <!-- Seats -->
+                    <div class="seat-container">
+                        @foreach (var row in Model.SeatRows)
+                        {
+                            <div class="seat-row mb-2">
+                                <span class="row-label">@row.RowName</span>
+                                <div class="seats">
+                                    @foreach (var seat in row.Seats)
+                                    {
+                                        var seatClass = "seat";
+                                        var disabled = "";
+
+                                        if (!seat.IsAvailable || seat.IsLocked)
+                                        {
+                                            seatClass += " seat-unavailable";
+                                            disabled = "disabled";
+                                        }
+                                        else if (seat.SeatType == "VIP")
+                                        {
+                                            seatClass += " seat-vip";
+                                        }
+                                        else if (seat.SeatType == "RECLINER")
+                                        {
+                                            seatClass += " seat-recliner";
+                                        }
+
+                                        <button type="button"
+                                                class="@seatClass"
+                                                data-seat-id="@seat.SeatId"
+                                                data-seat-number="@seat.SeatNumber"
+                                                data-seat-price="@seat.Price"
+                                                @disabled>
+                                            @seat.SeatColumn
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="seat-legend mt-4">
+                        <div class="legend-item">
+                            <span class="seat seat-available"></span> Available
+                        </div>
+                        <div class="legend-item">
+                            <span class="seat seat-selected"></span> Selected
+                        </div>
+                        <div class="legend-item">
+                            <span class="seat seat-unavailable"></span> Unavailable
+                        </div>
+                        <div class="legend-item">
+                            <span class="seat seat-vip"></span> VIP
+                        </div>
+                        <div class="legend-item">
+                            <span class="seat seat-recliner"></span> Recliner
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Summary -->
+        <div class="col-md-3">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Booking Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div id="selected-seats-info">
+                        <p class="text-muted">No seats selected</p>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong id="total-amount">₹0</strong>
+                    </div>
+                    <div id="timer-info" class="mt-3 alert alert-warning" style="display: none;">
+                        <small>
+                            <i class="bi bi-clock"></i> Time remaining: <span id="timer">05:00</span>
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button id="proceed-btn" class="btn btn-primary w-100" disabled>
+                        Proceed to Pay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .screen {
+        background: linear-gradient(to bottom, #ccc 0%, #fff 100%);
+        height: 50px;
+        line-height: 50px;
+        font-weight: bold;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+
+    .seat-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .row-label {
+        width: 30px;
+        text-align: center;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+
+    .seats {
+        display: flex;
+        gap: 8px;
+    }
+
+    .seat {
+        width: 35px;
+        height: 35px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 11px;
+        transition: all 0.3s;
+    }
+
+        .seat:hover:not(.seat-unavailable) {
+            transform: scale(1.1);
+            border-color: #007bff;
+        }
+
+        .seat.seat-selected {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .seat.seat-unavailable {
+            background: #6c757d;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .seat.seat-vip {
+            border-color: #ffc107;
+            background: #fff9e6;
+        }
+
+        .seat.seat-recliner {
+            border-color: #dc3545;
+            background: #ffe6e6;
+        }
+
+    .seat-legend {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        let selectedSeats = [];
+        let lockTimer = null;
+        let timeRemaining = 300; // 5 minutes in seconds
+
+        $(document).ready(function () {
+            // Seat selection
+            $('.seat:not(.seat-unavailable)').click(function () {
+                const seatId = $(this).data('seat-id');
+                const seatNumber = $(this).data('seat-number');
+                const seatPrice = parseFloat($(this).data('seat-price'));
+
+                if ($(this).hasClass('seat-selected')) {
+                    // Deselect
+                    $(this).removeClass('seat-selected');
+                    selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+                } else {
+                    // Select
+                    if (selectedSeats.length >= 10) {
+                        alert('You can select maximum 10 seats at a time');
+                        return;
+                    }
+                    $(this).addClass('seat-selected');
+                    selectedSeats.push({
+                        id: seatId,
+                        number: seatNumber,
+                        price: seatPrice
+                    });
+                }
+
+                updateSummary();
+            });
+
+            // Proceed button
+            $('#proceed-btn').click(function () {
+                if (selectedSeats.length === 0) {
+                    alert('Please select at least one seat');
+                    return;
+                }
+
+                // Lock seats via AJAX
+                lockSeats();
+            });
+        });
+
+        function updateSummary() {
+            if (selectedSeats.length === 0) {
+                $('#selected-seats-info').html('<p class="text-muted">No seats selected</p>');
+                $('#total-amount').text('₹0');
+                $('#proceed-btn').prop('disabled', true);
+            } else {
+                let html = '<div class="mb-2"><strong>Selected Seats:</strong></div>';
+                html += '<div class="mb-2">';
+                selectedSeats.forEach(seat => {
+                    html += `<span class="badge bg-success me-1">${seat.number}</span>`;
+                });
+                html += '</div>';
+
+                const total = selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
+                $('#selected-seats-info').html(html);
+                $('#total-amount').text('₹' + total.toFixed(2));
+                $('#proceed-btn').prop('disabled', false);
+            }
+        }
+
+        function lockSeats() {
+            const seatIds = selectedSeats.map(s => s.id);
+
+            $.ajax({
+                url: '@Url.Action("LockSeats", "Booking")',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    showTimeId: '@Model.ShowTimeId',
+                    seatIds: seatIds
+                }),
+                success: function (response) {
+                    if (response.success) {
+                        // Start timer
+                        startTimer(response.expiresAt);
+
+                        // Redirect to review page
+                        const seatIdsParam = seatIds.join(',');
+                        window.location.href = '@Url.Action("ReviewBooking")?showTimeId=@Model.ShowTimeId&seatIds=' + seatIdsParam;
+                    } else {
+                        alert(response.message);
+                        location.reload();
+                    }
+                },
+                error: function (xhr) {
+                    alert('Failed to lock seats. Please try again.');
+                    console.error(xhr);
+                }
+            });
+        }
+
+        function startTimer(expiresAt) {
+            $('#timer-info').show();
+            const expiryTime = new Date(expiresAt);
+
+            lockTimer = setInterval(function () {
+                const now = new Date();
+                const diff = Math.floor((expiryTime - now) / 1000);
+
+                if (diff <= 0) {
+                    clearInterval(lockTimer);
+                    alert('Your seat selection has expired. Please select seats again.');
+                    location.reload();
+                    return;
+                }
+
+                const minutes = Math.floor(diff / 60);
+                const seconds = diff % 60;
+                $('#timer').text(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+            }, 1000);
+        }
+    </script>
 }

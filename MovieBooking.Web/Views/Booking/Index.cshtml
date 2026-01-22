@@ -1,0 +1,60 @@
+﻿@model List<MovieBooking.Web.ApiContracts.Booking.MovieListResponse>
+@{
+    ViewData["Title"] = "Browse Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Now Showing</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No movies available at the moment.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var movie in Model)
+            {
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 movie-card">
+                        <img src="@movie.PosterUrl" class="card-img-top" alt="@movie.Title"
+                             style="height: 400px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">@movie.Title</h5>
+                            <p class="card-text text-muted">
+                                <small>
+                                    <i class="bi bi-clock"></i> @movie.DurationMinutes mins
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                @(movie.Description.Length > 100
+                                                        ? movie.Description.Substring(0, 100) + "..."
+                                                        : movie.Description)
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a href="@Url.Action("SelectShow", new { movieId = movie.MovieId })"
+                               class="btn btn-primary w-100">
+                                <i class="bi bi-ticket-perforated"></i> Book Tickets
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .movie-card {
+        transition: transform 0.3s;
+        cursor: pointer;
+    }
+    .movie-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+</style>

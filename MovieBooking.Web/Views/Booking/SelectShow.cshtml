@@ -1,5 +1,117 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MovieBooking.Web.ViewModels.Booking.SelectShowViewModel
 @{
+    ViewData["Title"] = "Select Show";
 }
+
+<div class="container mt-4">
+    <!-- Movie Info Header -->
+    @if (Model.Movie != null)
+    {
+        <div class="row mb-4">
+            <div class="col-md-2">
+                <img src="@Model.Movie.PosterUrl" class="img-fluid rounded" alt="@Model.Movie.Title">
+            </div>
+            <div class="col-md-10">
+                <h2>@Model.Movie.Title</h2>
+                <p class="text-muted">
+                    <i class="bi bi-clock"></i> @Model.Movie.DurationMinutes mins
+                    <span class="ms-3">
+                        <i class="bi bi-calendar-event"></i> @Model.Movie.ReleaseDate.ToString("dd MMM yyyy")
+                    </span>
+                </p>
+                <p>@Model.Movie.Description</p>
+            </div>
+        </div>
+    }
+
+    <!-- Date Selector -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Select Date</h5>
+            <div class="btn-group" role="group">
+                @for (int i = 0; i < 7; i++)
+                {
+                    var date = DateOnly.FromDateTime(DateTime.Today.AddDays(i));
+                    var isSelected = date == Model.SelectedDate;
+
+                    <a href="@Url.Action("SelectShow", new { movieId = Model.MovieId, date = date.ToString("yyyy-MM-dd") })"
+                       class="btn @(isSelected ? "btn-primary" : "btn-outline-primary")">
+                        <div>@date.ToString("ddd")</div>
+                        <div><strong>@date.Day</strong></div>
+                        <div><small>@date.ToString("MMM")</small></div>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Theatres & Shows -->
+    @if (!Model.Theatres.Any())
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> No shows available for the selected date.
+        </div>
+    }
+    else
+    {
+        @foreach (var theatre in Model.Theatres)
+        {
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h5 class="mb-1">@theatre.TheatreName</h5>
+                    <small class="text-muted">
+                        <i class="bi bi-geo-alt"></i> @theatre.Location
+                    </small>
+                </div>
+                <div class="card-body">
+                    @if (!theatre.Shows.Any())
+                    {
+                        <p class="text-muted">No shows available</p>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            @foreach (var show in theatre.Shows)
+                            {
+                                <div class="col-md-3 mb-3">
+                                    <div class="border rounded p-3 h-100">
+                                        <div class="mb-2">
+                                            <strong>@show.StartTime.ToString("hh:mm tt")</strong>
+                                        </div>
+                                        <div class="text-muted mb-2">
+                                            <small>@show.ScreenName</small>
+                                        </div>
+                                        <div class="text-muted mb-2">
+                                            <small>@show.LanguageName</small>
+                                        </div>
+                                        <div class="mb-2">
+                                            <span class="badge bg-success">₹@show.BasePrice</span>
+                                        </div>
+                                        <div class="mb-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-person"></i> @show.AvailableSeats seats
+                                            </small>
+                                        </div>
+                                        @if (show.AvailableSeats > 0)
+                                        {
+                                            <a href="@Url.Action("SelectSeats", new { showTimeId = show.ShowTimeId })"
+                                               class="btn btn-sm btn-primary w-100">
+                                                Select Seats
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-secondary w-100" disabled>
+                                                Sold Out
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
