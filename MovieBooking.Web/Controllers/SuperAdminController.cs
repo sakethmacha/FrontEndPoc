@@ -310,7 +310,14 @@ namespace MovieBooking.Web.Controllers
             var screens = await SuperAdminService.GetScreensByTheatreAsync(theatreId);
             return View(screens);
         }
-
+        [HttpGet]
+        public async Task<IActionResult> ScreensByTheatre(Guid theatreId)
+        {
+            if (theatreId == Guid.Empty)
+                return Json(new List<object>());
+            var screens = await SuperAdminService.GetScreensByTheatreAsync(theatreId);
+            return Ok(screens);
+        }
         // ========== SHOWTIMES ==========
 
         public async Task<IActionResult> ShowTimes()

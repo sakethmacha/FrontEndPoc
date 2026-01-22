@@ -282,7 +282,6 @@ namespace MovieBooking.Web.Services
             return await HttpClient.GetFromJsonAsync<List<LanguageResponse>>("api/superadmin/languages");
         }
 
-        // ========== NEW: GET BY ID METHODS ==========
 
         public async Task<MovieResponse> GetMovieByIdAsync(Guid movieId)
         {
