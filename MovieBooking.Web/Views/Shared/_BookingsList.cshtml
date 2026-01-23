@@ -1,0 +1,133 @@
+﻿@model List<MovieBooking.Web.ApiContracts.Booking.UserBookingResponse>
+
+<div class="row">
+    @foreach (var booking in Model.OrderByDescending(b => b.BookingDate))
+    {
+        var statusClass = booking.Status switch
+        {
+            "CONFIRMED" => "success",
+            "PENDING" => "warning",
+            "CANCELLED" => "secondary",
+            "FAILED" => "danger",
+            _ => "info"
+        };
+
+        var statusIcon = booking.Status switch
+        {
+            "CONFIRMED" => "check-circle-fill",
+            "PENDING" => "clock-fill",
+            "CANCELLED" => "x-circle-fill",
+            "FAILED" => "exclamation-triangle-fill",
+            _ => "info-circle-fill"
+        };
+
+        var isPast = booking.ShowTime < DateTime.Now;
+        var canCancel = booking.Status == "CONFIRMED" && booking.ShowTime > DateTime.Now.AddHours(2);
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm hover-card">
+
+                <!-- Card Header -->
+                <div class="card-header bg-@statusClass text-white border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small><i class="bi bi-ticket-perforated"></i> @booking.BookingReference</small>
+                        </div>
+                        <div>
+                            <span class="badge bg-white text-@statusClass">
+                                <i class="bi bi-@statusIcon"></i> @booking.Status
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <h5 class="card-title mb-3">@booking.MovieTitle</h5>
+
+                    <div class="mb-2">
+                        <i class="bi bi-building text-primary"></i>
+                        <small class="text-muted">@booking.TheatreName</small>
+                    </div>
+
+                    <div class="mb-2">
+                        <i class="bi bi-tv text-primary"></i>
+                        <small class="text-muted">@booking.ScreenName</small>
+                    </div>
+
+                    <div class="mb-2">
+                        <i class="bi bi-calendar-event text-primary"></i>
+                        <small class="text-muted">
+                            @booking.ShowTime.ToString("ddd, dd MMM yyyy")
+                        </small>
+                    </div>
+
+                    <div class="mb-2">
+                        <i class="bi bi-clock text-primary"></i>
+                        <small class="text-muted">@booking.ShowTime.ToString("hh:mm tt")</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <i class="bi bi-person-fill text-primary"></i>
+                        <small class="text-muted">
+                            @booking.SeatCount Seat(s):
+                            <strong>@booking.SeatNumbers</strong>
+                        </small>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Total Amount:</span>
+                        <h5 class="mb-0 text-success">₹@booking.TotalAmount.ToString("F2")</h5>
+                    </div>
+
+                    @if (isPast)
+                    {
+                        <div class="alert alert-secondary py-2 mb-0">
+                            <small><i class="bi bi-clock-history"></i> Show ended</small>
+                        </div>
+                    }
+                    else if (booking.ShowTime < DateTime.Now.AddHours(2) && booking.Status == "CONFIRMED")
+                    {
+                        <div class="alert alert-info py-2 mb-0">
+                            <small><i class="bi bi-exclamation-circle"></i> Show starts soon!</small>
+                        </div>
+                    }
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer bg-white border-0">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("BookingDetails", new { bookingId = booking.BookingId })"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye"></i> View Details
+                        </a>
+
+                        @if (canCancel)
+                        {
+                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal"
+                                    data-booking-id="@booking.BookingId"
+                                    data-booking-ref="@booking.BookingReference"
+                                    data-movie-title="@booking.MovieTitle"
+                                    data-amount="@booking.TotalAmount.ToString("F2")">
+                                <i class="bi bi-x-circle"></i> Cancel Booking
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+        }
+</style>

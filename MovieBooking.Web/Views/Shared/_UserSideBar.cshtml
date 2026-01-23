@@ -1,0 +1,57 @@
+﻿
+@if (User.IsInRole("User"))
+{
+    <div class="col-md-2 user-sidebar min-vh-100 p-3">
+        <h5 class="text-white mb-4">🎟️ User Panel</h5>
+
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item mb-2">
+                <a asp-controller="Booking"
+                   asp-action="Index"
+                   class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+                    🎬 Browse Movies
+                </a>
+            </li>
+
+            <li class="nav-item mb-2">
+                <a asp-controller="Booking"
+                   asp-action="MyBookings"
+                   class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyBookings" ? "active" : "")">
+                    📖 My Bookings
+                </a>
+            </li>
+
+            @* <li class="nav-item mb-2">
+                <a asp-controller="Booking"
+                   asp-action="BookingDetails"
+                   class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "BookingDetails" ? "active" : "")">
+                    🔍 Booking Details
+                </a>
+            </li> *@
+        </ul>
+    </div>
+}
+<style>
+.user-sidebar {
+    background-color: #000;
+}
+
+/* Default link */
+.user-sidebar .nav-link {
+    color: #fff;
+    border-radius: 6px;
+    padding: 10px 14px;
+}
+
+/* Hover */
+.user-sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Active / Highlighted */
+.user-sidebar .nav-link.active {
+    background-color: #fff;
+    color: #000;
+    font-weight: 600;
+}
+</style>

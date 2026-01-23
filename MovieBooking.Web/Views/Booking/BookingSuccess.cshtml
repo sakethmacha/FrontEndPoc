@@ -1,12 +1,411 @@
 ﻿@model MovieBooking.Web.ApiContracts.Booking.BookingConfirmationResponse
 @{
     ViewData["Title"] = "Booking Confirmed";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <!-- Success Message -->
-            <div class="text-center mb-4">
-                <div class="success-checkmark">
-                    <i class="bi bi-check
+        <div class="col-lg-10">
+
+            <!-- Success Animation & Message -->
+            <div class="text-center mb-5">
+                <div class="success-animation">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+                <h1 class="text-success mt-4 mb-2">Booking Confirmed!</h1>
+                <p class="text-muted fs-5">Your movie tickets have been booked successfully</p>
+            </div>
+
+            <!-- Main Ticket Card -->
+            <div class="card shadow-lg border-0 ticket-card">
+                <div class="card-body p-0">
+
+                    <!-- Top Section with Gradient -->
+                    <div class="ticket-header text-white p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h3 class="mb-3">@Model.Movie.Title</h3>
+                                <div class="d-flex flex-wrap gap-3">
+                                    <span class="badge bg-light text-dark px-3 py-2">
+                                        <i class="bi bi-translate"></i> @Model.Movie.Language
+                                    </span>
+                                    <span class="badge bg-light text-dark px-3 py-2">
+                                        <i class="bi bi-clock"></i> @Model.Movie.DurationMinutes mins
+                                    </span>
+                                    <span class="badge bg-warning text-dark px-3 py-2">
+                                        <i class="bi bi-star-fill"></i> @Model.Status
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                <div class="booking-id-box">
+                                    <small class="d-block text-white-50 mb-1">BOOKING ID</small>
+                                    <h4 class="mb-0 fw-bold">@Model.BookingReference</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Perforated Border -->
+                    <div class="ticket-perforation"></div>
+
+                    <!-- Details Section -->
+                    <div class="p-4">
+
+                        <!-- Theatre & Show Info -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="info-box h-100">
+                                    <div class="info-icon">
+                                        <i class="bi bi-building"></i>
+                                    </div>
+                                    <div class="info-content">
+                                        <h6 class="text-muted mb-2">Theatre</h6>
+                                        <h5 class="mb-1">@Model.Theatre.Name</h5>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-geo-alt"></i> @Model.Theatre.Location
+                                        </p>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-tv"></i> Screen: @Model.Theatre.ScreenName
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-box h-100">
+                                    <div class="info-icon">
+                                        <i class="bi bi-calendar-event"></i>
+                                    </div>
+                                    <div class="info-content">
+                                        <h6 class="text-muted mb-2">Show Time</h6>
+                                        <h5 class="mb-1">@Model.Theatre.ShowTime.ToString("dddd, dd MMMM yyyy")</h5>
+                                        <p class="mb-0">
+                                            <i class="bi bi-clock-fill text-primary"></i>
+                                            <strong>@Model.Theatre.ShowTime.ToString("hh:mm tt")</strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Seats Section -->
+                        <div class="seats-section mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-person-fill"></i> Your Seats (@Model.Seats.Count)
+                                </h5>
+                            </div>
+                            <div class="seats-grid">
+                                @foreach (var seat in Model.Seats)
+                                {
+                                    <div class="seat-badge">
+                                        <div class="seat-number">@seat.SeatNumber</div>
+                                        <div class="seat-type">@seat.SeatType</div>
+                                        <div class="seat-price">₹@seat.Price</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Payment Summary -->
+                        <div class="payment-summary">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="text-muted mb-2">Payment Details</h6>
+                                    <div class="d-flex gap-4">
+                                        <div>
+                                            <small class="text-muted d-block">Ticket Cost</small>
+                                            <strong>₹@Model.TotalAmount.ToString("F2")</strong>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Convenience Fee</small>
+                                            <strong>₹0.00</strong>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block">Booked On</small>
+                                            <strong>@Model.CreatedAt.ToString("dd MMM, hh:mm tt")</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                    <h6 class="text-muted mb-1">Total Paid</h6>
+                                    <h2 class="text-success mb-0">₹@Model.TotalAmount.ToString("F2")</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QR Code Section -->
+                        <div class="text-center my-4 py-4 border-top border-bottom">
+                            <div class="qr-code-container d-inline-block">
+                                <div class="qr-placeholder">
+                                    <i class="bi bi-qr-code"></i>
+                                </div>
+                                <p class="text-muted mb-0 mt-2">
+                                    <small><i class="bi bi-info-circle"></i> Show this QR code at the theatre</small>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Important Instructions -->
+                        <div class="alert alert-warning border-0 shadow-sm">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Important Instructions
+                            </h6>
+                            <ul class="mb-0 ps-3">
+                                <li>Please arrive at least <strong>15 minutes before</strong> the show time</li>
+                                <li>Carry a <strong>valid ID proof</strong> for verification</li>
+                                <li>Save or screenshot this booking confirmation</li>
+                                <li>Tickets once booked cannot be cancelled or refunded (check theatre policy)</li>
+                                <li>Outside food and beverages are not allowed inside the theatre</li>
+                            </ul>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <a href="@Url.Action("BookingDetails", new { bookingId = Model.BookingId })"
+                                   class="btn btn-primary btn-lg w-100">
+                                    <i class="bi bi-file-earmark-text"></i> View Details
+                                </a>
+                            </div>
+                            <div class="col-md-4">
+                                <button onclick="window.print()" class="btn btn-outline-primary btn-lg w-100">
+                                    <i class="bi bi-printer"></i> Print Ticket
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="@Url.Action("MyBookings")" class="btn btn-outline-secondary btn-lg w-100">
+                                    <i class="bi bi-list-ul"></i> My Bookings
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="@Url.Action("Index")" class="btn btn-link">
+                                <i class="bi bi-house"></i> Back to Home
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Confirmation Note -->
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    <i class="bi bi-envelope-check"></i>
+                    A confirmation email has been sent to your registered email address
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Success Animation */
+    .success-animation {
+        margin: 0 auto;
+    }
+
+    .checkmark {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 2;
+        stroke: #4CAF50;
+        stroke-miterlimit: 10;
+        margin: 0 auto;
+        box-shadow: inset 0px 0px 0px #4CAF50;
+        animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+
+    .checkmark__circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke-miterlimit: 10;
+        stroke: #4CAF50;
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark__check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @@keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @@keyframes scale {
+        0%, 100% {
+            transform: none;
+        }
+
+        50% {
+            transform: scale3d(1.1, 1.1, 1);
+        }
+    }
+
+    @@keyframes fill {
+        100% {
+            box-shadow: inset 0px 0px 0px 60px #4CAF50;
+        }
+    }
+
+    /* Ticket Card */
+    .ticket-card {
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .ticket-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        position: relative;
+    }
+
+    .booking-id-box {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+    }
+
+    .ticket-perforation {
+        height: 20px;
+        background-image: radial-gradient(circle, white 40%, transparent 40%);
+        background-size: 30px 20px;
+        background-position: 15px 0;
+        background-repeat: repeat-x;
+        position: relative;
+        margin-top: -10px;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        gap: 15px;
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+        .info-icon i {
+            font-size: 24px;
+            color: white;
+        }
+
+    .info-content h5 {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .seats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+    }
+
+    .seat-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(102, 126, 234, 0.2);
+        transition: transform 0.3s;
+    }
+
+        .seat-badge:hover {
+            transform: translateY(-5px);
+        }
+
+    .seat-number {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .seat-type {
+        font-size: 11px;
+        opacity: 0.9;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .seat-price {
+        font-size: 14px;
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
+    .payment-summary {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 15px;
+        margin-top: 20px;
+    }
+
+    .qr-placeholder {
+        width: 180px;
+        height: 180px;
+        background: #f8f9fa;
+        border: 3px dashed #dee2e6;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+        .qr-placeholder i {
+            font-size: 80px;
+            color: #6c757d;
+        }
+
+    @@media print {
+        .btn, .alert {
+            display: none !important;
+        }
+
+        .ticket-card {
+            box-shadow: none !important;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .seats-grid {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .seat-badge {
+            padding: 12px;
+        }
+
+        .seat-number {
+            font-size: 20px;
+        }
+    }
+</style>

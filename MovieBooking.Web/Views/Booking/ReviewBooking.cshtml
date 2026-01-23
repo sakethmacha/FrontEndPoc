@@ -1,5 +1,416 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MovieBooking.Web.ViewModels.Booking.ReviewBookingViewModel
 @{
+    ViewData["Title"] = "Review Booking";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+
+            <!-- Progress Steps -->
+            <div class="mb-5">
+                <div class="progress-steps">
+                    <div class="step completed">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Select Show</div>
+                    </div>
+                    <div class="step completed">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Select Seats</div>
+                    </div>
+                    <div class="step active">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Review</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Payment</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Review Card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-white py-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h4 class="mb-0">
+                        <i class="bi bi-clipboard-check-fill"></i> Review Your Booking
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <!-- Movie & Theatre Details -->
+                    <div class="row g-4 mb-4">
+                        <!-- Movie Info -->
+                        <div class="col-md-6">
+                            <div class="card bg-light border-0 h-100">
+                                <div class="card-body">
+                                    <h6 class="text-muted text-uppercase mb-3">
+                                        <i class="bi bi-film"></i> Movie Details
+                                    </h6>
+                                    <h5 class="fw-bold mb-3">@Model.MovieTitle</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Theatre Info -->
+                        <div class="col-md-6">
+                            <div class="card bg-light border-0 h-100">
+                                <div class="card-body">
+                                    <h6 class="text-muted text-uppercase mb-3">
+                                        <i class="bi bi-building"></i> Theatre Details
+                                    </h6>
+                                    <p class="mb-1"><strong>@Model.TheatreName</strong></p>
+                                    <p class="mb-0 text-muted">
+                                        <i class="bi bi-tv"></i> @Model.ScreenName
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Show Time -->
+                    <div class="card border-primary mb-4">
+                        <div class="card-body text-center py-4">
+                            <h6 class="text-muted text-uppercase mb-3">Show Time</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <i class="bi bi-calendar-event-fill text-primary fs-2"></i>
+                                    <h5 class="mt-2 mb-0">@Model.StartTime.ToString("dddd, dd MMMM yyyy")</h5>
+                                </div>
+                                <div class="col-md-6">
+                                    <i class="bi bi-clock-fill text-primary fs-2"></i>
+                                    <h5 class="mt-2 mb-0">@Model.StartTime.ToString("hh:mm tt")</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Seats -->
+                    <div class="mb-4">
+                        <h5 class="mb-3">
+                            <i class="bi bi-person-fill-check"></i> Selected Seats (@Model.SelectedSeats.Count)
+                        </h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th width="15%">#</th>
+                                        <th width="35%">Seat Number</th>
+                                        <th width="30%">Seat Type</th>
+                                        <th width="20%" class="text-end">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.SelectedSeats.Count; i++)
+                                    {
+                                        var seat = Model.SelectedSeats[i];
+                                        <tr>
+                                            <td>@(i + 1)</td>
+                                            <td>
+                                                <span class="badge bg-success fs-6">@seat.SeatNumber</span>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var badgeClass = seat.SeatType switch
+                                                    {
+                                                        "VIP" => "bg-warning text-dark",
+                                                        "RECLINER" => "bg-danger",
+                                                        _ => "bg-primary"
+                                                    };
+                                                }
+                                                <span class="badge @badgeClass">@seat.SeatType</span>
+                                            </td>
+                                            <td class="text-end fw-bold">₹@seat.Price.ToString("F2")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Price Breakdown -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="mb-3">Price Breakdown</h6>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <span>Ticket Price (@Model.SelectedSeats.Count seat(s)):</span>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span>₹@Model.TotalAmount.ToString("F2")</span>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <span>Convenience Fee:</span>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span>₹0.00</span>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-6">
+                                    <span>GST (18%):</span>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span>₹0.00</span>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-6">
+                                    <h5 class="mb-0">Total Payable:</h5>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <h4 class="mb-0 text-success fw-bold">₹@Model.TotalAmount.ToString("F2")</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Important Notice -->
+                    <div class="alert alert-info border-info mb-4">
+                        <h6 class="alert-heading">
+                            <i class="bi bi-info-circle-fill"></i> Please Note
+                        </h6>
+                        <ul class="mb-0 small">
+                            <li>Your seats are locked for <strong>5 minutes</strong></li>
+                            <li>Please complete payment within this time</li>
+                            <li>Tickets once booked cannot be exchanged or transferred</li>
+                            <li>Outside food and beverages are not allowed in the cinema</li>
+                        </ul>
+                    </div>
+
+                    <!-- Terms & Conditions -->
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                        <label class="form-check-label" for="termsCheck">
+                            I have read and agree to the
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">
+                                Terms & Conditions
+                            </a> and
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#cancellationModal">
+                                Cancellation Policy
+                            </a>
+                        </label>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <form asp-action="ConfirmBooking" method="post" id="bookingForm">
+                        <input type="hidden" name="ShowTimeId" value="@Model.ShowTimeId" />
+                        @foreach (var seat in Model.SelectedSeats)
+                        {
+                            <input type="hidden" name="SeatIds" value="@seat.SeatId" />
+                        }
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <a href="@Url.Action("SelectSeats", new { showTimeId = Model.ShowTimeId })"
+                                   class="btn btn-outline-secondary btn-lg w-100">
+                                    <i class="bi bi-arrow-left"></i> Change Seats
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-success btn-lg w-100" id="confirmBtn" disabled>
+                                    <i class="bi bi-credit-card"></i> Proceed to Payment
+                                    <span class="d-block small">₹@Model.TotalAmount.ToString("F2")</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Terms & Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-file-text"></i> Terms & Conditions
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>General Terms:</h6>
+                <ol>
+                    <li>Tickets once booked cannot be exchanged or transferred</li>
+                    <li>Outside food and beverages are not allowed</li>
+                    <li>Please carry a valid ID proof</li>
+                    <li>Children above 3 years require a separate ticket</li>
+                    <li>Late entry may not be allowed</li>
+                </ol>
+
+                <h6>Prohibited Items:</h6>
+                <ul>
+                    <li>Outside food and beverages</li>
+                    <li>Weapons of any kind</li>
+                    <li>Recording devices</li>
+                    <li>Laser pointers</li>
+                </ul>
+
+                <h6>Code of Conduct:</h6>
+                <ul>
+                    <li>Maintain silence during the show</li>
+                    <li>Switch off mobile phones</li>
+                    <li>Do not litter</li>
+                    <li>Follow cinema staff instructions</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancellation Policy Modal -->
+<div class="modal fade" id="cancellationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-x-circle"></i> Cancellation Policy
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Cancellation Rules:</h6>
+                <ul>
+                    <li>Cancellations allowed up to <strong>2 hours before</strong> show time</li>
+                    <li>No cancellations allowed within 2 hours of show time</li>
+                    <li>Cancellation charges may apply based on timing</li>
+                </ul>
+
+                <h6>Refund Policy:</h6>
+                <ul>
+                    <li>Refund will be processed within 5-7 business days</li>
+                    <li>Refund will be credited to original payment method</li>
+                    <li>Convenience fees are non-refundable</li>
+                </ul>
+
+                <h6>Cancellation Charges:</h6>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Time Before Show</th>
+                            <th>Cancellation Charge</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>More than 24 hours</td>
+                            <td>No Charges</td>
+                        </tr>
+                        <tr>
+                            <td>12-24 hours</td>
+                            <td>20% of ticket price</td>
+                        </tr>
+                        <tr>
+                            <td>2-12 hours</td>
+                            <td>50% of ticket price</td>
+                        </tr>
+                        <tr>
+                            <td>Less than 2 hours</td>
+                            <td>Not Allowed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    I Understand
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #dee2e6;
+            z-index: 0;
+        }
+
+    .step {
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .step-number {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #dee2e6;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin: 0 auto 10px;
+    }
+
+    .step.completed .step-number {
+        background: #28a745;
+        color: white;
+    }
+
+    .step.active .step-number {
+        background: #007bff;
+        color: white;
+        box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+    }
+
+    .step-label {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .step.active .step-label,
+    .step.completed .step-label {
+        color: #212529;
+        font-weight: 600;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Enable/disable confirm button based on terms checkbox
+            $('#termsCheck').change(function() {
+                $('#confirmBtn').prop('disabled', !this.checked);
+            });
+
+            // Form submission handling
+            $('#bookingForm').submit(function() {
+                $('#confirmBtn').prop('disabled', true)
+                    .html('<span class="spinner-border spinner-border-sm me-2"></span>Processing...');
+            });
+        });
+    </script>
 }

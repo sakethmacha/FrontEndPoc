@@ -1,5 +1,203 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<MovieBooking.Web.ApiContracts.Booking.UserBookingResponse>
 @{
+    ViewData["Title"] = "My Bookings";
+}
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-ticket-perforated-fill"></i> My Bookings</h2>
+            <p class="text-muted mb-0">View and manage all your movie bookings</p>
+        </div>
+        <a href="@Url.Action("Index")" class="btn btn-primary">
+            <i class="bi bi-film"></i> Book New Ticket
+        </a>
+    </div>
+
+    <!-- Success/Error Messages -->
+@if (TempData["Success"] != null)
+{
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+}
+
+@if (TempData["Error"] != null)
+{
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+}
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-4" id="bookingTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="all-tab" data-bs-toggle=" pill
+" data-bs-target="#all" type="button">
+                All Bookings (@Model?.Count ?? 0)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="upcoming-tab" data-bs-toggle="pill"
+                    data-bs-target="#upcoming" type="button">
+                Upcoming (@Model?.Count(b => b.ShowTime > DateTime.Now && b.Status == "CONFIRMED") ?? 0)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="past-tab" data-bs-toggle="pill"
+                    data-bs-target="#past" type="button">
+                Past (@Model?.Count(b => b.ShowTime < DateTime.Now) ?? 0)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cancelled-tab" data-bs-toggle="pill"
+                    data-bs-target="#cancelled" type="button">
+                Cancelled (@Model?.Count(b => b.Status == "CANCELLED") ?? 0)
+            </button>
+        </li>
+    </ul>
+    @if (Model == null || !Model.Any())
+{
+    <!-- Empty State -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h3 class="mt-4 text-muted">No Bookings Found</h3>
+            <p class="text-muted">You haven't made any movie bookings yet</p>
+            <a href="@Url.Action("Index")" class="btn btn-primary btn-lg mt-3">
+                <i class="bi bi-film"></i> Browse Movies Now
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Tab Content -->
+    <div class="tab-content" id="bookingTabsContent">
+        
+        <!-- All Bookings Tab -->
+        <div class="tab-pane fade show active" id="all" role="tabpanel">
+            @await Html.PartialAsync("_BookingsList", Model)
+        </div>
+
+        <!-- Upcoming Bookings Tab -->
+        <div class="tab-pane fade" id="upcoming" role="tabpanel">
+            @{
+                var upcomingBookings = Model.Where(b => b.ShowTime > DateTime.Now && b.Status == "CONFIRMED").ToList();
+            }
+            @if (upcomingBookings.Any())
+            {
+                @await Html.PartialAsync("_BookingsList", upcomingBookings)
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No upcoming bookings
+                </div>
+            }
+        </div>
+
+        <!-- Past Bookings Tab -->
+        <div class="tab-pane fade" id="past" role="tabpanel">
+            @{
+                var pastBookings = Model.Where(b => b.ShowTime < DateTime.Now).ToList();
+            }
+            @if (pastBookings.Any())
+            {
+                @await Html.PartialAsync("_BookingsList", pastBookings)
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No past bookings
+                </div>
+            }
+        </div>
+
+        <!-- Cancelled Bookings Tab -->
+        <div class="tab-pane fade" id="cancelled" role="tabpanel">
+            @{
+                var cancelledBookings = Model.Where(b => b.Status == "CANCELLED").ToList();
+            }
+            @if (cancelledBookings.Any())
+            {
+                @await Html.PartialAsync("_BookingsList", cancelledBookings)
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> No cancelled bookings
+                </div>
+            }
+        </div>
+    </div>
+}
+</div>
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CancelBooking" method="post">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Cancel Booking
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="bookingId" id="cancelBookingId" />
+                <div class="alert alert-warning">
+                    <strong>Are you sure you want to cancel this booking?</strong>
+                    <p class="mb-0 mt-2">Booking Reference: <strong id="cancelBookingRef"></strong></p>
+                    <p class="mb-0">Movie: <strong id="cancelMovieTitle"></strong></p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Reason for Cancellation (Optional)</label>
+                    <textarea class="form-control" name="reason" rows="3" 
+                              placeholder="Tell us why you're cancelling..."></textarea>
+                </div>
+
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6>Refund Information</h6>
+                        <p class="mb-1 small">Amount: <strong id="cancelAmount"></strong></p>
+                        <p class="mb-0 small text-muted">
+                            <i class="bi bi-info-circle"></i> 
+                            Refund will be processed within 5-7 business days
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Keep Booking
+                </button>
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-check-circle"></i> Confirm Cancellation
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+@section Scripts {
+<script>
+$('#cancelModal').on('show.bs.modal', function (event) {
+var button = $(event.relatedTarget);
+var bookingId = button.data('booking-id');
+var bookingRef = button.data('booking-ref');
+var movieTitle = button.data('movie-title');
+var amount = button.data('amount');
+        var modal = $(this);
+        modal.find('#cancelBookingId').val(bookingId);
+        modal.find('#cancelBookingRef').text(bookingRef);
+        modal.find('#cancelMovieTitle').text(movieTitle);
+        modal.find('#cancelAmount').text('₹' + amount);
+    });
+</script>
 }

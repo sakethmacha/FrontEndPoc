@@ -45,7 +45,7 @@ namespace MovieBooking.Web.Controllers
 
             var claims = jwt.Claims.ToList();
 
-            // 🔥 STORE JWT FOR MVC → API CALLS
+            //  STORE JWT FOR MVC → API CALLS
             claims.Add(new Claim("access_token", result.Token));
 
             claims.Add(new Claim(ClaimTypes.Name, result.Name));

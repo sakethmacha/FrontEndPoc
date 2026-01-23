@@ -331,7 +331,6 @@ namespace MovieBooking.Web.Controllers
 
         [HttpPost]
         public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel addShowTimeBulkViewModel)
-
         {
             if (!ModelState.IsValid)
                 return View(addShowTimeBulkViewModel);
