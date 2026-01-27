@@ -205,20 +205,26 @@
                             <input type="hidden" name="SeatIds" value="@seat.SeatId" />
                         }
 
+                      
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <a href="@Url.Action("SelectSeats", new { showTimeId = Model.ShowTimeId })"
-                                   class="btn btn-outline-secondary btn-lg w-100">
+                                   class="btn btn-outline-secondary btn-lg w-100 text-center">
                                     <i class="bi bi-arrow-left"></i> Change Seats
+                                    <span class="d-block small invisible">placeholder</span>
                                 </a>
                             </div>
+
                             <div class="col-md-6">
-                                <button type="submit" class="btn btn-success btn-lg w-100" id="confirmBtn" disabled>
+                                <button type="submit"
+                                        class="btn btn-success btn-lg w-100"
+                                        id="confirmBtn" disabled>
                                     <i class="bi bi-credit-card"></i> Proceed to Payment
                                     <span class="d-block small">₹@Model.TotalAmount.ToString("F2")</span>
                                 </button>
                             </div>
                         </div>
+
                     </form>
 
                 </div>

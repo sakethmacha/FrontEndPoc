@@ -320,8 +320,10 @@ namespace MovieBooking.Web.Controllers
         }
         // ========== SHOWTIMES ==========
 
+        //public async Task<IActionResult> ShowTimes()
+        //    => View(await SuperAdminService.GetShowTimesAsync());
         public async Task<IActionResult> ShowTimes()
-            => View(await SuperAdminService.GetShowTimesAsync());
+    => View(await SuperAdminService.GetMovieWiseShowTimesAsync());
 
         [HttpGet]
         public async Task<IActionResult> AddShowTime()

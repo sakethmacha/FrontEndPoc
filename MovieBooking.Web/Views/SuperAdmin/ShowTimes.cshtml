@@ -1,175 +1,157 @@
-﻿
-@model List<MovieBooking.Web.ApiContracts.ShowTimes.ShowTimeResponse>
+﻿@model List<MovieShowTimeViewModel>
 
 @{
     ViewData["Title"] = "ShowTimes";
 }
 
+
 <style>
-    .showtime-card {
-        border-radius: 18px;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    .movie-card {
+        border-radius: 16px;
         border: none;
+        transition: all 0.25s ease;
     }
 
-        .showtime-card:hover {
-            transform: translateY(-6px);
+        .movie-card:hover {
             box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
         }
 
-    .showtime-title {
+    .theatre-name {
         font-weight: 600;
-        font-size: 1.05rem;
+        font-size: 0.95rem;
     }
 
-    .showtime-meta {
-        font-size: 0.9rem;
+    .screen-meta {
+        font-size: 0.8rem;
         color: #6c757d;
     }
 
-    .price-badge {
-        font-size: 0.85rem;
-        padding: 6px 12px;
+    .showtime-row {
+        border: 1px solid #e9ecef;
         border-radius: 12px;
+        padding: 14px 16px;
+        transition: background-color 0.2s ease;
     }
 
-    .empty-state {
-        border: 2px dashed #dee2e6;
-        border-radius: 18px;
-        padding: 40px;
-        text-align: center;
-        background-color: #fafafa;
-    }
+        .showtime-row:hover {
+            background-color: #f8f9fa;
+        }
 </style>
 
 <div class="container mt-4">
 
-    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold mb-0">⏰ ShowTimes</h2>
-            <small class="text-muted">Manage movie showtimes</small>
-        </div>
+        <h2 class="fw-bold mb-0">🎬 Movie ShowTimes</h2>
 
-        <a asp-action="AddShowTime" class="btn btn-primary fw-semibold">
-            <i class="bi bi-plus-lg"></i> Add ShowTime
+        <a asp-action="AddShowTime"
+           asp-controller="SuperAdmin"
+           class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>
+            Add ShowTime
         </a>
     </div>
 
-    @if (TempData["Success"] != null)
+
+    @foreach (var movie in Model)
     {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+        <div class="card movie-card mb-4 shadow-sm">
+            <div class="card-body">
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+                <!-- MOVIE HEADER -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-film me-1"></i>
+                        @movie.MovieTitle
+                    </h5>
 
-    @if (!Model.Any())
-    {
-        <!-- EMPTY STATE -->
-        <div class="empty-state shadow-sm">
-            <h5 class="fw-bold">No ShowTimes Available</h5>
-            <p class="text-muted mb-3">
-                Start by adding showtimes for movies.
-            </p>
-            <a asp-action="AddShowTime" class="btn btn-outline-primary">
-                ➕ Add ShowTime
-            </a>
-        </div>
-    }
-    else
-    {
-        <!-- SHOWTIME CARDS -->
-        <div class="row g-4">
-            @foreach (var st in Model)
-            {
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card showtime-card shadow-sm h-100">
-                        <div class="card-body d-flex flex-column">
+                    <button class="btn btn-sm btn-outline-primary"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#movie-@movie.MovieTitle.GetHashCode()">
+                        View ShowTimes
+                    </button>
+                </div>
 
-                            <!-- MOVIE TITLE -->
-                            <div class="showtime-title mb-2">
-                                <i class="bi bi-film text-muted me-1"></i>
-                                @st.MovieTitle
-                            </div>
+                <!-- SHOWTIMES -->
+                <div class="collapse" id="movie-@movie.MovieTitle.GetHashCode()">
+                    <div class="row g-4">
 
-                            <!-- META -->
-                            <div class="showtime-meta mb-3">
-                                <div>
-                                    <i class="bi bi-building"></i>
-                                    @st.TheatreName
+                        @foreach (var group in movie.ShowTimes.GroupBy(x => x.TheatreName))
+                        {
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 h-100">
+
+                                    <!-- THEATRE NAME -->
+                                    <div class="theatre-name mb-3">
+                                        <i class="bi bi-building"></i>
+                                        @group.Key
+                                    </div>
+
+                                    <!-- SHOWTIME ROW -->
+                                    @foreach (var st in group)
+                                    {
+                                        <div class="showtime-row d-flex justify-content-between align-items-center mb-3">
+
+                                            <!-- LEFT: TIME INFO -->
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    @st.StartTime.ToString("dd MMM yyyy, hh:mm tt")
+                                                </div>
+                                                <div class="screen-meta">
+                                                    @st.ScreenName • @st.LanguageName
+                                                </div>
+                                            </div>
+
+                                            <!-- RIGHT: PRICE + DELETE -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <span class="badge bg-success fs-6">
+                                                    ₹ @st.BasePrice
+                                                </span>
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-danger px-2"
+                                                        onclick="confirmDelete('@st.ShowTimeId','@movie.MovieTitle')"
+                                                        title="Delete ShowTime">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    }
+
                                 </div>
-                                <div>
-                                    <i class="bi bi-tv"></i>
-                                    @st.ScreenName
-                                </div>
-                                <div>
-                                    <i class="bi bi-translate"></i>
-                                    @st.LanguageName
-                                </div>
-                                <div>
-                                    <i class="bi bi-clock"></i>
-                                    @st.StartTime.ToString("dd MMM yyyy, hh:mm tt")
-                                </div>
                             </div>
+                        }
 
-                            <!-- PRICE -->
-                            <div class="mb-3">
-                                <span class="badge bg-success price-badge">
-                                    ₹ @st.BasePrice
-                                </span>
-                            </div>
-
-                            <!-- ACTIONS -->
-                            <div class="mt-auto d-flex gap-2">
-                                <a asp-action="EditShowTime"
-                                   asp-route-id="@st.ShowTimeId"
-                                   class="btn btn-sm btn-outline-primary flex-fill">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-
-                                <button type="button"
-                                        class="btn btn-sm btn-outline-danger flex-fill"
-                                        onclick="confirmDelete('@st.ShowTimeId', '@st.MovieTitle')">
-                                    <i class="bi bi-trash"></i> Delete
-                                </button>
-                            </div>
-
-                        </div>
                     </div>
                 </div>
-            }
+
+            </div>
         </div>
     }
+
 </div>
 
 <!-- DELETE CONFIRMATION MODAL -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
+                <h5 class="modal-title text-danger">Confirm Deletion</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete showtime for
-                <strong id="movieName"></strong>?
+                This will permanently delete the showtime for
+                <strong id="movieName"></strong>.
+                <br /><br />
+                <span class="text-muted">
+                    This action cannot be undone.
+                </span>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancel
-                </button>
                 <form id="deleteForm" method="post">
                     <button type="submit" class="btn btn-danger">
-                        Delete
+                        Yes, Delete
                     </button>
                 </form>
             </div>
@@ -179,15 +161,14 @@
 
 @section Scripts {
     <script>
-        function confirmDelete(showTimeId, movieTitle) {
-            document.getElementById('movieName').textContent = movieTitle;
-            document.getElementById('deleteForm').action =
-                '/SuperAdmin/DeleteShowTime/' + showTimeId;
+        function confirmDelete(showTimeId, movieName) {
+            document.getElementById("movieName").innerText = movieName;
+            document.getElementById("deleteForm").action =
+                "/SuperAdmin/DeleteShowTime/" + showTimeId;
 
-            var modal = new bootstrap.Modal(
-                document.getElementById('deleteModal')
-            );
-            modal.show();
+            new bootstrap.Modal(
+                document.getElementById("deleteModal")
+            ).show();
         }
     </script>
 }

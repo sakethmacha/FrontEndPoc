@@ -183,6 +183,23 @@ namespace MovieBooking.Web.Services
             Authentication();
             return await HttpClient.GetFromJsonAsync<List<ShowTimeResponse>>("api/superadmin/showtimes");
         }
+        public async Task<List<MovieShowTimeViewModel>> GetMovieWiseShowTimesAsync()
+        {
+            Authentication();
+
+            var showTimes =
+                await HttpClient.GetFromJsonAsync<List<ShowTimeResponse>>(
+                    "api/superadmin/showtimes");
+
+            return showTimes!
+                .GroupBy(x => x.MovieTitle)
+                .Select(g => new MovieShowTimeViewModel
+                {
+                    MovieTitle = g.Key,
+                    ShowTimes = g.ToList()
+                })
+                .ToList();
+        }
 
         public async Task<AddShowTimeViewModel> GetAddShowTimeFormAsync()
         {

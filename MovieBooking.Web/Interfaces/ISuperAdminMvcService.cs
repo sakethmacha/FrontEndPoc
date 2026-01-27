@@ -58,5 +58,8 @@ namespace MovieBooking.Web.Interfaces
 
         // ========== NEW: SCREEN METHODS ==========
         Task<List<ScreenResponse>> GetScreensAsync();
+
+        Task<List<MovieShowTimeViewModel>> GetMovieWiseShowTimesAsync();
+
     }
 }
