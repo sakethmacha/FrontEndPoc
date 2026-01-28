@@ -1,0 +1,204 @@
+﻿@model List<MovieBooking.Web.ApiContracts.Admin.ScreenRequestResponse>
+
+@{
+    ViewData["Title"] = "Approved Screens";
+
+    var screensByTheatre = Model
+        .GroupBy(s => s.TheatreName)
+        .OrderBy(g => g.Key);
+}
+
+<style>
+    .screen-card {
+        border-radius: 12px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: none;
+    }
+
+        .screen-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+    .screen-title {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .screen-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .layout-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .empty-state {
+        border: 2px dashed #dee2e6;
+        border-radius: 18px;
+        padding: 60px;
+        text-align: center;
+        background-color: #fafafa;
+    }
+
+    .group-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">✅ My Approved Screens</h2>
+            <small class="text-muted">Screens approved by SuperAdmin</small>
+        </div>
+
+        <div class="btn-group">
+            <a asp-action="MyScreens" class="btn btn-outline-secondary">
+                <i class="bi bi-list"></i> All Requests
+            </a>
+            <a asp-action="RequestScreen" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Request New Screen
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <!-- EMPTY STATE -->
+        <div class="empty-state shadow-sm">
+            <i class="bi bi-tv" style="font-size: 4rem; color: #ccc;"></i>
+            <h5 class="fw-bold mt-3">No Approved Screens Yet</h5>
+            <p class="text-muted mb-3">
+                Your screen requests are pending approval or haven't been submitted yet.
+            </p>
+            <div class="d-flex gap-2 justify-content-center">
+                <a asp-action="MyScreens" class="btn btn-outline-primary">
+                    <i class="bi bi-list"></i> View All Requests
+                </a>
+                <a asp-action="RequestScreen" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Request Screen
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- GROUP BY THEATRE -->
+        @foreach (var theatreGroup in screensByTheatre)
+        {
+            <div class="mb-5">
+                <!-- Theatre Header -->
+                <div class="group-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-building"></i> @theatreGroup.Key
+                    </h4>
+                    <small class="opacity-75">@theatreGroup.Count() Screen(s)</small>
+                </div>
+
+                <!-- Screens Grid -->
+                <div class="row g-3">
+                    @foreach (var screen in theatreGroup)
+                    {
+                        <div class="col-md-6 col-lg-4 col-xl-3">
+                            <div class="card screen-card shadow-sm h-100">
+                                <div class="card-body">
+
+                                    <div class="screen-title mb-3">
+                                        <i class="bi bi-tv text-primary"></i>
+                                        @screen.ScreenName
+                                    </div>
+
+                                    <div class="mb-3 text-center">
+                                        <span class="layout-badge">
+                                            @screen.SeatLayoutType
+                                        </span>
+                                    </div>
+
+                                    <div class="screen-meta text-center">
+                                        <small>
+                                            <i class="bi bi-calendar-check"></i>
+                                            Approved: @screen.RequestedAt.ToString("dd MMM yyyy")
+                                        </small>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i> Active
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- SUMMARY STATISTICS -->
+        <div class="row g-3 mt-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3 class="mb-0">@Model.Count</h3>
+                        <small>Total Approved Screens</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3 class="mb-0">@screensByTheatre.Count()</h3>
+                        <small>Theatres with Screens</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h3 class="mb-0">@Model.GroupBy(s => s.SeatLayoutType).Count()</h3>
+                        <small>Layout Types Used</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LAYOUT TYPE BREAKDOWN -->
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart"></i> Layout Type Breakdown
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var layoutGroup in Model.GroupBy(s => s.SeatLayoutType))
+                    {
+                        <div class="col-md-4 mb-3">
+                            <strong>@layoutGroup.Key</strong>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-primary"
+                                     style="width: @((layoutGroup.Count() * 100.0 / Model.Count))%">
+                                    @layoutGroup.Count()
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

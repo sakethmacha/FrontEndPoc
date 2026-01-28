@@ -1,0 +1,89 @@
+﻿@model List<MovieBooking.Web.ApiContracts.Admin.ScreenRequestResponse>
+
+@{
+    ViewData["Title"] = "My Screen Requests";
+}
+
+<style>
+    .status-pending {
+        background-color: #ffc107;
+    }
+
+    .status-approved {
+        background-color: #28a745;
+    }
+
+    .status-rejected {
+        background-color: #dc3545;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">📺 My Screen Requests</h2>
+            <small class="text-muted">Track your screen approval status</small>
+        </div>
+        <a asp-action="RequestScreen" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Request New Screen
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> You haven't requested any screens yet. Click "Request New Screen" to get started!
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Screen Name</th>
+                        <th>Theatre</th>
+                        <th>Layout Type</th>
+                        <th>Status</th>
+                        <th>Requested Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var screen in Model)
+                    {
+                        <tr>
+                            <td>
+                                <i class="bi bi-tv text-primary me-2"></i>
+                                <strong>@screen.ScreenName</strong>
+                            </td>
+                            <td>@screen.TheatreName</td>
+                            <td>@screen.SeatLayoutType</td>
+                            <td>
+                                <span class="badge status-@screen.ApprovalStatus.ToLower() text-white">
+                                    @screen.ApprovalStatus
+                                </span>
+                            </td>
+                            <td>@screen.RequestedAt.ToString("dd MMM yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

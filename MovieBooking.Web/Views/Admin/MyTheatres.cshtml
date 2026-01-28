@@ -1,0 +1,97 @@
+﻿@model List<MovieBooking.Web.ApiContracts.Admin.TheatreRequestResponse>
+
+@{
+    ViewData["Title"] = "My Theatre Requests";
+}
+
+<style>
+    .status-pending {
+        background-color: #ffc107;
+    }
+
+    .status-approved {
+        background-color: #28a745;
+    }
+
+    .status-rejected {
+        background-color: #dc3545;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">🏢 My Theatre Requests</h2>
+            <small class="text-muted">Track your theatre approval status</small>
+        </div>
+        <a asp-action="RequestTheatre" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Request New Theatre
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> You haven't requested any theatres yet. Click "Request New Theatre" to get started!
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var theatre in Model)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-building text-primary"></i> @theatre.Name
+                                </h5>
+                                <span class="badge status-@theatre.ApprovalStatus.ToLower() text-white">
+                                    @theatre.ApprovalStatus
+                                </span>
+                            </div>
+
+                            <p class="text-muted mb-2">
+                                <i class="bi bi-geo-alt"></i> @theatre.Location
+                            </p>
+
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-calendar"></i> Requested: @theatre.RequestedAt.ToString("dd MMM yyyy")
+                            </p>
+
+                            @if (theatre.TimeSlots.Any())
+                            {
+                                <div class="mt-3">
+                                    <strong class="small">Time Slots:</strong>
+                                    <ul class="small mb-0 mt-1">
+                                        @foreach (var slot in theatre.TimeSlots)
+                                        {
+                                            <li>@slot.StartTime - @slot.EndTime</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

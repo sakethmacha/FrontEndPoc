@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="fw-bold mb-4">🎭 Admin Dashboard</h2>
+
+    <div class="row g-4">
+        <!-- Theatre Management -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-building fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title">My Theatres</h5>
+                    <p class="text-muted small">View and manage your theatre requests</p>
+                    <a asp-action="MyTheatres" class="btn btn-primary btn-sm">View Theatres</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Theatre -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-plus-circle fs-1 text-success mb-3"></i>
+                    <h5 class="card-title">Request Theatre</h5>
+                    <p class="text-muted small">Submit a new theatre request</p>
+                    <a asp-action="RequestTheatre" class="btn btn-success btn-sm">Request Theatre</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen Management -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-tv fs-1 text-info mb-3"></i>
+                    <h5 class="card-title">My Screens</h5>
+                    <p class="text-muted small">View and manage your screen requests</p>
+                    <a asp-action="MyScreens" class="btn btn-info btn-sm text-white">View Screens</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Request Screen -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-layout-split fs-1 text-warning mb-3"></i>
+                    <h5 class="card-title">Request Screen</h5>
+                    <p class="text-muted small">Add screens to your theatres</p>
+                    <a asp-action="RequestScreen" class="btn btn-warning btn-sm">Request Screen</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a asp-action="ApprovedTheatres" class="list-group-item list-group-item-action">
+                            <i class="bi bi-check-circle text-success me-2"></i> View Approved Theatres
+                        </a>
+                        <a asp-action="ApprovedScreens" class="list-group-item list-group-item-action">
+                            <i class="bi bi-check-circle text-success me-2"></i> View Approved Screens
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

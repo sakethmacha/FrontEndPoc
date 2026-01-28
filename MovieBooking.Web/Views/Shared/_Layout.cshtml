@@ -54,7 +54,7 @@
                                     My Bookings
                                 </a>
                             </li>
-                        }
+                        } *@
 
                         @if (User.IsInRole("Admin"))
                         {
@@ -67,7 +67,7 @@
                             </li>
                         }
 
-                        @if (User.IsInRole("SuperAdmin"))
+                        @* @if (User.IsInRole("SuperAdmin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-danger"
