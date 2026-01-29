@@ -176,7 +176,7 @@ namespace MovieBooking.Web.Services
             };
 
             var response = await _httpClient.PostAsJsonAsync(
-                "api/bookings/cancel", request);
+                "api/book/cancel", request);
 
             if (!response.IsSuccessStatusCode)
             {
