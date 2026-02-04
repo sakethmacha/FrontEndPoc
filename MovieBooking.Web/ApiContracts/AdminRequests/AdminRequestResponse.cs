@@ -6,6 +6,11 @@
         public string RequestType { get; set; }
         public string Status { get; set; }
         public DateTime RequestedAt { get; set; }
+
+        public string RequestedBy { get; set; }
+
+        //public string TheatreName { get; set; }
+        //public string ScreenName { get; set; }
     }
 
 }

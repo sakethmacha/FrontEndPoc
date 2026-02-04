@@ -2,18 +2,18 @@
 {
     public class MockHttpMessageHandler : HttpMessageHandler
     {
-        private readonly HttpResponseMessage _response;
+        private readonly HttpResponseMessage HttpResponseMessage;
 
-        public MockHttpMessageHandler(HttpResponseMessage response)
+        public MockHttpMessageHandler(HttpResponseMessage httpResponseMessage)
         {
-            _response = response;
+            HttpResponseMessage = httpResponseMessage;
         }
 
         protected override Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            return Task.FromResult(_response);
+            return Task.FromResult(HttpResponseMessage);
         }
     }
 

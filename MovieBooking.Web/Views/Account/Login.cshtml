@@ -22,9 +22,6 @@
         border: none;
     }
 
-    .form-control {
-        border-left: none;
-    }
 
         .form-control:focus {
             box-shadow: none;
@@ -62,7 +59,9 @@
                         <span class="input-group-text">
                             <i class="bi bi-envelope"></i>
                         </span>
-                        <input asp-for="Email" class="form-control" placeholder="john@email.com" />
+                        <input asp-for="Email"
+                               class="form-control"
+                               placeholder="john@email.com" />
                     </div>
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
@@ -70,19 +69,30 @@
                 <!-- PASSWORD -->
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label fw-semibold"></label>
+
                     <div class="input-group">
+                        <!-- Left lock icon (same style as Name & Email) -->
                         <span class="input-group-text">
                             <i class="bi bi-lock"></i>
                         </span>
-                        <input asp-for="Password" type="password" class="form-control" id="passwordInput"
+
+                        <!-- Password input -->
+                        <input asp-for="Password"
+                               type="password"
+                               class="form-control password-input pe-5"
                                placeholder="••••••••" />
-                        <span class="input-group-text toggle-password"
-                              onclick="togglePassword()">
+
+                        <!-- Eye icon inside input -->
+                        <span class="position-absolute top-50 end-0 translate-middle-y me-3"
+                              style="cursor:pointer; z-index:5;"
+                              onclick="togglePassword(this)">
                             <i class="bi bi-eye"></i>
                         </span>
                     </div>
+
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
+
 
                 <!-- MODEL LEVEL ERROR -->
                 @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)

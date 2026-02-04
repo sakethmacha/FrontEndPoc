@@ -31,18 +31,26 @@
 <!-- PASSWORD -->
 <div class="mb-3">
     <label asp-for="Password" class="form-label fw-semibold"></label>
+
     <div class="input-group">
+        <!-- Left lock icon (same style as Name & Email) -->
         <span class="input-group-text">
             <i class="bi bi-lock"></i>
         </span>
+
+        <!-- Password input -->
         <input asp-for="Password"
                type="password"
-               class="form-control password-input"
+               class="form-control password-input pe-5"
                placeholder="••••••••" />
-        <span class="input-group-text toggle-password"
+
+        <!-- Eye icon inside input -->
+        <span class="position-absolute top-50 end-0 translate-middle-y me-3"
+              style="cursor:pointer; z-index:5;"
               onclick="togglePassword(this)">
             <i class="bi bi-eye"></i>
         </span>
     </div>
+
     <span asp-validation-for="Password" class="text-danger small"></span>
 </div>

@@ -94,7 +94,7 @@ namespace MovieBooking.Web.Controllers
                 return View(registerViewModel);
             }
 
-            return RedirectToAction("Login");
+            return RedirectToAction("RegisterSuccess");
         }
 
         // ---------------- LOGOUT ----------------

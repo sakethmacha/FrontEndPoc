@@ -38,25 +38,25 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="all-tab" data-bs-toggle=" pill
 " data-bs-target="#all" type="button">
-                All Bookings (@Model?.Count ?? 0)
+                All Bookings (@Model?.Count)
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="upcoming-tab" data-bs-toggle="pill"
                     data-bs-target="#upcoming" type="button">
-                Upcoming (@Model?.Count(b => b.ShowTime > DateTime.Now && b.Status == "CONFIRMED") ?? 0)
+                Upcoming (@Model?.Count(b => b.ShowTime > DateTime.Now && b.Status == "CONFIRMED"))
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="past-tab" data-bs-toggle="pill"
                     data-bs-target="#past" type="button">
-                Past (@Model?.Count(b => b.ShowTime < DateTime.Now) ?? 0)
+                Past (@Model?.Count(b => b.ShowTime < DateTime.Now))
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="cancelled-tab" data-bs-toggle="pill"
                     data-bs-target="#cancelled" type="button">
-                Cancelled (@Model?.Count(b => b.Status == "CANCELLED") ?? 0)
+                Cancelled (@Model?.Count(b => b.Status == "CANCELLED"))
             </button>
         </li>
     </ul>

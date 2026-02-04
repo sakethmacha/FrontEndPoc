@@ -40,18 +40,30 @@ namespace MovieBooking.Web.Services
         // ========== EXISTING METHODS ==========
         public async Task CreateAdminAsync(AddAdminViewModel addAdminViewModel)
         {
-            //  mapping belongs HERE, not controller
-            var response = await HttpClient.PostAsJsonAsync(
-                "api/superadmin/admins",
-            new CreateAdminDto
+            Authentication();
+            var dto = new CreateAdminDto
             {
                 Name = addAdminViewModel.Name,
                 Email = addAdminViewModel.Email,
                 Password = addAdminViewModel.Password
-            });
+            };
+
+            var response = await HttpClient.PostAsJsonAsync(
+                "api/superadmin/admins",
+                dto
+            );
+
+            //  THIS IS MANDATORY
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"API Error: {response.StatusCode} - {error}");
+            }
         }
+
         public async Task<AdminDto> GetAdminByIdAsync(Guid adminId)
         {
+            Authentication();
             return await HttpClient.GetFromJsonAsync<AdminDto>(
                 $"api/superadmin/admins/{adminId}"
             )!;
@@ -59,6 +71,7 @@ namespace MovieBooking.Web.Services
 
         public async Task UpdateAdminAsync(Guid adminId, AddAdminViewModel addAdminViewModel)
         {
+            Authentication();
             var response = await HttpClient.PutAsJsonAsync(
                 $"api/superadmin/admins/{adminId}", addAdminViewModel);
 
@@ -67,6 +80,7 @@ namespace MovieBooking.Web.Services
 
         public async Task DeactivateAdminAsync(Guid adminId)
         {
+            Authentication();
             var response = await HttpClient.DeleteAsync(
                 $"api/superadmin/admins/{adminId}");
 

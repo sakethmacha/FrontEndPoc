@@ -9,11 +9,11 @@ namespace MovieBooking.Web.Controllers
     [Authorize(Roles = "User")]
     public class BookingController : Controller
     {
-        private readonly IBookingMvcService _bookingService;
+        private readonly IBookingMvcService BookingService;
 
         public BookingController(IBookingMvcService bookingService)
         {
-            _bookingService = bookingService;
+            BookingService = bookingService;
         }
 
         // ========== STEP 1: BROWSE MOVIES ==========
@@ -25,7 +25,7 @@ namespace MovieBooking.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var movies = await _bookingService.GetActiveMoviesAsync();
+            var movies = await BookingService.GetActiveMoviesAsync();
             return View(movies);
         }
 
@@ -48,11 +48,11 @@ namespace MovieBooking.Web.Controllers
             {
                 MovieId = movieId,
                 SelectedDate = selectedDate,
-                Theatres = await _bookingService.GetShowTimesByMovieAsync(movieId, selectedDate)
+                Theatres = await BookingService.GetShowTimesByMovieAsync(movieId, selectedDate)
             };
 
             // Get movie details for display
-            var movies = await _bookingService.GetActiveMoviesAsync();
+            var movies = await BookingService.GetActiveMoviesAsync();
             viewModel.Movie = movies.FirstOrDefault(m => m.MovieId == movieId);
 
             return View(viewModel);
@@ -66,7 +66,7 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> SelectSeats(Guid showTimeId)
         {
-            var seatLayout = await _bookingService.GetSeatLayoutAsync(showTimeId);
+            var seatLayout = await BookingService.GetSeatLayoutAsync(showTimeId);
             return View(seatLayout);
         }
 
@@ -74,11 +74,11 @@ namespace MovieBooking.Web.Controllers
         /// Lock selected seats (AJAX)
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> LockSeats([FromBody] LockSeatsViewModel model)
+        public async Task<IActionResult> LockSeats([FromBody] LockSeatsViewModel loclSeatsViewModel)
         {
             try
             {
-                var result = await _bookingService.LockSeatsAsync(model);
+                var result = await BookingService.LockSeatsAsync(loclSeatsViewModel);
 
                 if (!result.Success)
                     return BadRequest(new { success = false, message = result.Message });
@@ -109,7 +109,7 @@ namespace MovieBooking.Web.Controllers
                 .Select(id => Guid.Parse(id))
                 .ToList();
 
-            var seatLayout = await _bookingService.GetSeatLayoutAsync(showTimeId);
+            var seatLayout = await BookingService.GetSeatLayoutAsync(showTimeId);
 
             var viewModel = new ReviewBookingViewModel
             {
@@ -142,18 +142,18 @@ namespace MovieBooking.Web.Controllers
         /// Create booking (before payment)
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> ConfirmBooking(CreateBookingViewModel model)
+        public async Task<IActionResult> ConfirmBooking(CreateBookingViewModel createBookingViewModel)
         {
             try
             {
-                var booking = await _bookingService.CreateBookingAsync(model);
+                var booking = await BookingService.CreateBookingAsync(createBookingViewModel);
 
                 return RedirectToAction("Payment", new { bookingId = booking.BookingId });
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction("SelectSeats", new { showTimeId = model.ShowTimeId });
+                return RedirectToAction("SelectSeats", new { showTimeId = createBookingViewModel.ShowTimeId });
             }
         }
 
@@ -165,7 +165,7 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Payment(Guid bookingId)
         {
-            var booking = await _bookingService.GetBookingDetailsAsync(bookingId);
+            var booking = await BookingService.GetBookingDetailsAsync(bookingId);
 
             var viewModel = new PaymentViewModel
             {
@@ -185,27 +185,27 @@ namespace MovieBooking.Web.Controllers
         /// Process payment
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> ProcessPayment(ProcessPaymentViewModel model)
+        public async Task<IActionResult> ProcessPayment(ProcessPaymentViewModel processPaymentViewModel)
         {
             try
             {
-                var payment = await _bookingService.ProcessPaymentAsync(model);
+                var payment = await BookingService.ProcessPaymentAsync(processPaymentViewModel);
 
                 if (payment.Status == "SUCCESS")
                 {
                     TempData["Success"] = "Payment successful! Your booking is confirmed.";
-                    return RedirectToAction("BookingSuccess", new { bookingId = model.BookingId });
+                    return RedirectToAction("BookingSuccess", new { bookingId = processPaymentViewModel.BookingId });
                 }
                 else
                 {
                     TempData["Error"] = "Payment failed. Please try again.";
-                    return RedirectToAction("Payment", new { bookingId = model.BookingId });
+                    return RedirectToAction("Payment", new { bookingId = processPaymentViewModel.BookingId });
                 }
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction("Payment", new { bookingId = model.BookingId });
+                return RedirectToAction("Payment", new { bookingId = processPaymentViewModel.BookingId });
             }
         }
 
@@ -217,7 +217,7 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> BookingSuccess(Guid bookingId)
         {
-            var booking = await _bookingService.GetBookingDetailsAsync(bookingId);
+            var booking = await BookingService.GetBookingDetailsAsync(bookingId);
             return View(booking);
         }
 
@@ -229,7 +229,7 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> MyBookings()
         {
-            var bookings = await _bookingService.GetMyBookingsAsync();
+            var bookings = await BookingService.GetMyBookingsAsync();
             return View(bookings);
         }
 
@@ -239,7 +239,7 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> BookingDetails(Guid bookingId)
         {
-            var booking = await _bookingService.GetBookingDetailsAsync(bookingId);
+            var booking = await BookingService.GetBookingDetailsAsync(bookingId);
             return View(booking);
         }
 
@@ -253,7 +253,7 @@ namespace MovieBooking.Web.Controllers
         {
             try
             {
-                await _bookingService.CancelBookingAsync(bookingId, reason);
+                await BookingService.CancelBookingAsync(bookingId, reason);
                 TempData["Success"] = "Booking cancelled successfully. Refund will be processed shortly.";
             }
             catch (Exception ex)
@@ -291,7 +291,7 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetScreensByTheatre(Guid theatreId)
         {
-            var screens = await _bookingService.GetScreensByTheatreAsync(theatreId);
+            var screens = await BookingService.GetScreensByTheatreAsync(theatreId);
             return Ok(screens);
         }
     }

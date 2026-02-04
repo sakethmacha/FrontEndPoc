@@ -67,7 +67,7 @@
                             </li>
                         }
 
-                        @* @if (User.IsInRole("SuperAdmin"))
+                        @if (User.IsInRole("SuperAdmin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-danger"
@@ -76,7 +76,7 @@
                                     Super Admin
                                 </a>
                             </li>
-                        } *@
+                        }
 
                     </ul>
 
@@ -139,10 +139,10 @@
     <div class="container-fluid">
         <div class="row">
 
-            @if (User.IsInRole("SuperAdmin"))
+            @* @if (User.IsInRole("SuperAdmin"))
             {
                 @await Html.PartialAsync("_SuperAdminSidebar")
-            }
+            } *@
             @if (User.IsInRole("User"))
             {
                 @await Html.PartialAsync("_UserSideBar")

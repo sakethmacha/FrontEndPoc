@@ -19,6 +19,7 @@
         </a>
     </div>
 
+    <!-- SUCCESS MESSAGE -->
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show">
@@ -27,6 +28,7 @@
         </div>
     }
 
+    <!-- ERROR MESSAGE -->
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger alert-dismissible fade show">
@@ -35,7 +37,8 @@
         </div>
     }
 
-    @if (Model==null)
+    <!-- EMPTY STATE -->
+    @if (Model == null || !Model.Any())
     {
         <div class="alert alert-info text-center">
             No admins found.
@@ -50,9 +53,11 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-body d-flex flex-column">
 
+                            <!-- ADMIN INFO -->
                             <h5 class="fw-bold mb-1">@admin.Name</h5>
                             <small class="text-muted">@admin.Email</small>
 
+                            <!-- STATUS -->
                             <div class="mt-2">
                                 @if (admin.IsActive)
                                 {
@@ -64,7 +69,7 @@
                                 }
                             </div>
 
-
+                            <!-- ACTIONS -->
                             <div class="mt-auto pt-3">
                                 <form asp-action="DeleteAdmin" method="post">
                                     <input type="hidden" name="id" value="@admin.UserId" />
@@ -83,4 +88,5 @@
             }
         </div>
     }
+
 </div>

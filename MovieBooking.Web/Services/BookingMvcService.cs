@@ -8,25 +8,25 @@ namespace MovieBooking.Web.Services
 {
     public class BookingMvcService : IBookingMvcService
     {
-        private readonly HttpClient _httpClient;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HttpClient HttpClient;
+        private readonly IHttpContextAccessor HttpContextAccessor;
 
         public BookingMvcService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
-            _httpClient = httpClient;
-            _httpContextAccessor = httpContextAccessor;
+            HttpClient = httpClient;
+            HttpContextAccessor = httpContextAccessor;
         }
 
         private void Authenticate()
         {
-            var token = _httpContextAccessor.HttpContext!
+            var token = HttpContextAccessor.HttpContext!
                 .User
                 .FindFirst("access_token")?
                 .Value;
 
             if (!string.IsNullOrEmpty(token))
             {
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
         }
 
@@ -34,7 +34,7 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<MovieListResponse>> GetActiveMoviesAsync()
         {
-            var response = await _httpClient.GetFromJsonAsync<List<MovieListResponse>>(
+            var response = await HttpClient.GetFromJsonAsync<List<MovieListResponse>>(
                 "api/bookings/movies");
 
             return response ?? new List<MovieListResponse>();
@@ -42,7 +42,7 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<TheatreShowResponse>> GetShowTimesByMovieAsync(Guid movieId, DateOnly date)
         {
-            var response = await _httpClient.GetFromJsonAsync<List<TheatreShowResponse>>(
+            var response = await HttpClient.GetFromJsonAsync<List<TheatreShowResponse>>(
                 $"api/bookings/movies/{movieId}/showtimes?date={date:yyyy-MM-dd}");
 
             return response ?? new List<TheatreShowResponse>();
@@ -54,23 +54,23 @@ namespace MovieBooking.Web.Services
         {
             Authenticate();
 
-            var response = await _httpClient.GetFromJsonAsync<SeatLayoutResponse>(
+            var response = await HttpClient.GetFromJsonAsync<SeatLayoutResponse>(
                 $"api/bookings/showtimes/{showTimeId}/seats");
 
             return response!;
         }
 
-        public async Task<LockSeatsResultViewModel> LockSeatsAsync(LockSeatsViewModel model)
+        public async Task<LockSeatsResultViewModel> LockSeatsAsync(LockSeatsViewModel lockSeatsViewModel)
         {
             Authenticate();
 
             var request = new LockSeatsRequest
             {
-                ShowTimeId = model.ShowTimeId,
-                SeatIds = model.SeatIds
+                ShowTimeId = lockSeatsViewModel.ShowTimeId,
+                SeatIds = lockSeatsViewModel.SeatIds
             };
 
-            var response = await _httpClient.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/bookings/lock-seats", request);
 
             if (!response.IsSuccessStatusCode)
@@ -97,17 +97,17 @@ namespace MovieBooking.Web.Services
 
         // ========== BOOKING & PAYMENT ==========
 
-        public async Task<BookingConfirmationResponse> CreateBookingAsync(CreateBookingViewModel model)
+        public async Task<BookingConfirmationResponse> CreateBookingAsync(CreateBookingViewModel createBookingViewModel)
         {
             Authenticate();
 
             var request = new CreateBookingRequest
             {
-                ShowTimeId = model.ShowTimeId,
-                SeatIds = model.SeatIds
+                ShowTimeId = createBookingViewModel.ShowTimeId,
+                SeatIds = createBookingViewModel.SeatIds
             };
 
-            var response = await _httpClient.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/bookings", request);
 
             if (!response.IsSuccessStatusCode)
@@ -119,18 +119,18 @@ namespace MovieBooking.Web.Services
             return await response.Content.ReadFromJsonAsync<BookingConfirmationResponse>()!;
         }
 
-        public async Task<PaymentResultResponse> ProcessPaymentAsync(ProcessPaymentViewModel model)
+        public async Task<PaymentResultResponse> ProcessPaymentAsync(ProcessPaymentViewModel processPaymentViewModel)
         {
             Authenticate();
 
             var request = new ProcessPaymentRequest
             {
-                BookingId = model.BookingId,
-                PaymentMethod = model.PaymentMethod,
-                PaymentGateway = model.PaymentGateway
+                BookingId = processPaymentViewModel.BookingId,
+                PaymentMethod = processPaymentViewModel.PaymentMethod,
+                PaymentGateway = processPaymentViewModel.PaymentGateway
             };
 
-            var response = await _httpClient.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/bookings/payment", request);
 
             if (!response.IsSuccessStatusCode)
@@ -148,7 +148,7 @@ namespace MovieBooking.Web.Services
         {
             Authenticate();
 
-            var response = await _httpClient.GetFromJsonAsync<List<UserBookingResponse>>(
+            var response = await HttpClient.GetFromJsonAsync<List<UserBookingResponse>>(
                 "api/bookings/my-bookings");
 
             return response ?? new List<UserBookingResponse>();
@@ -158,7 +158,7 @@ namespace MovieBooking.Web.Services
         {
             Authenticate();
 
-            var response = await _httpClient.GetFromJsonAsync<BookingConfirmationResponse>(
+            var response = await HttpClient.GetFromJsonAsync<BookingConfirmationResponse>(
                 $"api/bookings/{bookingId}");
 
             return response!;
@@ -174,7 +174,7 @@ namespace MovieBooking.Web.Services
                 Reason = reason ?? string.Empty
             };
 
-            var response = await _httpClient.PostAsJsonAsync(
+            var response = await HttpClient.PostAsJsonAsync(
                 "api/book/cancel", request);
 
             if (!response.IsSuccessStatusCode)
@@ -190,7 +190,7 @@ namespace MovieBooking.Web.Services
         {
             Authenticate();
 
-            var response = await _httpClient.GetFromJsonAsync<List<ScreenResponse>>(
+            var response = await HttpClient.GetFromJsonAsync<List<ScreenResponse>>(
                 $"api/superadmin/screens/by-theatre/{theatreId}");
 
             return response ?? new List<ScreenResponse>();
