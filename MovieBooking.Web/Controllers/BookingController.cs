@@ -97,8 +97,6 @@ namespace MovieBooking.Web.Controllers
             }
         }
 
-        // ========== STEP 4: REVIEW BOOKING ==========
-
         /// <summary>
         /// Review booking details before payment
         /// </summary>

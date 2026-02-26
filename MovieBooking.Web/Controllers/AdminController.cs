@@ -15,7 +15,6 @@ namespace MovieBooking.Web.Controllers
             AdminMvcService = adminService;
         }
 
-        // ========== DASHBOARD ==========
 
         public IActionResult Dashboard() => View();
 
