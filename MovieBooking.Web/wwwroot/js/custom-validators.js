@@ -2,183 +2,119 @@
 
     // ========== STRICT EMAIL VALIDATOR ==========
     $.validator.addMethod("emailvalidate", function (value, element, params) {
-        if (!value) {
-            return true; // Let [Required] handle empty values
-        }
-
-        // Trim whitespace
+        if (!value) return true;
         value = value.trim();
-
-        // Must contain @
-        if (value.indexOf('@') === -1) {
-            return false;
-        }
-
-        // Must contain . after @
+        if (value.indexOf('@') === -1) return false;
         var atIndex = value.indexOf('@');
         var dotIndex = value.lastIndexOf('.');
-
-        if (dotIndex <= atIndex) {
-            return false;
-        }
-
-        // Check TLD (domain extension) is at least 2 chars
-        var tld = value.substring(dotIndex + 1);
-        if (tld.length < 2) {
-            return false;
-        }
-
-        // Validate with regex pattern
-        var pattern = new RegExp(params.pattern);
-        return pattern.test(value);
+        if (dotIndex <= atIndex) return false;
+        if (value.substring(dotIndex + 1).length < 2) return false;
+        return new RegExp(params.pattern).test(value);
     });
 
     $.validator.unobtrusive.adapters.add("emailvalidate", ["pattern"], function (options) {
-        options.rules["emailvalidate"] = {
-            pattern: options.params.pattern
-        };
+        options.rules["emailvalidate"] = { pattern: options.params.pattern };
         options.messages["emailvalidate"] = options.message;
     });
 
     // ========== PASSWORD VALIDATOR ==========
     $.validator.addMethod("passwordvalidate", function (value, element, params) {
-        if (!value) {
-            return true;
-        }
-        var pattern = new RegExp(params.pattern);
-        return pattern.test(value);
+        if (!value) return true;
+        return new RegExp(params.pattern).test(value);
     });
 
     $.validator.unobtrusive.adapters.add("passwordvalidate", ["pattern"], function (options) {
-        options.rules["passwordvalidate"] = {
-            pattern: options.params.pattern
-        };
+        options.rules["passwordvalidate"] = { pattern: options.params.pattern };
         options.messages["passwordvalidate"] = options.message;
     });
 
     // ========== NAME VALIDATOR ==========
     $.validator.addMethod("namevalidate", function (value, element, params) {
-        if (!value) {
-            return true;
-        }
-        var pattern = new RegExp(params.pattern);
-        return pattern.test(value);
+        if (!value) return true;
+        return new RegExp(params.pattern).test(value);
     });
 
     $.validator.unobtrusive.adapters.add("namevalidate", ["pattern"], function (options) {
-        options.rules["namevalidate"] = {
-            pattern: options.params.pattern
-        };
+        options.rules["namevalidate"] = { pattern: options.params.pattern };
         options.messages["namevalidate"] = options.message;
     });
 
-    // ========== REAL-TIME EMAIL VALIDATION FEEDBACK ==========
-    $('input[name="Email"]').on('blur keyup', function () {
+    // ========== REAL-TIME EMAIL FEEDBACK ==========
+    $('input[name="Email"]').on('blur keyup input', function () {
         var email = $(this).val().trim();
-        var $feedbackDiv = $('#emailFeedback');
+        var $feedback = $('#emailFeedback');
+        if (!$feedback.length) return;
 
-        // Remove existing feedback
-        $feedbackDiv.remove();
-
-        if (email.length > 0) {
-            var feedback = '';
-            var feedbackClass = '';
-
-            if (email.indexOf('@') === -1) {
-                feedback = '✗ Email must contain @ symbol';
-                feedbackClass = 'text-danger';
-            } else {
-                var atIndex = email.indexOf('@');
-                var dotIndex = email.lastIndexOf('.');
-
-                if (dotIndex <= atIndex) {
-                    feedback = '✗ Email must contain a domain (e.g., @example.com)';
-                    feedbackClass = 'text-danger';
-                } else {
-                    var tld = email.substring(dotIndex + 1);
-                    if (tld.length < 2) {
-                        feedback = '✗ Domain extension must be at least 2 characters';
-                        feedbackClass = 'text-danger';
-                    } else if ($(this).valid()) {
-                        feedback = '✓ Valid email format';
-                        feedbackClass = 'text-success';
-                    }
-                }
-            }
-
-            if (feedback) {
-                $(this).after('<small id="emailFeedback" class="form-text ' + feedbackClass + '">' + feedback + '</small>');
-            }
+        if (!email.length) {
+            $feedback.text('').removeClass('text-danger text-success');
+            return;
         }
-    });
 
-    // ========== PREVENT NON-ALPHABETIC IN NAME ==========
-    $('input[name="Name"]').on('keypress', function (e) {
-        var char = String.fromCharCode(e.which);
-        if (!/[a-zA-Z\s]/.test(char)) {
-            e.preventDefault();
-            return false;
+        if (email.indexOf('@') === -1) {
+            $feedback.text('✗ Email must contain @ symbol').removeClass('text-success').addClass('text-danger');
+        } else {
+            var atIndex = email.indexOf('@');
+            var dotIndex = email.lastIndexOf('.');
+            if (dotIndex <= atIndex) {
+                $feedback.text('✗ Email must contain a domain (e.g., @example.com)').removeClass('text-success').addClass('text-danger');
+            } else if (email.substring(dotIndex + 1).length < 2) {
+                $feedback.text('✗ Domain extension must be at least 2 characters').removeClass('text-success').addClass('text-danger');
+            } else {
+                $feedback.text('✓ Valid email format').removeClass('text-danger').addClass('text-success');
+            }
         }
     });
 
     // ========== PASSWORD STRENGTH INDICATOR ==========
-    $('input[name="Password"]').on('keyup', function () {
+    $('input[name="Password"]').on('keyup input', function () {
         var password = $(this).val();
-        var strength = 0;
+        var $strength = $('#passwordStrength');
+        if (!$strength.length) return;
 
-        if (password.length >= 8) strength++;
-        if (/[a-z]/.test(password)) strength++;
-        if (/[A-Z]/.test(password)) strength++;
-        if (/\d/.test(password)) strength++;
-        if (/[@$!%*?&#]/.test(password)) strength++;
+        if (!password.length) {
+            $strength.html('');
+            return;
+        }
 
-        $('#passwordStrength').remove();
+        var score = 0;
+        if (password.length >= 8) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        if (/[@$!%*?&#]/.test(password)) score++;
 
-        if (password.length > 0) {
-            var strengthText = "";
-            var strengthClass = "";
-            var progressWidth = 0;
+        var label, barClass, width;
+        if (score < 3) { label = 'Weak'; barClass = 'bg-danger'; width = 33; }
+        else if (score < 5) { label = 'Medium'; barClass = 'bg-warning'; width = 66; }
+        else { label = 'Strong'; barClass = 'bg-success'; width = 100; }
 
-            if (strength < 3) {
-                strengthText = "Weak";
-                strengthClass = "bg-danger";
-                progressWidth = 33;
-            } else if (strength < 5) {
-                strengthText = "Medium";
-                strengthClass = "bg-warning";
-                progressWidth = 66;
-            } else {
-                strengthText = "Strong";
-                strengthClass = "bg-success";
-                progressWidth = 100;
-            }
+        $strength.html(`
+            <small class="text-muted">Password Strength: <span class="fw-bold">${label}</span></small>
+            <div class="progress mt-1" style="height:5px;">
+                <div class="progress-bar ${barClass}" style="width:${width}%"
+                     role="progressbar" aria-valuenow="${width}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        `);
+    });
 
-            var strengthHtml = `
-                <div id="passwordStrength" class="mt-1">
-                    <small class="text-muted">Password Strength: <span class="fw-bold">${strengthText}</span></small>
-                    <div class="progress" style="height: 5px;">
-                        <div class="progress-bar ${strengthClass}" role="progressbar" 
-                             style="width: ${progressWidth}%" aria-valuenow="${progressWidth}" 
-                             aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-            `;
-            $(this).parent().append(strengthHtml);
+    // ========== PREVENT NON-ALPHABETIC IN NAME ==========
+    $('input[name="Name"]').on('keypress', function (e) {
+        if (!/[a-zA-Z\s]/.test(String.fromCharCode(e.which))) {
+            e.preventDefault();
         }
     });
 
-    // ========== BOOTSTRAP VALIDATION CLASSES ==========
+    // ========== BORDER-ONLY VALIDATION FEEDBACK (no layout shift) ==========
     $('input, select, textarea').on('blur', function () {
-        if ($(this).val()) {
-            if ($(this).valid()) {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-            } else {
-                $(this).removeClass('is-valid').addClass('is-invalid');
-            }
+        if (!$(this).val()) return;
+        if ($(this).valid()) {
+            $(this).css('outline', '2px solid #198754').css('outline-offset', '-1px');
+        } else {
+            $(this).css('outline', '2px solid #dc3545').css('outline-offset', '-1px');
         }
     });
 
     $('input, select, textarea').on('focus', function () {
-        $(this).removeClass('is-invalid is-valid');
+        $(this).css('outline', '');
     });
 });

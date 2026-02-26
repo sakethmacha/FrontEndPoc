@@ -1,6 +1,6 @@
 ﻿@model AddTheatreViewModel
 
-<h2 class="mt-4">➕ Add Theatre</h2>
+<h2 class="mt-4"> <i class="bi bi-plus-circle me-2"></i> Add Theatre</h2>
 
 <form method="post" class="card p-4 shadow-sm">
 
@@ -32,7 +32,7 @@
     <button type="button"
             class="btn btn-outline-primary mb-3"
             onclick="addTimeSlot()">
-        ➕ Add Time Slot
+        <i class="bi bi-plus-circle me-2"></i> Add Time Slot
     </button>
 
     <div class="alert alert-info">
@@ -75,7 +75,7 @@
                     <button type="button"
                             class="btn btn-outline-danger"
                             onclick="this.closest('.time-slot').remove()">
-                        ❌
+                        <i class="bi bi-x-circle me-1"></i>
                     </button>
                 </div>
             </div>

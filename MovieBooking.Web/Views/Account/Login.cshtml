@@ -22,10 +22,9 @@
         border: none;
     }
 
-
-        .form-control:focus {
-            box-shadow: none;
-        }
+    .form-control:focus {
+        box-shadow: none;
+    }
 
     .login-btn {
         background: linear-gradient(135deg, #ff416c, #ff4b2b);
@@ -46,7 +45,9 @@
         <div class="card auth-card p-4">
 
             <div class="text-center mb-4">
-                <h3 class="fw-bold">🎬 Movie Booking</h3>
+                <h3 class="fw-bold">
+                    <i class="bi bi-camera-reels me-2"></i>Movie Booking
+                </h3>
                 <p class="text-muted mb-0">Sign in to continue</p>
             </div>
 
@@ -61,38 +62,32 @@
                         </span>
                         <input asp-for="Email"
                                class="form-control"
-                               placeholder="john@email.com" />
+                               placeholder="tarak@email.com" />
                     </div>
+                    <small id="emailFeedback" class="form-text" style="min-height:1.2em; display:block;"></small>
                     <span asp-validation-for="Email" class="text-danger small"></span>
                 </div>
 
                 <!-- PASSWORD -->
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label fw-semibold"></label>
-
                     <div class="input-group">
-                        <!-- Left lock icon (same style as Name & Email) -->
                         <span class="input-group-text">
                             <i class="bi bi-lock"></i>
                         </span>
-
-                        <!-- Password input -->
                         <input asp-for="Password"
                                type="password"
                                class="form-control password-input pe-5"
                                placeholder="••••••••" />
-
-                        <!-- Eye icon inside input -->
                         <span class="position-absolute top-50 end-0 translate-middle-y me-3"
                               style="cursor:pointer; z-index:5;"
                               onclick="togglePassword(this)">
                             <i class="bi bi-eye"></i>
                         </span>
                     </div>
-
+                    <small id="passwordFeedback" class="form-text" style="min-height:1.2em; display:block;"></small>
                     <span asp-validation-for="Password" class="text-danger small"></span>
                 </div>
-
 
                 <!-- MODEL LEVEL ERROR -->
                 @if (ViewData.ModelState[string.Empty]?.Errors.Count > 0)
@@ -110,7 +105,7 @@
             <hr class="my-4" />
 
             <p class="text-center mb-0">
-                Don’t have an account?
+                Don't have an account?
                 <a asp-action="Register" class="fw-semibold text-decoration-none">
                     Register here
                 </a>
@@ -124,7 +119,7 @@
     <script src="~/js/custom-validators.js"></script>
     <script>
         function togglePassword() {
-            const input = document.getElementById("passwordInput");
+            const input = document.querySelector(".password-input");
             const icon = event.currentTarget.querySelector("i");
 
             if (input.type === "password") {
