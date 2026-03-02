@@ -7,15 +7,15 @@ namespace MovieBooking.Web.Interfaces
     {
         // Theatre Requests
         Task RequestTheatreAsync(RequestTheatreViewModel vm);
-        Task<List<TheatreRequestResponse>> GetMyTheatreRequestsAsync();
-        Task<List<TheatreRequestResponse>> GetMyApprovedTheatresAsync();
+        Task<List<TheatreRequestResponse>> GetTheatreRequestsAsync();
+        Task<List<TheatreRequestResponse>> GetApprovedTheatresAsync();
 
         // Screen Requests
         Task RequestScreenAsync(RequestScreenViewModel vm);
-        Task<List<ScreenRequestResponse>> GetMyScreenRequestsAsync();
-        Task<List<ScreenRequestResponse>> GetMyApprovedScreensAsync();
+        Task<List<ScreenRequestResponse>> GetScreenRequestsAsync();
+        Task<List<ScreenRequestResponse>> GetApprovedScreensAsync();
 
         // Helper
-        Task<List<TheatreDropdownItem>> GetMyTheatresForScreenAsync();
+        Task<List<TheatreDropdownItem>> GetTheatresForScreenAsync();
     }
 }

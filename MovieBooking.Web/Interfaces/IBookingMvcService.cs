@@ -19,7 +19,7 @@ namespace MovieBooking.Web.Interfaces
         Task<PaymentResultResponse> ProcessPaymentAsync(ProcessPaymentViewModel model);
 
         // User Bookings
-        Task<List<UserBookingResponse>> GetMyBookingsAsync();
+        Task<List<UserBookingResponse>> GetBookingsAsync();
         Task<BookingConfirmationResponse> GetBookingDetailsAsync(Guid bookingId);
         Task CancelBookingAsync(Guid bookingId, string? reason);
 
