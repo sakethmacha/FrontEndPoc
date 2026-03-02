@@ -1,0 +1,218 @@
+﻿@model AddShowTimeBulkViewModel
+
+@{
+    ViewData["Title"] = "Edit ShowTimes";
+}
+
+<h2 class="mt-4">✏️ Edit Scheduled Movies</h2>
+
+<form asp-action="EditShowTime" method="post" class="card p-4 shadow-sm">
+
+    <!-- MOVIE & LANGUAGE (READ-ONLY) -->
+    <div class="row mb-3">
+        <div class="col">
+            <label>Movie</label>
+            <select asp-for="MovieId"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Movies, "MovieId", "Title"))"
+                    disabled>
+            </select>
+        </div>
+
+        <div class="col">
+            <label>Language</label>
+            <select asp-for="LanguageId"
+                    class="form-select"
+                    asp-items="@(new SelectList(Model.Languages, "LanguageId", "Name"))"
+                    disabled>
+            </select>
+        </div>
+    </div>
+
+    <!-- KEEP VALUES FOR POST -->
+    <input type="hidden" asp-for="MovieId" />
+    <input type="hidden" asp-for="LanguageId" />
+
+    <hr />
+
+    <div id="showtimeContainer">
+        @for (int i = 0; i < Model.ShowTimes.Count; i++)
+        {
+            <div class="border rounded p-3 mt-4 showtime-group">
+
+                <!-- ShowTimeId -->
+                <input type="hidden"
+                       name="ShowTimes[@i].ShowTimeId"
+                       value="@Model.ShowTimes[i].ShowTimeId" />
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">Scheduled Show</h6>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="this.closest('.showtime-group').remove()">
+                        <i class="bi bi-x-circle me-1"></i>Remove
+                    </button>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Theatre</label>
+                        <select name="ShowTimes[@i].TheatreId"
+                                class="form-select theatre-dd"
+                                onchange="loadScreens(this)">
+                            <option value="">-- Select Theatre --</option>
+                            @foreach (var t in Model.Theatres)
+                            {
+                                <option value="@t.TheatreId"
+                                        selected="@(t.TheatreId == Model.ShowTimes[i].TheatreId)">
+                                    @t.Name
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col">
+                        <label>Screen</label>
+                        <select name="ShowTimes[@i].ScreenId"
+                                class="form-select screen-dd">
+                            <option value="">-- Select Screen --</option>
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Date</label>
+                        <input type="date"
+                               name="ShowTimes[@i].ShowDate"
+                               value="@Model.ShowTimes[i].ShowDate.ToString("yyyy-MM-dd")"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col">
+                        <label>Base Price</label>
+                        <input type="number"
+                               step="0.01"
+                               name="ShowTimes[@i].BasePrice"
+                               value="@Model.ShowTimes[i].BasePrice"
+                               class="form-control" />
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-2">
+                    Theatre timings will be applied automatically.
+                </div>
+            </div>
+        }
+    </div>
+
+    <button type="button"
+            class="btn btn-outline-primary mt-3"
+            onclick="addShowTimeGroup()">
+        <i class="bi bi-plus-circle me-2"></i> Add Theatre / Screen
+    </button>
+
+    <button type="submit"
+            class="btn btn-success mt-4">
+        Update ShowTimes
+    </button>
+</form>
+
+@section Scripts {
+    <script>
+        let index = @Model.ShowTimes.Count;
+
+        function addShowTimeGroup() {
+            const container = document.getElementById("showtimeContainer");
+
+            const html = `
+            <div class="border rounded p-3 mt-4 showtime-group">
+
+                <input type="hidden"
+                       name="ShowTimes[${index}].ShowTimeId"
+                       value="" />
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0">New Schedule</h6>
+                           <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="this.closest('.showtime-group').remove()">
+                                <i class="bi bi-x-circle me-1"></i>Remove
+                            </button>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Theatre</label>
+                        <select name="ShowTimes[${index}].TheatreId"
+                                class="form-select theatre-dd"
+                                onchange="loadScreens(this)">
+                            <option value="">-- Select Theatre --</option>
+                            @foreach (var t in Model.Theatres)
+                            {
+                                        <option value="@t.TheatreId">@t.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col">
+                        <label>Screen</label>
+                        <select name="ShowTimes[${index}].ScreenId"
+                                class="form-select screen-dd">
+                            <option value="">-- Select Screen --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col">
+                        <label>Date</label>
+                        <input type="date"
+                               name="ShowTimes[${index}].ShowDate"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col">
+                        <label>Base Price</label>
+                        <input type="number"
+                               step="0.01"
+                               name="ShowTimes[${index}].BasePrice"
+                               class="form-control" />
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-2">
+                    Theatre timings will be applied automatically.
+                </div>
+            </div>
+            `;
+
+            container.insertAdjacentHTML("beforeend", html);
+            index++;
+        }
+
+        async function loadScreens(select) {
+            const theatreId = select.value;
+            const screenDd = select
+                .closest(".showtime-group")
+                .querySelector(".screen-dd");
+
+            screenDd.innerHTML = '<option>Loading...</option>';
+
+            const res = await fetch(
+                `/SuperAdmin/GetScreensByTheatre?theatreId=${theatreId}`);
+            const screens = await res.json();
+
+            screenDd.innerHTML =
+                '<option value="">-- Select Screen --</option>';
+
+            screens.forEach(s => {
+                const o = document.createElement("option");
+                o.value = s.screenId;
+                o.text = s.screenName;
+                screenDd.appendChild(o);
+            });
+        }
+    </script>
+}

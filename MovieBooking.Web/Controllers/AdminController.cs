@@ -15,16 +15,15 @@ namespace MovieBooking.Web.Controllers
             AdminMvcService = adminService;
         }
 
-        // ========== DASHBOARD ==========
 
         public IActionResult Dashboard() => View();
 
         // ========== THEATRE REQUESTS ==========
 
         [HttpGet]
-        public async Task<IActionResult> MyTheatres()
+        public async Task<IActionResult> Theatres()
         {
-            var requests = await AdminMvcService.GetMyTheatreRequestsAsync();
+            var requests = await AdminMvcService.GetTheatreRequestsAsync();
             return View(requests);
         }
 
@@ -53,9 +52,9 @@ namespace MovieBooking.Web.Controllers
         // ========== SCREEN REQUESTS ==========
 
         [HttpGet]
-        public async Task<IActionResult> MyScreens()
+        public async Task<IActionResult> Screens()
         {
-            var screens = await AdminMvcService.GetMyScreenRequestsAsync();
+            var screens = await AdminMvcService.GetScreenRequestsAsync();
             return View(screens);
         }
 
@@ -64,7 +63,7 @@ namespace MovieBooking.Web.Controllers
         {
             var vm = new RequestScreenViewModel
             {
-                AvailableTheatres = await AdminMvcService.GetMyTheatresForScreenAsync()
+                AvailableTheatres = await AdminMvcService.GetTheatresForScreenAsync()
             };
 
             if (!vm.AvailableTheatres.Any())
@@ -81,7 +80,7 @@ namespace MovieBooking.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                requestScreenViewModel.AvailableTheatres = await AdminMvcService.GetMyTheatresForScreenAsync();
+                requestScreenViewModel.AvailableTheatres = await AdminMvcService.GetTheatresForScreenAsync();
                 return View(requestScreenViewModel);
             }
 
@@ -94,7 +93,7 @@ namespace MovieBooking.Web.Controllers
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                requestScreenViewModel.AvailableTheatres = await AdminMvcService.GetMyTheatresForScreenAsync();
+                requestScreenViewModel.AvailableTheatres = await AdminMvcService.GetTheatresForScreenAsync();
                 return View(requestScreenViewModel);
             }
         }
@@ -104,14 +103,14 @@ namespace MovieBooking.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> ApprovedTheatres()
         {
-            var theatres = await AdminMvcService.GetMyApprovedTheatresAsync();
+            var theatres = await AdminMvcService.GetApprovedTheatresAsync();
             return View(theatres);
         }
 
         [HttpGet]
         public async Task<IActionResult> ApprovedScreens()
         {
-            var screens = await AdminMvcService.GetMyApprovedScreensAsync();
+            var screens = await AdminMvcService.GetApprovedScreensAsync();
             return View(screens);
         }
     }

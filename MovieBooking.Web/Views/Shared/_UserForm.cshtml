@@ -1,4 +1,4 @@
-﻿@model RegisterViewModel
+﻿@* @model RegisterViewModel
 
 <!-- NAME -->
 <div class="mb-3">
@@ -9,7 +9,7 @@
         </span>
         <input asp-for="Name"
                class="form-control"
-               placeholder="John Doe" />
+               placeholder="Nandamuri taraka ramarao" />
     </div>
     <span asp-validation-for="Name" class="text-danger small"></span>
 </div>
@@ -23,7 +23,7 @@
         </span>
         <input asp-for="Email"
                class="form-control"
-               placeholder="john@email.com" />
+               placeholder="tarak@gmail.com" />
     </div>
     <span asp-validation-for="Email" class="text-danger small"></span>
 </div>
@@ -52,5 +52,58 @@
         </span>
     </div>
 
+    <span asp-validation-for="Password" class="text-danger small"></span>
+</div> *@
+@model RegisterViewModel
+
+<!-- NAME -->
+<div class="mb-3">
+    <label asp-for="Name" class="form-label fw-semibold"></label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="bi bi-person"></i>
+        </span>
+        <input asp-for="Name"
+               class="form-control"
+               placeholder="Nandamuri taraka ramarao" />
+    </div>
+    <span asp-validation-for="Name" class="text-danger small"></span>
+</div>
+
+<!-- EMAIL -->
+<div class="mb-3">
+    <label asp-for="Email" class="form-label fw-semibold"></label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="bi bi-envelope"></i>
+        </span>
+        <input asp-for="Email"
+               class="form-control"
+               placeholder="tarak@gmail.com" />
+    </div>
+    <!-- Feedback lives OUTSIDE input-group so it displays as a block below -->
+    <small id="emailFeedback" class="form-text" style="min-height:1.2em; display:block;"></small>
+    <span asp-validation-for="Email" class="text-danger small"></span>
+</div>
+
+<!-- PASSWORD -->
+<div class="mb-3">
+    <label asp-for="Password" class="form-label fw-semibold"></label>
+    <div class="input-group">
+        <span class="input-group-text">
+            <i class="bi bi-lock"></i>
+        </span>
+        <input asp-for="Password"
+               type="password"
+               class="form-control password-input pe-5"
+               placeholder="••••••••" />
+        <span class="position-absolute top-50 end-0 translate-middle-y me-3"
+              style="cursor:pointer; z-index:5;"
+              onclick="togglePassword(this)">
+            <i class="bi bi-eye"></i>
+        </span>
+    </div>
+    <!-- Password strength lives OUTSIDE input-group -->
+    <div id="passwordStrength" style="min-height:2rem;"></div>
     <span asp-validation-for="Password" class="text-danger small"></span>
 </div>

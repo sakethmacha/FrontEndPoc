@@ -144,7 +144,7 @@ namespace MovieBooking.Web.Services
 
         // ========== USER BOOKINGS ==========
 
-        public async Task<List<UserBookingResponse>> GetMyBookingsAsync()
+        public async Task<List<UserBookingResponse>> GetBookingsAsync()
         {
             Authenticate();
 

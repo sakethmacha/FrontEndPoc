@@ -97,8 +97,6 @@ namespace MovieBooking.Web.Controllers
             }
         }
 
-        // ========== STEP 4: REVIEW BOOKING ==========
-
         /// <summary>
         /// Review booking details before payment
         /// </summary>
@@ -227,9 +225,9 @@ namespace MovieBooking.Web.Controllers
         /// View all user bookings
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> MyBookings()
+        public async Task<IActionResult> Bookings()
         {
-            var bookings = await BookingService.GetMyBookingsAsync();
+            var bookings = await BookingService.GetBookingsAsync();
             return View(bookings);
         }
 

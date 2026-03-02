@@ -31,6 +31,41 @@ namespace MovieBooking.Web
                 var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
                 Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
             });
+            builder.Services.AddHttpClient<IAdminManagementMvcService, AdminManagementMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient<IMovieMvcService, MovieMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient<ITheatreMvcService,TheatreMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient<IScreenMvcService, ScreenMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient<IShowTimeMvcService, ShowTimeMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient<ILanguageMvcService, LanguageMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
+            builder.Services.AddHttpClient<IRequestApprovalMvcService, RequestApprovalMvcService>((ServiceProvider, Client) =>
+            {
+                var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+                Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
+            });
             builder.Services.AddDistributedMemoryCache();
             
             builder.Services

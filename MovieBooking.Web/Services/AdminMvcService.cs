@@ -56,14 +56,14 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task<List<TheatreRequestResponse>> GetMyTheatreRequestsAsync()
+        public async Task<List<TheatreRequestResponse>> GetTheatreRequestsAsync()
         {
             Auth();
             return await HttpClient.GetFromJsonAsync<List<TheatreRequestResponse>>("api/admin/theatres/requests")
                    ?? new List<TheatreRequestResponse>();
         }
 
-        public async Task<List<TheatreRequestResponse>> GetMyApprovedTheatresAsync()
+        public async Task<List<TheatreRequestResponse>> GetApprovedTheatresAsync()
         {
             Auth();
             return await HttpClient.GetFromJsonAsync<List<TheatreRequestResponse>>("api/admin/theatres/approved")
@@ -99,14 +99,14 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task<List<ScreenRequestResponse>> GetMyScreenRequestsAsync()
+        public async Task<List<ScreenRequestResponse>> GetScreenRequestsAsync()
         {
             Auth();
             return await HttpClient.GetFromJsonAsync<List<ScreenRequestResponse>>("api/admin/screens/requests")
                    ?? new List<ScreenRequestResponse>();
         }
 
-        public async Task<List<ScreenRequestResponse>> GetMyApprovedScreensAsync()
+        public async Task<List<ScreenRequestResponse>> GetApprovedScreensAsync()
         {
             Auth();
             return await HttpClient.GetFromJsonAsync<List<ScreenRequestResponse>>("api/admin/screens/approved")
@@ -115,7 +115,7 @@ namespace MovieBooking.Web.Services
 
         // ========== HELPER METHODS ==========
 
-        public async Task<List<TheatreDropdownItem>> GetMyTheatresForScreenAsync()
+        public async Task<List<TheatreDropdownItem>> GetTheatresForScreenAsync()
         {
             Auth();
             var theatres = await HttpClient.GetFromJsonAsync<List<TheatreRequestResponse>>("api/admin/theatres/for-screen")

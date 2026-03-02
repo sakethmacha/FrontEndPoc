@@ -1,0 +1,199 @@
+﻿@model List<MovieBooking.Web.ApiContracts.AdminRequests.AdminRequestResponse>
+
+@{
+    ViewData["Title"] = "Approval Requests";
+}
+
+<style>
+    .request-card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+        .request-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+    .request-type-theatre {
+        border-left: 4px solid #007bff;
+    }
+
+    .request-type-screen {
+        border-left: 4px solid #28a745;
+    }
+
+    .request-type-showtime {
+        border-left: 4px solid #ffc107;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .status-approved {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">
+                <i class="bi bi-clipboard-check me-2"></i>Approval Requests
+            </h2>
+            <small class="text-muted">Review and manage admin requests</small>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-outline-primary" onclick="filterRequests('all')">All</button>
+            <button class="btn btn-outline-warning" onclick="filterRequests('PENDING')">Pending</button>
+            <button class="btn btn-outline-success" onclick="filterRequests('APPROVED')">Approved</button>
+            <button class="btn btn-outline-danger" onclick="filterRequests('REJECTED')">Rejected</button>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No approval requests at the moment.
+        </div>
+    }
+    else
+    {
+        <!-- PENDING REQUESTS COUNT -->
+        var pendingCount = Model.Count(r => r.Status == "PENDING");
+
+        @if (pendingCount > 0)
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>@pendingCount</strong> request(s) pending your approval
+            </div>
+        }
+
+        <!-- REQUESTS LIST -->
+        <div class="row g-3" id="requestsContainer">
+            @foreach (var request in Model.OrderByDescending(r => r.RequestedAt))
+            {
+                <div class="col-md-6 col-lg-4 request-item" data-status="@request.Status">
+                    <div class="card request-card request-type-@request.RequestType.ToLower() shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-person"></i>
+                                    Requested by <strong>@request.RequestedBy</strong>
+                                </small>
+                            </div>
+
+                            <!-- REQUEST TYPE & STATUS -->
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h6 class="mb-1">
+                                        @if (request.RequestType == "THEATRE")
+                                        {
+                                            <i class="bi bi-building text-primary"></i>
+                                            <span>Theatre Request</span>
+                                        }
+                                        else if (request.RequestType == "SCREEN")
+                                        {
+                                            <i class="bi bi-tv text-success"></i>
+                                            <span>Screen Request</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-clock text-warning"></i>
+                                            <span>ShowTime Request</span>
+                                        }
+                                    </h6>
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i>
+                                        @request.RequestedAt.ToString("dd MMM yyyy HH:mm")
+                                    </small>
+                                </div>
+
+                                <span class="badge status-@request.Status.ToLower()">
+                                    @request.Status
+                                </span>
+                            </div>
+
+                            <!-- REQUEST ID -->
+                            <div class="mb-3">
+                                <small class="text-muted">
+                                    ID: @request.AdminRequestId.ToString().Substring(0, 8)...
+                                </small>
+                            </div>
+
+                            <!-- ACTIONS (Only for pending) -->
+                            @if (request.Status == "PENDING")
+                            {
+                                <div class="d-flex gap-2">
+                                    <form asp-action="Approve" asp-route-id="@request.AdminRequestId" method="post" class="flex-fill">
+                                        <button type="submit" class="btn btn-success btn-sm w-100">
+                                            <i class="bi bi-check-lg"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form asp-action="Reject" asp-route-id="@request.AdminRequestId" method="post" class="flex-fill">
+                                        <button type="submit" class="btn btn-danger btn-sm w-100">
+                                            <i class="bi bi-x-lg"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center">
+                                    <small class="text-muted">
+                                        @if (request.Status == "APPROVED")
+                                        {
+                                            <i class="bi bi-check-circle text-success"></i>
+                                            <span>Request Approved</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-x-circle text-danger"></i>
+                                            <span>Request Rejected</span>
+                                        }
+                                    </small>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function filterRequests(status) {
+            const items = document.querySelectorAll('.request-item');
+            items.forEach(item => {
+                if (status === 'all' || item.dataset.status === status) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}
