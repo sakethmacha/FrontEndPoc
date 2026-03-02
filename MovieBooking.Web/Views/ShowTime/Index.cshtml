@@ -1,0 +1,175 @@
+﻿@model List<MovieShowTimeViewModel>
+
+@{
+    ViewData["Title"] = "ShowTimes";
+}
+
+
+<style>
+    .movie-card {
+        border-radius: 16px;
+        border: none;
+        transition: all 0.25s ease;
+    }
+
+        .movie-card:hover {
+            box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+            transform: translateY(-4px);
+        }
+
+    .theatre-name {
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .screen-meta {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .showtime-row {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 14px 16px;
+        transition: background-color 0.2s ease;
+    }
+
+        .showtime-row:hover {
+            background-color: #f8f9fa;
+        }
+</style>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-clock me-2"></i>Movie ShowTimes
+        </h2>
+        <a asp-action="AddShowTime"
+           asp-controller="ShowTime"
+           class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>
+            Add ShowTime
+        </a>
+    </div>
+
+
+    @foreach (var movie in Model)
+    {
+        <div class="card movie-card mb-4 shadow-sm">
+            <div class="card-body">
+
+                <!-- MOVIE HEADER -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-film me-1"></i>
+                        @movie.MovieTitle
+                    </h5>
+
+                    <button class="btn btn-sm btn-outline-primary"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#movie-@movie.MovieTitle.GetHashCode()">
+                        View ShowTimes
+                    </button>
+                </div>
+
+                <!-- SHOWTIMES -->
+                <div class="collapse" id="movie-@movie.MovieTitle.GetHashCode()">
+                    <div class="row g-4">
+
+                        @foreach (var group in movie.ShowTimes.GroupBy(x => x.TheatreName))
+                        {
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 h-100">
+
+                                    <!-- THEATRE NAME -->
+                                    <div class="theatre-name mb-3">
+                                        <i class="bi bi-building"></i>
+                                        @group.Key
+                                    </div>
+
+                                    <!-- SHOWTIME ROW -->
+                                    @foreach (var st in group)
+                                    {
+                                        <div class="showtime-row d-flex justify-content-between align-items-center mb-3">
+
+                                            <!-- LEFT: TIME INFO -->
+                                            <div>
+                                                <div class="fw-semibold">
+                                                    @st.StartTime.ToString("dd MMM yyyy, hh:mm tt")
+                                                </div>
+                                                <div class="screen-meta">
+                                                    @st.ScreenName • @st.LanguageName
+                                                </div>
+                                            </div>
+
+                                            <!-- RIGHT: PRICE + DELETE -->
+                                            <div class="d-flex align-items-center gap-3">
+                                                <span class="badge bg-success fs-6">
+                                                    ₹ @st.BasePrice
+                                                </span>
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-outline-danger px-2"
+                                                        onclick="confirmDelete('@st.ShowTimeId','@movie.MovieTitle')"
+                                                        title="Delete ShowTime">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                This will permanently delete the showtime for
+                <strong id="movieName"></strong>.
+                <br /><br />
+                <span class="text-muted">
+                    This action cannot be undone.
+                </span>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post">
+                    <button type="submit" class="btn btn-danger">
+                        Yes, Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(showTimeId, movieName) {
+            document.getElementById("movieName").innerText = movieName;
+            document.getElementById("deleteForm").action =
+                "/SuperAdmin/DeleteShowTime/" + showTimeId;
+
+            new bootstrap.Modal(
+                document.getElementById("deleteModal")
+            ).show();
+        }
+    </script>
+}

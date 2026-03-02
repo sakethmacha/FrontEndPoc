@@ -1,0 +1,181 @@
+﻿@model List<MovieBooking.Web.ApiContracts.Movies.MovieResponse>
+
+@{
+    ViewData["Title"] = "Movies";
+}
+
+<style>
+    .movie-card {
+        border-radius: 18px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        border: none;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+        }
+
+    .movie-title {
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+    .movie-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 12px;
+    }
+
+    .empty-state {
+        border: 2px dashed #dee2e6;
+        border-radius: 18px;
+        padding: 40px;
+        text-align: center;
+        background-color: #fafafa;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">🎬 Movies</h2>
+            <small class="text-muted">Manage movies in the system</small>
+        </div>
+
+        <a asp-action="AddMovie" class="btn btn-primary fw-semibold">
+            <i class="bi bi-plus-lg"></i> Add Movie
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <!-- EMPTY STATE -->
+        <div class="empty-state shadow-sm">
+            <h5 class="fw-bold">No Movies Available</h5>
+            <p class="text-muted mb-3">
+                Start by adding movies to your platform.
+            </p>
+            <a asp-action="AddMovie" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle me-2"></i> Add Movie
+            </a>
+        </div>
+    }
+    else
+    {
+        <!-- MOVIE CARDS -->
+        <div class="row g-4">
+            @foreach (var m in Model)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card movie-card shadow-sm h-100">
+                        <div class="card-body d-flex flex-column">
+
+                            <!-- TITLE -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="movie-title">
+                                    <i class="bi bi-film text-muted me-1"></i>
+                                    @m.Title
+                                </div>
+                                @if (m.IsActive)
+                                {
+                                    <span class="badge bg-success status-badge">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger status-badge">
+                                        Inactive
+                                    </span>
+                                }
+                            </div>
+
+                            <!-- META -->
+                            <div class="movie-meta mb-3">
+                                <div>
+                                    <i class="bi bi-clock"></i>
+                                    @m.DurationMinutes min
+                                </div>
+                                <div>
+                                    <i class="bi bi-calendar-event"></i>
+                                    @m.ReleaseDate.ToString("dd MMM yyyy")
+                                </div>
+                            </div>
+
+                            <!-- ACTIONS -->
+                            <div class="mt-auto d-flex gap-2">
+                                <a asp-action="EditMovie"
+                                   asp-route-id="@m.MovieId"
+                                   class="btn btn-sm btn-outline-primary flex-fill">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger flex-fill"
+                                        onclick="confirmDelete('@m.MovieId', '@m.Title')">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="movieName"></strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(movieId, movieTitle) {
+            document.getElementById('movieName').textContent = movieTitle;
+            document.getElementById('deleteForm').action = '/SuperAdmin/DeleteMovie/' + movieId;
+            var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        }
+    </script>
+}
