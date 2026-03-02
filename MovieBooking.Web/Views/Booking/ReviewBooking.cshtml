@@ -1,4 +1,5 @@
-﻿@model MovieBooking.Web.ViewModels.Booking.ReviewBookingViewModel
+﻿@using MovieBooking.Web.Enums;
+@model MovieBooking.Web.ViewModels.Booking.ReviewBookingViewModel
 @{
     ViewData["Title"] = "Review Booking";
 }
@@ -115,8 +116,8 @@
                                                 @{
                                                     var badgeClass = seat.SeatType switch
                                                     {
-                                                        "VIP" => "bg-warning text-dark",
-                                                        "RECLINER" => "bg-danger",
+                                                        SeatType.VIP => "bg-warning text-dark",
+                                                        SeatType.RECLINER => "bg-danger",
                                                         _ => "bg-primary"
                                                     };
                                                 }

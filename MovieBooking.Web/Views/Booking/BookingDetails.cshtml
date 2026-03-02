@@ -1,8 +1,9 @@
-﻿@model MovieBooking.Web.ApiContracts.Booking.BookingConfirmationResponse
+﻿@using MovieBooking.Web.Enums;
+@model MovieBooking.Web.ApiContracts.Booking.BookingConfirmationResponse
 @{
     ViewData["Title"] = "Booking Details";
     var isPastShow = Model.Theatre.ShowTime < DateTime.Now;
-    var canCancel = Model.Status == "CONFIRMED" && Model.Theatre.ShowTime > DateTime.Now.AddHours(2);
+    var canCancel = Model.Status == BookingStatus.CONFIRMED && Model.Theatre.ShowTime > DateTime.Now.AddHours(2);
 }
 
 <div class="container mt-4">
@@ -15,7 +16,7 @@
                     <h2><i class="bi bi-ticket-detailed-fill"></i> Booking Details</h2>
                     <p class="text-muted mb-0">Reference: <strong>@Model.BookingReference</strong></p>
                 </div>
-                <a href="@Url.Action("MyBookings")" class="btn btn-outline-secondary">
+                <a href="@Url.Action("Bookings")" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Back to My Bookings
                 </a>
             </div>
@@ -37,10 +38,10 @@
                             @{
                                 var statusBadgeClass = Model.Status switch
                                 {
-                                    "CONFIRMED" => "bg-success",
-                                    "PENDING" => "bg-warning text-dark",
-                                    "CANCELLED" => "bg-secondary",
-                                    "FAILED" => "bg-danger",
+                                    BookingStatus.CONFIRMED => "bg-success",
+                                    BookingStatus.PENDING => "bg-warning text-dark",
+                                    BookingStatus.CANCELLED => "bg-secondary",
+                                    BookingStatus.FAILED => "bg-danger",
                                     _ => "bg-info"
                                 };
                             }
@@ -60,13 +61,13 @@
                             <i class="bi bi-clock-history"></i> This show has ended
                         </div>
                     }
-                    else if (Model.Status == "CANCELLED")
+                    else if (Model.Status == BookingStatus.CANCELLED)
                     {
                         <div class="alert alert-warning">
                             <i class="bi bi-x-circle"></i> This booking has been cancelled. Refund will be processed within 5-7 business days.
                         </div>
-                    }
-                    else if (Model.Status == "CONFIRMED")
+                    }       
+                    else if (Model.Status == BookingStatus.CONFIRMED)
                     {
                         <div class="alert alert-success">
                             <i class="bi bi-check-circle"></i> Your booking is confirmed. See you at the movies!
@@ -143,8 +144,8 @@
                                                 @{
                                                     var seatTypeBadge = seat.SeatType switch
                                                     {
-                                                        "VIP" => "bg-warning text-dark",
-                                                        "RECLINER" => "bg-danger",
+                                                        SeatType.VIP => "bg-warning text-dark",
+                                                        SeatType.RECLINER => "bg-danger",
                                                         _ => "bg-primary"
                                                     };
                                                 }
@@ -175,7 +176,7 @@
                                     <i class="bi bi-circle-fill text-success"></i>
                                     <strong>Booking Created:</strong> @Model.CreatedAt.ToString("dd MMM yyyy, hh:mm tt")
                                 </div>
-                                @if (Model.Status == "CONFIRMED")
+                                @if (Model.Status == BookingStatus.CONFIRMED)
                                 {
                                     <div class="timeline-item">
                                         <i class="bi bi-circle-fill text-success"></i>

@@ -1,4 +1,5 @@
-﻿@model List<MovieBooking.Web.ApiContracts.AdminRequests.AdminRequestResponse>
+﻿@using MovieBooking.Web.Enums;
+@model List<MovieBooking.Web.ApiContracts.AdminRequests.AdminRequestResponse>
 
 @{
     ViewData["Title"] = "Approval Requests";
@@ -79,7 +80,7 @@
     else
     {
         <!-- PENDING REQUESTS COUNT -->
-        var pendingCount = Model.Count(r => r.Status == "PENDING");
+        var pendingCount = Model.Count(r => r.Status == ApprovalStatus.PENDING);
 
         @if (pendingCount > 0)
         {
@@ -129,7 +130,7 @@
                                     </small>
                                 </div>
 
-                                <span class="badge status-@request.Status.ToLower()">
+                                <span class="badge status-@request.Status">
                                     @request.Status
                                 </span>
                             </div>
@@ -142,7 +143,7 @@
                             </div>
 
                             <!-- ACTIONS (Only for pending) -->
-                            @if (request.Status == "PENDING")
+                            @if (request.Status == ApprovalStatus.PENDING)
                             {
                                 <div class="d-flex gap-2">
                                     <form asp-action="Approve" asp-route-id="@request.AdminRequestId" method="post" class="flex-fill">
@@ -161,7 +162,7 @@
                             {
                                 <div class="text-center">
                                     <small class="text-muted">
-                                        @if (request.Status == "APPROVED")
+                                        @if (request.Status == ApprovalStatus.APPROVED)
                                         {
                                             <i class="bi bi-check-circle text-success"></i>
                                             <span>Request Approved</span>

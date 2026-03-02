@@ -1,9 +1,11 @@
-﻿namespace MovieBooking.Web.ApiContracts.Booking
+﻿
+using MovieBooking.Web.Enums;
+namespace MovieBooking.Web.ApiContracts.Booking
 {
     public class BookedSeatResponse
     {
         public string SeatNumber { get; set; } = string.Empty;
-        public string SeatType { get; set; } = string.Empty;
+        public SeatType SeatType { get; set; } 
         public decimal Price { get; set; }
     }
 }

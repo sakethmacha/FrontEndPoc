@@ -1,4 +1,5 @@
-﻿@model MovieBooking.Web.ApiContracts.Booking.SeatLayoutResponse
+﻿@using MovieBooking.Web.Enums;
+@model MovieBooking.Web.ApiContracts.Booking.SeatLayoutResponse
 @{
     ViewData["Title"] = "Select Seats";
 }
@@ -50,11 +51,11 @@
                                             seatClass += " seat-unavailable";
                                             disabled = "disabled";
                                         }
-                                        else if (seat.SeatType == "VIP")
+                                        else if (seat.SeatType == SeatType.VIP)
                                         {
                                             seatClass += " seat-vip";
                                         }
-                                        else if (seat.SeatType == "RECLINER")
+                                        else if (seat.SeatType == SeatType.RECLINER)
                                         {
                                             seatClass += " seat-recliner";
                                         }
