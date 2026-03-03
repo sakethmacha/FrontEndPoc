@@ -23,19 +23,19 @@ namespace MovieBooking.Web.Controllers
         public IActionResult CreateAdmin() => View();
 
         [HttpPost]
-        public async Task<IActionResult> CreateAdmin(AddAdminViewModel vm)
+        public async Task<IActionResult> CreateAdmin(AddAdminViewModel addAdminViewModel)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid) return View(addAdminViewModel);
             try
             {
-                await AdminService.CreateAdminAsync(vm);
+                await AdminService.CreateAdminAsync(addAdminViewModel);
                 TempData["Success"] = "Admin created successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addAdminViewModel);
             }
         }
 
@@ -53,19 +53,19 @@ namespace MovieBooking.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditAdmin(AddAdminViewModel vm)
+        public async Task<IActionResult> EditAdmin(AddAdminViewModel addAdminViewModel)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid) return View(addAdminViewModel);
             try
             {
-                await AdminService.UpdateAdminAsync(vm.UserId, vm);
+                await AdminService.UpdateAdminAsync(addAdminViewModel.UserId, addAdminViewModel);
                 TempData["Success"] = "Admin updated successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addAdminViewModel);
             }
         }
 

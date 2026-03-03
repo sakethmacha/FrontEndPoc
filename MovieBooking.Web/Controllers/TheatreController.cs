@@ -22,19 +22,19 @@ namespace MovieBooking.Web.Controllers
         public IActionResult AddTheatre() => View();
 
         [HttpPost]
-        public async Task<IActionResult> AddTheatre(AddTheatreViewModel vm)
+        public async Task<IActionResult> AddTheatre(AddTheatreViewModel addTheatreViewModel)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid) return View(addTheatreViewModel);
             try
             {
-                await TheatreService.AddTheatreAsync(vm);
+                await TheatreService.AddTheatreAsync(addTheatreViewModel);
                 TempData["Success"] = "Theatre added successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addTheatreViewModel);
             }
         }
 
@@ -53,19 +53,19 @@ namespace MovieBooking.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditTheatre(Guid id, AddTheatreViewModel vm)
+        public async Task<IActionResult> EditTheatre(Guid id, AddTheatreViewModel addTheatreViewModel)
         {
-            if (!ModelState.IsValid) { ViewBag.TheatreId = id; return View(vm); }
+            if (!ModelState.IsValid) { ViewBag.TheatreId = id; return View(addTheatreViewModel); }
             try
             {
-                await TheatreService.UpdateTheatreAsync(id, vm);
+                await TheatreService.UpdateTheatreAsync(id, addTheatreViewModel);
                 TempData["Success"] = "Theatre updated successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addTheatreViewModel);
             }
         }
 

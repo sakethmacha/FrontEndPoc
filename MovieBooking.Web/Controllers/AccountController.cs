@@ -17,7 +17,6 @@ namespace MovieBooking.Web.Controllers
             AuthenticationService = authenticationService;
         }
 
-        // ---------------- LOGIN (GET) ----------------
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
@@ -25,7 +24,6 @@ namespace MovieBooking.Web.Controllers
             return View();
         }
 
-        // ---------------- LOGIN (POST) ----------------
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel,string? returnUrl = null)
         {

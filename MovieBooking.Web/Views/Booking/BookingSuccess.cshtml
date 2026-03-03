@@ -208,17 +208,13 @@
 
 <style>
     /* Success Animation */
-    .success-animation {
-        margin: 0 auto;
-    }
-
     .checkmark {
         width: 100px;
         height: 100px;
         border-radius: 50%;
         display: block;
         stroke-width: 2;
-        stroke: #4CAF50;
+        stroke: #fff;
         stroke-miterlimit: 10;
         margin: 0 auto;
         box-shadow: inset 0px 0px 0px #4CAF50;
@@ -239,6 +235,7 @@
         transform-origin: 50% 50%;
         stroke-dasharray: 48;
         stroke-dashoffset: 48;
+        stroke: #fff; /* ADDED: white tick on green circle */
         animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
     }
 
@@ -385,12 +382,46 @@
         }
 
     @@media print {
-        .btn, .alert {
+        /* Hide unnecessary elements */
+        .btn, nav, .navbar, footer,
+        .alert-warning, .text-center.mt-4 {
             display: none !important;
         }
+        /* Force background colors to print */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
 
+        body {
+            background: white !important;
+        }
+        /* Keep ticket header gradient */
+        .ticket-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+        /* Keep seat badges gradient */
+        .seat-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+        /* Keep info icons gradient */
+        .info-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+        /* Avoid bad page breaks */
+        .ticket-card,
+        .info-box,
+        .seats-section,
+        .payment-summary,
+        .seat-badge {
+            break-inside: avoid !important;
+        }
+        /* Remove shadows for clean print */
         .ticket-card {
             box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
         }
     }
 

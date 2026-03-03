@@ -1,4 +1,4 @@
-﻿@model List<MovieBooking.Web.ApiContracts.Booking.MovieListResponse>
+﻿@* @model List<MovieBooking.Web.ApiContracts.Booking.MovieListResponse>
 @{
     ViewData["Title"] = "Browse Movies";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -20,8 +20,11 @@
             {
                 <div class="col-md-3 col-sm-6 mb-4">
                     <div class="card h-100 movie-card">
-                        @* <img src="@movie.PosterUrl" class="card-img-top" alt="@movie.Title"
-                             style="height: 400px; object-fit: cover;"> *@
+                        <img src="https://localhost:7169/images/@movie.PosterUrl"
+                             alt="@movie.Title"
+                             class="card-img-top"
+                             style="height: 350px; width: 100%; object-fit: cover;"
+                             onerror="this.src='/images/no-poster.png'" />
                         <div class="card-body">
                             <h5 class="card-title">@movie.Title</h5>
                             <p class="card-text text-muted">
@@ -56,5 +59,118 @@
     .movie-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+</style> *@
+
+@model List<MovieBooking.Web.ApiContracts.Booking.MovieListResponse>
+@{
+    ViewData["Title"] = "Browse Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Now Showing</h2>
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No movies available at the moment.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var movie in Model)
+            {
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100 movie-card border-0 shadow-sm">
+
+                        <div class="poster-wrapper">
+                            <img src="https://localhost:7169/images/@movie.PosterUrl"
+                                 alt="@movie.Title"
+                                 class="card-img-top poster-img"
+                                 onerror="this.src='/images/no-poster.png'" />
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">@movie.Title</h5>
+                            <p class="card-text text-muted">
+                                <small>
+                                    <i class="bi bi-clock"></i> @movie.DurationMinutes mins
+                                </small>
+                            </p>
+                            <p class="card-text text-muted small">
+                                @(movie.Description.Length > 100
+                                                        ? movie.Description.Substring(0, 100) + "..."
+                                                        : movie.Description)
+                    </p>
+                </div>
+
+                        <div class="card-footer border-0 pb-3">
+                            <a href="@Url.Action("SelectShow", new { movieId = movie.MovieId })"
+                               class="btn btn-primary w-100">
+                                <i class="bi bi-ticket-perforated me-1"></i> Book Tickets
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                }
+        </div>
+    }
+</div>
+
+<style>
+    /* FULL PAGE BACKGROUND */
+    body {
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e) !important;
+        min-height: 100vh;
+    }
+
+    h2 {
+        color: #ffffff;
+    }
+
+    /* EVERY MOVIE CARD BACKGROUND */
+    .movie-card {
+        background: linear-gradient(160deg, #1a1a2e, #16213e, #0f3460) !important;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(99, 0, 255, 0.3) !important;
+        }
+
+    /* POSTER */
+    .poster-wrapper {
+        overflow: hidden;
+    }
+
+    .poster-img {
+        height: 350px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .movie-card:hover .poster-img {
+        transform: scale(1.05);
+    }
+
+    /* TEXT COLORS on dark card */
+    .movie-card .card-title {
+        color: #ffffff;
+    }
+
+    .movie-card .card-text,
+    .movie-card .text-muted {
+        color: #a0aec0 !important;
+    }
+
+    /* CARD FOOTER */
+    .movie-card .card-footer {
+        background: transparent !important;
     }
 </style>

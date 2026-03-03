@@ -41,18 +41,46 @@ namespace MovieBooking.Web.Services
             return await HttpClient.GetFromJsonAsync<MovieResponse>($"api/Movie/{movieId}");
         }
 
+        //public async Task AddMovieAsync(AddMovieViewModel vm)
+        //{
+        //    Authenticate();
+        //    var response = await HttpClient.PostAsJsonAsync("api/Movie",
+        //        new AddMovieRequest
+        //        {
+        //            Title = vm.Title,
+        //            Description = vm.Description,
+        //            DurationMinutes = vm.DurationMinutes,
+        //            ReleaseDate = vm.ReleaseDate,
+        //            PosterUrl = vm.PosterUrl
+        //        });
+
+        //    if (!response.IsSuccessStatusCode)
+        //    {
+        //        var error = await response.Content.ReadAsStringAsync();
+        //        throw new Exception($"AddMovie failed: {(int)response.StatusCode} - {error}");
+        //    }
+        //}
         public async Task AddMovieAsync(AddMovieViewModel vm)
         {
             Authenticate();
-            var response = await HttpClient.PostAsJsonAsync("api/Movie",
-                new AddMovieRequest
-                {
-                    Title = vm.Title,
-                    Description = vm.Description,
-                    DurationMinutes = vm.DurationMinutes,
-                    ReleaseDate = vm.ReleaseDate,
-                    PosterUrl = vm.PosterUrl
-                });
+
+            // CHANGED: was PostAsJsonAsync, now multipart to support file upload
+            using var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(vm.Title ?? ""), "Title");
+            content.Add(new StringContent(vm.Description ?? ""), "Description");
+            content.Add(new StringContent(vm.DurationMinutes.ToString()), "DurationMinutes");
+            content.Add(new StringContent(vm.ReleaseDate.ToString("yyyy-MM-dd")), "ReleaseDate");
+
+            if (vm.PosterFile != null && vm.PosterFile.Length > 0)
+            {
+                var fileContent = new StreamContent(vm.PosterFile.OpenReadStream());
+                fileContent.Headers.ContentType =
+                    new MediaTypeHeaderValue(vm.PosterFile.ContentType);
+                content.Add(fileContent, "PosterFile", vm.PosterFile.FileName);
+            }
+
+            var response = await HttpClient.PostAsync("api/Movie", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -60,19 +88,45 @@ namespace MovieBooking.Web.Services
                 throw new Exception($"AddMovie failed: {(int)response.StatusCode} - {error}");
             }
         }
+        //public async Task UpdateMovieAsync(Guid movieId, AddMovieViewModel vm)
+        //{
+        //    Authenticate();
+        //    var response = await HttpClient.PutAsJsonAsync($"api/Movie/{movieId}",
+        //        new AddMovieRequest
+        //        {
+        //            Title = vm.Title,
+        //            Description = vm.Description,
+        //            DurationMinutes = vm.DurationMinutes,
+        //            ReleaseDate = vm.ReleaseDate,
+        //            PosterUrl = vm.PosterUrl
+        //        });
 
+        //    if (!response.IsSuccessStatusCode)
+        //    {
+        //        var error = await response.Content.ReadAsStringAsync();
+        //        throw new Exception($"UpdateMovie failed: {(int)response.StatusCode} - {error}");
+        //    }
+        //}
         public async Task UpdateMovieAsync(Guid movieId, AddMovieViewModel vm)
         {
             Authenticate();
-            var response = await HttpClient.PutAsJsonAsync($"api/Movie/{movieId}",
-                new AddMovieRequest
-                {
-                    Title = vm.Title,
-                    Description = vm.Description,
-                    DurationMinutes = vm.DurationMinutes,
-                    ReleaseDate = vm.ReleaseDate,
-                    PosterUrl = vm.PosterUrl
-                });
+
+            using var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(vm.Title ?? ""), "Title");
+            content.Add(new StringContent(vm.Description ?? ""), "Description");
+            content.Add(new StringContent(vm.DurationMinutes.ToString()), "DurationMinutes");
+            content.Add(new StringContent(vm.ReleaseDate.ToString("o")), "ReleaseDate");
+
+            if (vm.PosterFile != null && vm.PosterFile.Length > 0)
+            {
+                var fileContent = new StreamContent(vm.PosterFile.OpenReadStream());
+                fileContent.Headers.ContentType =
+                    new MediaTypeHeaderValue(vm.PosterFile.ContentType);
+                content.Add(fileContent, "PosterFile", vm.PosterFile.FileName);
+            }
+
+            var response = await HttpClient.PutAsync($"api/Movie/{movieId}", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -80,7 +134,6 @@ namespace MovieBooking.Web.Services
                 throw new Exception($"UpdateMovie failed: {(int)response.StatusCode} - {error}");
             }
         }
-
         public async Task DeleteMovieAsync(Guid movieId)
         {
             Authenticate();
