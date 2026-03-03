@@ -6,11 +6,11 @@ using MovieBooking.Web.ViewModels.Admin;
 namespace MovieBooking.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class AdminController : Controller
+    public class RequestController : Controller
     {
         private readonly IAdminMvcService AdminMvcService;
 
-        public AdminController(IAdminMvcService adminService)
+        public RequestController(IAdminMvcService adminService)
         {
             AdminMvcService = adminService;
         }

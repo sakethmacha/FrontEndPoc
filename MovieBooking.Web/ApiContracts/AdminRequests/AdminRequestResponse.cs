@@ -5,7 +5,7 @@ namespace MovieBooking.Web.ApiContracts.AdminRequests
     {
         public Guid AdminRequestId { get; set; }
         public string RequestType { get; set; }
-        public ApprovalStatus Status { get; set; }
+        public string Status { get; set; }
         public DateTime RequestedAt { get; set; }
 
         public string RequestedBy { get; set; }

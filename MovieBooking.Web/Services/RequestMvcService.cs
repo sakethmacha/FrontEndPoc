@@ -5,18 +5,18 @@ using System.Net.Http.Headers;
 
 namespace MovieBooking.Web.Services
 {
-    public class AdminMvcService : IAdminMvcService
+    public class RequestMvcService : IAdminMvcService
     {
         private readonly HttpClient HttpClient;
         private readonly IHttpContextAccessor HttpContextAccessor;
 
-        public AdminMvcService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        public RequestMvcService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             HttpClient = httpClient;
             HttpContextAccessor = httpContextAccessor;
         }
 
-        private void Auth()
+        private void Authenticate()
         {
             var token = HttpContextAccessor.HttpContext!
                 .User
@@ -34,7 +34,7 @@ namespace MovieBooking.Web.Services
 
         public async Task RequestTheatreAsync(RequestTheatreViewModel requestTheatreViewModel)
         {
-            Auth();
+            Authenticate();
 
             var request = new CreateTheatreRequestContract
             {
@@ -58,14 +58,14 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<TheatreRequestResponse>> GetTheatreRequestsAsync()
         {
-            Auth();
+            Authenticate();
             return await HttpClient.GetFromJsonAsync<List<TheatreRequestResponse>>("api/admin/theatres/requests")
                    ?? new List<TheatreRequestResponse>();
         }
 
         public async Task<List<TheatreRequestResponse>> GetApprovedTheatresAsync()
         {
-            Auth();
+            Authenticate();
             return await HttpClient.GetFromJsonAsync<List<TheatreRequestResponse>>("api/admin/theatres/approved")
                    ?? new List<TheatreRequestResponse>();
         }
@@ -74,7 +74,7 @@ namespace MovieBooking.Web.Services
 
         public async Task RequestScreenAsync(RequestScreenViewModel requestScreenViewModel)
         {
-            Auth();
+            Authenticate();
 
             var request = new CreateScreenRequestContract
             {
@@ -101,14 +101,14 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<ScreenRequestResponse>> GetScreenRequestsAsync()
         {
-            Auth();
+            Authenticate();
             return await HttpClient.GetFromJsonAsync<List<ScreenRequestResponse>>("api/admin/screens/requests")
                    ?? new List<ScreenRequestResponse>();
         }
 
         public async Task<List<ScreenRequestResponse>> GetApprovedScreensAsync()
         {
-            Auth();
+            Authenticate();
             return await HttpClient.GetFromJsonAsync<List<ScreenRequestResponse>>("api/admin/screens/approved")
                    ?? new List<ScreenRequestResponse>();
         }
@@ -117,7 +117,7 @@ namespace MovieBooking.Web.Services
 
         public async Task<List<TheatreDropdownItem>> GetTheatresForScreenAsync()
         {
-            Auth();
+            Authenticate();
             var theatres = await HttpClient.GetFromJsonAsync<List<TheatreRequestResponse>>("api/admin/theatres/for-screen")
                           ?? new List<TheatreRequestResponse>();
 

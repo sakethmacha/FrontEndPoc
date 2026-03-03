@@ -80,7 +80,7 @@
     else
     {
         <!-- PENDING REQUESTS COUNT -->
-        var pendingCount = Model.Count(r => r.Status == ApprovalStatus.PENDING);
+        var pendingCount = Model.Count(r => r.Status == "PENDING");
 
         @if (pendingCount > 0)
         {
@@ -143,7 +143,7 @@
                             </div>
 
                             <!-- ACTIONS (Only for pending) -->
-                            @if (request.Status == ApprovalStatus.PENDING)
+                            @if (request.Status == "PENDING")
                             {
                                 <div class="d-flex gap-2">
                                     <form asp-action="Approve" asp-route-id="@request.AdminRequestId" method="post" class="flex-fill">
@@ -162,7 +162,7 @@
                             {
                                 <div class="text-center">
                                     <small class="text-muted">
-                                        @if (request.Status == ApprovalStatus.APPROVED)
+                                        @if (request.Status == "APPROVED")
                                         {
                                             <i class="bi bi-check-circle text-success"></i>
                                             <span>Request Approved</span>
