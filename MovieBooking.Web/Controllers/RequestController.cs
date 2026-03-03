@@ -40,7 +40,7 @@ namespace MovieBooking.Web.Controllers
             {
                 await AdminMvcService.RequestTheatreAsync(requestTheatreViewModel);
                 TempData["Success"] = "Theatre request submitted successfully! Waiting for SuperAdmin approval.";
-                return RedirectToAction("MyTheatres");
+                return RedirectToAction("Theatres");
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace MovieBooking.Web.Controllers
             if (!vm.AvailableTheatres.Any())
             {
                 TempData["Error"] = "You don't have any approved theatres. Please request a theatre first.";
-                return RedirectToAction("MyTheatres");
+                return RedirectToAction("Theatres");
             }
 
             return View(vm);
@@ -88,7 +88,7 @@ namespace MovieBooking.Web.Controllers
             {
                 await AdminMvcService.RequestScreenAsync(requestScreenViewModel);
                 TempData["Success"] = "Screen request submitted successfully! Waiting for SuperAdmin approval.";
-                return RedirectToAction("MyScreens");
+                return RedirectToAction("Screens");
             }
             catch (Exception ex)
             {

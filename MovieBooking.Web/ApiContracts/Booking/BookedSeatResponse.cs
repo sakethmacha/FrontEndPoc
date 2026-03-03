@@ -5,7 +5,7 @@ namespace MovieBooking.Web.ApiContracts.Booking
     public class BookedSeatResponse
     {
         public string SeatNumber { get; set; } = string.Empty;
-        public SeatType SeatType { get; set; } 
+        public string SeatType { get; set; } 
         public decimal Price { get; set; }
     }
 }

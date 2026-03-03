@@ -34,23 +34,7 @@ namespace MovieBooking.Web.Services
             Authenticate();
             return await HttpClient.GetFromJsonAsync<List<AdminRequestResponse>>("api/RequestApproval");
         }
-        //public async Task<List<AdminRequestResponse>> GetRequestsAsync()
-        //{
-        //    Authenticate();
-
-        //    var response = await HttpClient.GetAsync("api/RequestApproval");
-
-        //    var json = await response.Content.ReadAsStringAsync();
-
-        //    Console.WriteLine(json); // 👈 VERY IMPORTANT
-
-        //    var options = new JsonSerializerOptions
-        //    {
-        //        PropertyNameCaseInsensitive = true
-        //    };
-
-        //    return JsonSerializer.Deserialize<List<AdminRequestResponse>>(json, options);
-        //}
+      
         public async Task ApproveRequestAsync(Guid id)
         {
             Authenticate();

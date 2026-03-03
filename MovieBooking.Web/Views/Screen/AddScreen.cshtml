@@ -1,4 +1,5 @@
-﻿@model AddScreenViewModel
+﻿@using MovieBooking.Web.Enums;
+@model AddScreenViewModel
 
 <h2 class="mt-4"> <i class="bi bi-plus-circle me-2"></i> Add Screen</h2>
 
@@ -25,9 +26,10 @@
     <!-- SEAT LAYOUT -->
     <div class="mb-3">
         <label class="form-label">Seat Layout Type</label>
-        <select asp-for="SeatLayoutType" class="form-select">
+        <select asp-for="SeatLayoutType"
+                class="form-select"
+                asp-items="Html.GetEnumSelectList<SeatLayoutType>()">
             <option value="">-- Select Layout --</option>
-            <option value="STANDARD">STANDARD</option>
         </select>
     </div>
 

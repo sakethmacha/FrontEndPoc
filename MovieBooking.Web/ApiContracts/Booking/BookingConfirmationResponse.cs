@@ -6,7 +6,7 @@ namespace MovieBooking.Web.ApiContracts.Booking
         public Guid BookingId { get; set; }
         public string BookingReference { get; set; } = string.Empty;
         public decimal TotalAmount { get; set; }
-        public BookingStatus Status { get; set; }
+        public string Status { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public MovieDetailsResponse Movie { get; set; } = null!;

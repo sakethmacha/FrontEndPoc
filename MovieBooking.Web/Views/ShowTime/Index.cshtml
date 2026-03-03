@@ -165,7 +165,7 @@
         function confirmDelete(showTimeId, movieName) {
             document.getElementById("movieName").innerText = movieName;
             document.getElementById("deleteForm").action =
-                "/SuperAdmin/DeleteShowTime/" + showTimeId;
+                "/ShowTime/DeleteShowTime/" + showTimeId;
 
             new bootstrap.Modal(
                 document.getElementById("deleteModal")

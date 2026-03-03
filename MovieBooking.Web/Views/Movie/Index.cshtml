@@ -173,7 +173,7 @@
     <script>
         function confirmDelete(movieId, movieTitle) {
             document.getElementById('movieName').textContent = movieTitle;
-            document.getElementById('deleteForm').action = '/SuperAdmin/DeleteMovie/' + movieId;
+            document.getElementById('deleteForm').action = '/Movie/DeleteMovie/' + movieId;
             var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
             modal.show();
         }

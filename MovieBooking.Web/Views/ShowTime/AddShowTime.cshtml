@@ -134,8 +134,7 @@
             screenDd.innerHTML = '<option>Loading...</option>';
 
             try {
-                const res = await fetch(
-                    `/SuperAdmin/ScreensByTheatre?theatreId=${theatreId}`);
+                const res = await fetch(`/Screen/ScreensByTheatre?theatreId=${theatreId}`)
 
                 const screens = await res.json();
 
