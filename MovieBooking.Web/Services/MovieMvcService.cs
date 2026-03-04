@@ -60,24 +60,24 @@ namespace MovieBooking.Web.Services
         //        throw new Exception($"AddMovie failed: {(int)response.StatusCode} - {error}");
         //    }
         //}
-        public async Task AddMovieAsync(AddMovieViewModel vm)
+        public async Task AddMovieAsync(AddMovieViewModel addMovieViewModel)
         {
             Authenticate();
 
             // CHANGED: was PostAsJsonAsync, now multipart to support file upload
             using var content = new MultipartFormDataContent();
 
-            content.Add(new StringContent(vm.Title ?? ""), "Title");
-            content.Add(new StringContent(vm.Description ?? ""), "Description");
-            content.Add(new StringContent(vm.DurationMinutes.ToString()), "DurationMinutes");
-            content.Add(new StringContent(vm.ReleaseDate.ToString("yyyy-MM-dd")), "ReleaseDate");
+            content.Add(new StringContent(addMovieViewModel.Title ?? ""), "Title");
+            content.Add(new StringContent(addMovieViewModel.Description ?? ""), "Description");
+            content.Add(new StringContent(addMovieViewModel.DurationMinutes.ToString()), "DurationMinutes");
+            content.Add(new StringContent(addMovieViewModel.ReleaseDate.ToString("yyyy-MM-dd")), "ReleaseDate");
 
-            if (vm.PosterFile != null && vm.PosterFile.Length > 0)
+            if (addMovieViewModel.PosterFile != null && addMovieViewModel.PosterFile.Length > 0)
             {
-                var fileContent = new StreamContent(vm.PosterFile.OpenReadStream());
+                var fileContent = new StreamContent(addMovieViewModel.PosterFile.OpenReadStream());
                 fileContent.Headers.ContentType =
-                    new MediaTypeHeaderValue(vm.PosterFile.ContentType);
-                content.Add(fileContent, "PosterFile", vm.PosterFile.FileName);
+                    new MediaTypeHeaderValue(addMovieViewModel.PosterFile.ContentType);
+                content.Add(fileContent, "PosterFile", addMovieViewModel.PosterFile.FileName);
             }
 
             var response = await HttpClient.PostAsync("api/Movie", content);
@@ -107,23 +107,23 @@ namespace MovieBooking.Web.Services
         //        throw new Exception($"UpdateMovie failed: {(int)response.StatusCode} - {error}");
         //    }
         //}
-        public async Task UpdateMovieAsync(Guid movieId, AddMovieViewModel vm)
+        public async Task UpdateMovieAsync(Guid movieId, AddMovieViewModel addMovieViewModel)
         {
             Authenticate();
 
             using var content = new MultipartFormDataContent();
 
-            content.Add(new StringContent(vm.Title ?? ""), "Title");
-            content.Add(new StringContent(vm.Description ?? ""), "Description");
-            content.Add(new StringContent(vm.DurationMinutes.ToString()), "DurationMinutes");
-            content.Add(new StringContent(vm.ReleaseDate.ToString("o")), "ReleaseDate");
+            content.Add(new StringContent(addMovieViewModel.Title ?? ""), "Title");
+            content.Add(new StringContent(addMovieViewModel.Description ?? ""), "Description");
+            content.Add(new StringContent(addMovieViewModel.DurationMinutes.ToString()), "DurationMinutes");
+            content.Add(new StringContent(addMovieViewModel.ReleaseDate.ToString("o")), "ReleaseDate");
 
-            if (vm.PosterFile != null && vm.PosterFile.Length > 0)
+            if (addMovieViewModel.PosterFile != null && addMovieViewModel.PosterFile.Length > 0)
             {
-                var fileContent = new StreamContent(vm.PosterFile.OpenReadStream());
+                var fileContent = new StreamContent(addMovieViewModel.PosterFile.OpenReadStream());
                 fileContent.Headers.ContentType =
-                    new MediaTypeHeaderValue(vm.PosterFile.ContentType);
-                content.Add(fileContent, "PosterFile", vm.PosterFile.FileName);
+                    new MediaTypeHeaderValue(addMovieViewModel.PosterFile.ContentType);
+                content.Add(fileContent, "PosterFile", addMovieViewModel.PosterFile.FileName);
             }
 
             var response = await HttpClient.PutAsync($"api/Movie/{movieId}", content);
