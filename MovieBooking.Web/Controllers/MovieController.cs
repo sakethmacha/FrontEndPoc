@@ -16,8 +16,8 @@ namespace MovieBooking.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
-            => View(await MovieService.GetMoviesAsync());
+        public async Task<IActionResult> Index()                                                                                                                      
+            => View(await MovieService.GetMoviesAsync());                                                                                                    
 
         public IActionResult AddMovie() => View();
 
