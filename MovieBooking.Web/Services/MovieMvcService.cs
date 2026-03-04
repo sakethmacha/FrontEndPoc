@@ -64,7 +64,6 @@ namespace MovieBooking.Web.Services
         {
             Authenticate();
 
-            // CHANGED: was PostAsJsonAsync, now multipart to support file upload
             using var content = new MultipartFormDataContent();
 
             content.Add(new StringContent(addMovieViewModel.Title ?? ""), "Title");
