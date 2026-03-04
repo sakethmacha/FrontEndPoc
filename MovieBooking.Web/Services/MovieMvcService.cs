@@ -120,8 +120,7 @@ namespace MovieBooking.Web.Services
             if (addMovieViewModel.PosterFile != null && addMovieViewModel.PosterFile.Length > 0)
             {
                 var fileContent = new StreamContent(addMovieViewModel.PosterFile.OpenReadStream());
-                fileContent.Headers.ContentType =
-                    new MediaTypeHeaderValue(addMovieViewModel.PosterFile.ContentType);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(addMovieViewModel.PosterFile.ContentType);
                 content.Add(fileContent, "PosterFile", addMovieViewModel.PosterFile.FileName);
             }
 
