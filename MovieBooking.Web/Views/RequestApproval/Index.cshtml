@@ -1,4 +1,5 @@
-﻿@model List<MovieBooking.Web.ApiContracts.AdminRequests.AdminRequestResponse>
+﻿@using MovieBooking.Web.Enums;
+@model List<MovieBooking.Web.ApiContracts.AdminRequests.AdminRequestResponse>
 
 @{
     ViewData["Title"] = "Approval Requests";
@@ -129,7 +130,7 @@
                                     </small>
                                 </div>
 
-                                <span class="badge status-@request.Status.ToLower()">
+                                <span class="badge status-@request.Status">
                                     @request.Status
                                 </span>
                             </div>

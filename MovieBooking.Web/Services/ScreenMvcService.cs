@@ -49,16 +49,16 @@ namespace MovieBooking.Web.Services
                 $"api/Screen/by-theatre/{theatreId}");
         }
 
-        public async Task AddScreenAsync(AddScreenViewModel vm)
+        public async Task AddScreenAsync(AddScreenViewModel addScreenViewModel)
         {
             Authenticate();
             var response = await HttpClient.PostAsJsonAsync("api/Screen",
                 new CreateScreenRequest
                 {
-                    TheatreId = vm.TheatreId,
-                    ScreenName = vm.ScreenName,
-                    SeatLayoutType = vm.SeatLayoutType,
-                    SeatRows = vm.SeatRows.Select(r => new CreateSeatRowRequest
+                    TheatreId = addScreenViewModel.TheatreId,
+                    ScreenName = addScreenViewModel.ScreenName,
+                    SeatLayoutType = addScreenViewModel.SeatLayoutType,
+                    SeatRows = addScreenViewModel.SeatRows.Select(r => new CreateSeatRowRequest
                     {
                         SeatRow = r.SeatRow,
                         SeatCount = r.SeatCount,
@@ -74,16 +74,16 @@ namespace MovieBooking.Web.Services
             }
         }
 
-        public async Task UpdateScreenAsync(Guid screenId, AddScreenViewModel vm)
+        public async Task UpdateScreenAsync(Guid screenId, AddScreenViewModel addScreenViewModel)
         {
             Authenticate();
             var response = await HttpClient.PutAsJsonAsync($"api/Screen/{screenId}",
                 new CreateScreenRequest
                 {
-                    TheatreId = vm.TheatreId,
-                    ScreenName = vm.ScreenName,
-                    SeatLayoutType = vm.SeatLayoutType,
-                    SeatRows = vm.SeatRows.Select(r => new CreateSeatRowRequest
+                    TheatreId = addScreenViewModel.TheatreId,
+                    ScreenName = addScreenViewModel.ScreenName,
+                    SeatLayoutType = addScreenViewModel.SeatLayoutType,
+                    SeatRows = addScreenViewModel.SeatRows.Select(r => new CreateSeatRowRequest
                     {
                         SeatRow = r.SeatRow,
                         SeatCount = r.SeatCount,

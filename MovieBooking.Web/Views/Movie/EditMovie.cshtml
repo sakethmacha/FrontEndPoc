@@ -1,10 +1,8 @@
 ﻿@model MovieBooking.Web.ViewModels.AddMovieViewModel
-
 @{
     ViewData["Title"] = "Edit Movie";
     var movieId = ViewBag.MovieId;
 }
-
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -15,44 +13,42 @@
                     </h4>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="EditMovie" asp-route-id="@movieId" method="post">
+                    <!-- CHANGED: added enctype="multipart/form-data" -->
+                    <form asp-action="EditMovie" asp-route-id="@movieId" method="post" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label fw-semibold">Movie Title</label>
                             <input asp-for="Title" class="form-control" placeholder="Enter movie title" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
-
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label fw-semibold">Description</label>
                             <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter movie description"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
-
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="DurationMinutes" class="form-label fw-semibold">Duration (minutes)</label>
                                 <input asp-for="DurationMinutes" type="number" class="form-control" placeholder="120" />
                                 <span asp-validation-for="DurationMinutes" class="text-danger"></span>
                             </div>
-
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ReleaseDate" class="form-label fw-semibold">Release Date</label>
                                 <input asp-for="ReleaseDate" type="date" class="form-control" />
                                 <span asp-validation-for="ReleaseDate" class="text-danger"></span>
                             </div>
                         </div>
-
                         <div class="mb-3">
-                            <label asp-for="PosterUrl" class="form-label fw-semibold">Poster URL</label>
-                            <input asp-for="PosterUrl" class="form-control" placeholder="https://example.com/poster.jpg" />
-                            <span asp-validation-for="PosterUrl" class="text-danger"></span>
+                            <label class="form-label fw-semibold">Movie Poster</label>
+                            <input type="file" name="PosterFile" accept="image/*" class="form-control" />
+                            <div class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Leave empty to keep existing poster
+                            </div>
                         </div>
-
                         <div class="d-flex gap-2 mt-4">
                             <button type="submit" class="btn btn-primary flex-fill">
                                 <i class="bi bi-check-lg"></i> Update Movie
                             </button>
-                            <a asp-action="Movies" class="btn btn-outline-secondary flex-fill">
+                            <a asp-action="Index" class="btn btn-outline-secondary flex-fill">
                                 <i class="bi bi-x-lg"></i> Cancel
                             </a>
                         </div>
@@ -62,7 +58,6 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

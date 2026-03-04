@@ -128,7 +128,7 @@
 
                             <!-- ACTIONS -->
                             <div class="mt-auto d-flex gap-2">
-                                <a asp-action="EditMovie"
+                                <a asp-controller ="Movie" asp-action="EditMovie"
                                    asp-route-id="@m.MovieId"
                                    class="btn btn-sm btn-outline-primary flex-fill">
                                     <i class="bi bi-pencil"></i> Edit
@@ -173,7 +173,7 @@
     <script>
         function confirmDelete(movieId, movieTitle) {
             document.getElementById('movieName').textContent = movieTitle;
-            document.getElementById('deleteForm').action = '/SuperAdmin/DeleteMovie/' + movieId;
+            document.getElementById('deleteForm').action = '/Movie/DeleteMovie/' + movieId;
             var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
             modal.show();
         }

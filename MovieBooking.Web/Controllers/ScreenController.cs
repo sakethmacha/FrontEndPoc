@@ -28,24 +28,24 @@ namespace MovieBooking.Web.Controllers
             });
 
         [HttpPost]
-        public async Task<IActionResult> AddScreen(AddScreenViewModel vm)
+        public async Task<IActionResult> AddScreen(AddScreenViewModel addScreenViewModel)
         {
             if (!ModelState.IsValid)
             {
-                vm.Theatres = await TheatreService.GetTheatresAsync();
-                return View(vm);
+                addScreenViewModel.Theatres = await TheatreService.GetTheatresAsync();
+                return View(addScreenViewModel);
             }
             try
             {
-                await ScreenService.AddScreenAsync(vm);
+                await ScreenService.AddScreenAsync(addScreenViewModel);
                 TempData["Success"] = "Screen added successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                vm.Theatres = await TheatreService.GetTheatresAsync();
-                return View(vm);
+                addScreenViewModel.Theatres = await TheatreService.GetTheatresAsync();
+                return View(addScreenViewModel);
             }
         }
 
@@ -72,25 +72,25 @@ namespace MovieBooking.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditScreen(Guid id, AddScreenViewModel vm)
+        public async Task<IActionResult> EditScreen(Guid id, AddScreenViewModel addScreenViewModel)
         {
             if (!ModelState.IsValid)
             {
-                vm.Theatres = await TheatreService.GetTheatresAsync();
+                addScreenViewModel.Theatres = await TheatreService.GetTheatresAsync();
                 ViewBag.ScreenId = id;
-                return View(vm);
+                return View(addScreenViewModel);
             }
             try
             {
-                await ScreenService.UpdateScreenAsync(id, vm);
+                await ScreenService.UpdateScreenAsync(id, addScreenViewModel);
                 TempData["Success"] = "Screen updated successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                vm.Theatres = await TheatreService.GetTheatresAsync();
-                return View(vm);
+                addScreenViewModel.Theatres = await TheatreService.GetTheatresAsync();
+                return View(addScreenViewModel);
             }
         }
 

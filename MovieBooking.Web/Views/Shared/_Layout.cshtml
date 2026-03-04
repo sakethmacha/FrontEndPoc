@@ -57,9 +57,9 @@
 
                             <li class="nav-item mb-2">
                                 <a asp-controller="Booking"
-                                   asp-action="MyBookings"
-                                   class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyBookings" ? "active" : "")">
-                                     My Bookings
+                                   asp-action="Bookings"
+                                   class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Bookings" ? "active" : "")">
+                                     Bookings
                                 </a>
                             </li>
                         }
@@ -68,7 +68,7 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-warning"
-                                   asp-controller="Admin"
+                                   asp-controller="Request"
                                    asp-action="Dashboard">
                                     Admin Panel
                                 </a>

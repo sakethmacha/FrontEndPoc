@@ -34,19 +34,19 @@ namespace MovieBooking.Web.Controllers
             => View(await ShowTimeService.GetAddShowTimeBulkFormAsync());
 
         [HttpPost]
-        public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel vm)
+        public async Task<IActionResult> AddShowTime(AddShowTimeBulkViewModel addShowTimeViewModel)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid) return View(addShowTimeViewModel);
             try
             {
-                await ShowTimeService.AddShowTimesBulkAsync(vm);
+                await ShowTimeService.AddShowTimesBulkAsync(addShowTimeViewModel);
                 TempData["Success"] = "ShowTimes added successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addShowTimeViewModel);
             }
         }
 
@@ -65,26 +65,26 @@ namespace MovieBooking.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditShowTime(Guid id, AddShowTimeViewModel vm)
+        public async Task<IActionResult> EditShowTime(Guid id, AddShowTimeViewModel addShowTimeViewModel)
         {
             if (!ModelState.IsValid)
             {
-                vm.Movies = await MovieService.GetMoviesAsync();
-                vm.Theatres = await TheatreService.GetTheatresAsync();
-                vm.Languages = await LanguageService.GetLanguagesAsync();
+                addShowTimeViewModel.Movies = await MovieService.GetMoviesAsync();
+                addShowTimeViewModel.Theatres = await TheatreService.GetTheatresAsync();
+                addShowTimeViewModel.Languages = await LanguageService.GetLanguagesAsync();
                 ViewBag.ShowTimeId = id;
-                return View(vm);
+                return View(addShowTimeViewModel);
             }
             try
             {
-                await ShowTimeService.UpdateShowTimeAsync(id, vm);
+                await ShowTimeService.UpdateShowTimeAsync(id, addShowTimeViewModel);
                 TempData["Success"] = "ShowTime updated successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addShowTimeViewModel);
             }
         }
 

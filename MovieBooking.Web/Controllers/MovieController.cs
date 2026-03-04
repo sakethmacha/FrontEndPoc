@@ -16,25 +16,25 @@ namespace MovieBooking.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
-            => View(await MovieService.GetMoviesAsync());
+        public async Task<IActionResult> Index()                                                                                                                      
+            => View(await MovieService.GetMoviesAsync());                                                                                                    
 
         public IActionResult AddMovie() => View();
 
         [HttpPost]
-        public async Task<IActionResult> AddMovie(AddMovieViewModel vm)
+        public async Task<IActionResult> AddMovie(AddMovieViewModel addMovieViewModel)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid) return View(addMovieViewModel);
             try
             {
-                await MovieService.AddMovieAsync(vm);
+                await MovieService.AddMovieAsync(addMovieViewModel);
                 TempData["Success"] = "Movie added successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addMovieViewModel);
             }
         }
 
@@ -48,26 +48,26 @@ namespace MovieBooking.Web.Controllers
                 Description = movie.Description ?? string.Empty,
                 DurationMinutes = movie.DurationMinutes,
                 ReleaseDate = movie.ReleaseDate,
-                PosterUrl = movie.PosterUrl
+                //PosterUrl = movie.PosterUrl
             };
             ViewBag.MovieId = id;
             return View(vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditMovie(Guid id, AddMovieViewModel vm)
+        public async Task<IActionResult> EditMovie(Guid id, AddMovieViewModel addmovieViewModel)
         {
-            if (!ModelState.IsValid) { ViewBag.MovieId = id; return View(vm); }
+            if (!ModelState.IsValid) { ViewBag.MovieId = id; return View(addmovieViewModel); }
             try
             {
-                await MovieService.UpdateMovieAsync(id, vm);
+                await MovieService.UpdateMovieAsync(id, addmovieViewModel);
                 TempData["Success"] = "Movie updated successfully";
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return View(vm);
+                return View(addmovieViewModel);
             }
         }
 

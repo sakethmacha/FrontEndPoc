@@ -11,10 +11,10 @@ namespace MovieBooking.Web.Services
             HttpClient = httpClient;
         }
 
-        public async Task<AuthenticationViewModel?> LoginAsync(LoginViewModel model)
+        public async Task<AuthenticationViewModel?> LoginAsync(LoginViewModel loginViewModel)
         {
             var response = await HttpClient.PostAsJsonAsync(
-                "api/authentication/login", model);
+                "api/authentication/login", loginViewModel);
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -22,10 +22,10 @@ namespace MovieBooking.Web.Services
             return await response.Content.ReadFromJsonAsync<AuthenticationViewModel>();
         }
 
-        public async Task<bool> RegisterAsync(RegisterViewModel model)
+        public async Task<bool> RegisterAsync(RegisterViewModel registerViewModel)
         {
             var response = await HttpClient.PostAsJsonAsync(
-                "api/authentication/register", model);
+                "api/authentication/register", registerViewModel);
 
             return response.IsSuccessStatusCode;
         }

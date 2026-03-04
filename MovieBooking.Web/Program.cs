@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MovieBooking.Web.Interfaces;
 using MovieBooking.Web.Services;
+using System.Text.Json.Serialization;
 namespace MovieBooking.Web
 {
     public class Program
@@ -21,7 +22,7 @@ namespace MovieBooking.Web
                 var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
                 Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
             });
-            builder.Services.AddHttpClient<IAdminMvcService, AdminMvcService>((ServiceProvider, Client) =>
+            builder.Services.AddHttpClient<IAdminMvcService, RequestMvcService>((ServiceProvider, Client) =>
             {
                 var Configuration = ServiceProvider.GetRequiredService<IConfiguration>();
                 Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
@@ -62,7 +63,7 @@ namespace MovieBooking.Web
                 Client.BaseAddress = new Uri(Configuration["ApiSettings:BaseUrl"]!);
             });
             builder.Services.AddDistributedMemoryCache();
-            
+           
             builder.Services
              .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
              .AddCookie(options =>

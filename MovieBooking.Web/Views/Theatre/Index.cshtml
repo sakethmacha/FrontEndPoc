@@ -183,7 +183,7 @@
     <script>
         function confirmDelete(theatreId, theatreName) {
             document.getElementById('theatreName').textContent = theatreName;
-            document.getElementById('deleteForm').action = '/SuperAdmin/DeleteTheatre/' + theatreId;
+            document.getElementById('deleteForm').action = '/Theatre/DeleteTheatre/' + theatreId;
             var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
             modal.show();
         }

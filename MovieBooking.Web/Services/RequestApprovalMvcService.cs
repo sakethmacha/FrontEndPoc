@@ -1,6 +1,7 @@
 ﻿using MovieBooking.Web.ApiContracts.AdminRequests;
 using MovieBooking.Web.Interfaces;
 using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace MovieBooking.Web.Services
 {
@@ -33,7 +34,7 @@ namespace MovieBooking.Web.Services
             Authenticate();
             return await HttpClient.GetFromJsonAsync<List<AdminRequestResponse>>("api/RequestApproval");
         }
-
+      
         public async Task ApproveRequestAsync(Guid id)
         {
             Authenticate();

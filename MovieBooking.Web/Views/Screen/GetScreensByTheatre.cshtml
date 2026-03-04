@@ -173,7 +173,7 @@
     <script>
         function confirmDelete(screenId, screenName) {
             document.getElementById('screenName').textContent = screenName;
-            document.getElementById('deleteForm').action = '/SuperAdmin/DeleteScreen/' + screenId;
+            document.getElementById('deleteForm').action = '/Screen/DeleteScreen/' + screenId;
             var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
             modal.show();
         }

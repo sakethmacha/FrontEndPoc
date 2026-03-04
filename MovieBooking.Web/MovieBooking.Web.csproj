@@ -16,4 +16,8 @@
     <ProjectReference Include="..\MovieBooking.Validations\MovieBooking.Validations.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Posters\" />
+  </ItemGroup>
+
 </Project>

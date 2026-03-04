@@ -1,4 +1,5 @@
-﻿namespace MovieBooking.Web.ApiContracts.Admin
+﻿using MovieBooking.Web.Enums;
+namespace MovieBooking.Web.ApiContracts.Admin
 {
     public class ScreenRequestResponse
     {
